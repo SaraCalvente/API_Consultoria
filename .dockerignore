@@ -1,0 +1,13 @@
+.gitignore
+.dockerignore
+docker-compose-local.yaml
+docker-compose-stage.yaml
+bitbucket-pipelines.yml
+.env.local
+.idea
+.git
+vendor
+
+exec_docker-compose-local.sh
+exec_docker-compose-stage.sh
+exec_docker-compose-prod.sh

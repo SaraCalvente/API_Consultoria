@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  CHANGE_ME-api:
+    build:
+      context: .
+      dockerfile: .docker/local/Dockerfile
+    volumes:
+      - '.:/var/www'
+    ports:
+      - "8001:80"
+    depends_on:
+      - CHANGE_ME-mysql
+
+  CHANGE_ME-mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: CHANGE_ME
+      MYSQL_USER: CHANGE_ME
+      MYSQL_PASSWORD: CHANGE_ME
+      MYSQL_ROOT_PASSWORD: CHANGE_ME
+    ports:
+      - "3308:3306"
+    volumes:
+      - db:/var/lib/mysql
+    command:
+      - mysqld
+      - '--default-time-zone=Europe/Madrid'
+
+  CHANGE_ME-mysql-test:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: CHANGE_ME
+      MYSQL_USER: CHANGE_ME
+      MYSQL_PASSWORD: CHANGE_ME
+      MYSQL_ROOT_PASSWORD: CHANGE_ME
+    ports:
+      - "3309:3306"
+    volumes:
+      - db:/var/lib/mysql-test
+    command:
+      - mysqld
+      - '--default-time-zone=Europe/Madrid'
+
+volumes:
+  db:

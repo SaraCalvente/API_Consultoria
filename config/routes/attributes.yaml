@@ -1,0 +1,21 @@
+controllers:
+  resource: ../../src/Controller/Admin/
+  type: attribute
+  prefix: '/{_locale}/api'
+  requirements:
+    _locale: '%supported_locales_path%'
+
+rest_controllers:
+  resource: ../../src/Controller/Rest/
+  type: attribute
+  prefix: '/{_locale}'
+  requirements:
+    _locale: '%supported_locales_path%'
+
+front_controllers:
+  resource: ../../src/Controller/Front/
+  type: attribute
+
+kernel:
+  resource: ../../src/Kernel.php
+  type: attribute

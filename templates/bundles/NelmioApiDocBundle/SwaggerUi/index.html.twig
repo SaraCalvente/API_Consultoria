@@ -1,0 +1,133 @@
+{% extends '@!NelmioApiDoc/SwaggerUi/index.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .swagger-login-screen {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            height: calc(100vh - 70px);
+        }
+
+        .login-container {
+            width: 100%;
+            display: flex;
+            flex-flow: column wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .password, .username {
+            width: 30%;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .login-button {
+            background-color: #5c6461;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 30%;
+        }
+
+        .login-button:hover {
+            opacity: 0.8;
+        }
+
+        html header:before {
+            background-color:#777;
+        }
+
+        html header #logo img {
+            background-color: transparent;
+        }
+
+        html #swagger-ui.api-platform .information-container.wrapper {
+            margin-bottom:0px;
+        }
+
+        html #swagger-ui.api-platform .info .title {
+            color: #000;
+            padding-top: 1rem;
+            font-size: 2rem;
+        }
+
+        html #swagger-ui.api-platform .opblock-tag {
+            padding: 5px;
+        }
+
+        html #swagger-ui.api-platform .auth-wrapper > .btn.authorize  {
+            position: absolute;
+            margin-top: -60px;
+        }
+
+        html .swagger-ui .scheme-container {
+            padding: 0;
+            margin: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block header %}
+    <div id="logo"><img src="{{ asset('logo-swagger.png') }}"></div>
+{% endblock header %}
+
+{% block swagger_ui %}
+    {% if not app.request.cookies.get('username') %}
+        <form onsubmit="doLogin(event)">
+            <div class="swagger-login-screen">
+                <div class="login-container" id="login">
+                    <input type="text" placeholder="Username" id="username" class="username">
+                    <input type="password" placeholder="Password" id="password" class="password">
+                    <div id="error" style="color: red"></div>
+                    <input id="do-login-action" class="login-button" type="submit" value="Login">
+                </div>
+            </div>
+        </form>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        async function doLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            await fetch('/es/api/login_nelmio', {
+                method: 'POST',
+                body: JSON.stringify({username: username, password: password})
+            })
+            .then((response) => response.json())
+            .then((res) => {
+                const success = res.success;
+                if (success) {
+                    location.reload();
+                } else {
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    showError()
+                }
+            });
+        }
+
+        const showError = () => {
+            document.getElementById('error').innerText = '{{ 'TR_INVALID_CREDENTIALS' | trans }}'
+            setTimeout(() => {
+                document.getElementById('error').innerText = ''
+            }, 3000)
+        }
+    </script>
+{% endblock javascripts %}
+

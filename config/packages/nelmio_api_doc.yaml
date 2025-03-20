@@ -1,0 +1,77 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: 'Cuatroochenta App'
+            description: ''
+            version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+            parameters:
+                locale:
+                    name: _locale
+                    description: 'Locale of request response'
+                    in: path
+                    required: true
+                    schema:
+                        type: string
+                        default: es
+                        enum:
+                            - es
+        security:
+            -
+                Bearer: {  }
+        paths:
+            '/{_locale}/api/login_check':
+                post:
+                    tags:
+                        - Login
+                    description: 'Login into the api.'
+                    parameters:
+                        -
+                            name: _locale
+                            description: Lang
+                            in: path
+                            required: true
+                    requestBody:
+                        description: 'User to login'
+                        required: true
+                        content:
+                            application/json: { schema: { type: object, properties: { username: { type: string }, password: { type: string }, push_token: { type: string } } } }
+                    responses:
+                        200:
+                            description: 'Login successful'
+                            content: { application/json: { schema: { type: object, properties: { token: { type: string }, refresh_token: { type: string } } } } }
+                        401:
+                            description: 'Bad credentials'
+                            content: { application/json: { schema: { type: object, properties: { code: { type: int, example: 401 }, message: { type: string } } } } }
+            '/{_locale}/api/token/refresh':
+                post:
+                    tags:
+                        - Login
+                    description: 'Login into the api by refresh token.'
+                    parameters:
+                        -
+                            name: _locale
+                            description: Lang
+                            in: path
+                            required: true
+                    requestBody:
+                        content:
+                            application/json: { schema: { type: object, properties: { refresh_token: { type: string }, push_token: { type: string } } } }
+                    responses:
+                        200:
+                            description: OK
+                            content: { application/json: { schema: { type: object, properties: { token: { type: string }, refresh_token: { type: string } } } } }
+                        401:
+                            description: 'An authentication exception occurred.'
+    areas:
+        default:
+            disable_default_routes: true
+            path_patterns:
+                - '^/{_locale}/'
+    models:
+        use_jms: false

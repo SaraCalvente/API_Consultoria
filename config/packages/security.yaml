@@ -1,0 +1,57 @@
+security:
+    password_hashers:
+        App\Entity\User\User:
+            algorithm: md5
+            encode_as_base64: false
+            iterations: 0
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        login:
+            pattern: ^/%supported_locales_path%/api/login
+            stateless: true
+            user_checker: App\SecurityUser\UserChecker
+            json_login:
+                check_path: api_login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                require_previous_session: false
+            provider: user_entity
+        refresh:
+            pattern: ^/%supported_locales_path%/api/token/refresh
+            stateless: true
+            refresh_jwt:
+                provider: user_entity
+        api:
+            pattern: ^/%supported_locales_path%/api/private
+            stateless: true
+            jwt: null
+        public:
+            pattern: ^/%supported_locales_path%/api/public
+            stateless: true
+        logout:
+            pattern: ^/%supported_locales_path%/api/logout
+            stateless: true
+            jwt: null
+    access_control:
+        -
+            path: ^/%supported_locales_path%/api/login_nelmio
+            roles: PUBLIC_ACCESS
+        -
+            path: ^/%supported_locales_path%/api/public
+            roles: PUBLIC_ACCESS
+        -
+            path: ^/%supported_locales_path%/api/login
+            roles: IS_AUTHENTICATED_ANONYMOUSLY
+        -
+            path: ^/%supported_locales_path%/api/token/refresh
+            roles: PUBLIC_ACCESS
+        -
+            path: ^/%supported_locales_path%/api/private
+            roles: IS_AUTHENTICATED_FULLY
+    providers:
+        user_entity:
+            entity:
+                class: App\Entity\User\User
+                property: username

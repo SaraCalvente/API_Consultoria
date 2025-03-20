@@ -1,0 +1,22 @@
+fos_user:
+  db_driver: orm
+  firewall_name: main
+  user_class: App\Entity\User
+  service:
+    mailer: fos_user.mailer.noop
+  from_email:
+    address: '%email_sender_address%'
+    sender_name: "%email_sender_name%"
+  registration:
+    form:
+      type: App\Form\RegistrationType
+      validation_groups: [RegistrationCustom]
+  profile:
+    form:
+      validation_groups: [ProfileCustom]
+  resetting:
+    form:
+      validation_groups: [ResetPasswordCustom]
+  change_password:
+    form:
+      validation_groups: [ChangePasswordCustom]

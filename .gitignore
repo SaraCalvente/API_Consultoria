@@ -48,3 +48,65 @@ Thumbs.db
 *.mov
 *.wmv
 
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+.idea/
+public/csv/*.csv
+public/import_csv/*.csv
+
+###add next
+#/.env.test
+
+###remove next
+public/import_csv_examples/
+src/Controller/Admin/*
+!src/Controller/Admin/.gitignore
+src/Controller/Rest/*
+!src/Controller/Rest/.gitignore
+public/uploads/
+src/Command/
+src/Entity/*
+!src/Entity/.gitignore
+src/EventListener/
+src/Util/
+src/Model/
+src/Exception/
+src/Annotation/
+src/Form/*
+!src/Form/UserPasswordResetType.php
+!src/Form/UserPasswordResetRequestType.php
+src/Repository/
+src/EventListener/ResponseListener.php
+src/Security/
+src/Migrations/
+src/Services/GetVirtualColumnsService.php
+src/Services/GenerateNewLanguageService.php
+src/Services/*/*
+xml/schema/obj.txt
+var
+vendor
+tests/Tests/
+tests/Shared/
+
+id_rsa
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

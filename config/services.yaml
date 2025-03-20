@@ -1,0 +1,29 @@
+parameters:
+    app_env: '%env(APP_ENV)%'
+    app_url: '%env(APP_URL)%'
+    react_url: '%env(REACT_URL)%'
+    email_sender_name: '%env(EMAIL_SENDER_NAME)%'
+    email_sender_address: '%env(EMAIL_SENDER_ADDRESS)%'
+    locale: es
+    supported_locales:
+        - es
+    supported_locales_path: (es)
+    nelmio.username: '%env(NELMIO_USER_NAME)%'
+    nelmio.password: '%env(NELMIO_PASSWORD)%'
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\Controller\:
+        resource: ../src/Controller
+        tags:
+            - controller.service_arguments
+    app.user_provider.email:
+        class: Symfony\Bridge\Doctrine\Security\User\EntityUserProvider
+        arguments:
+            - '@doctrine'
+            - App\Entity\User
+            - email

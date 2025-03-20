@@ -1,0 +1,9 @@
+{
+    "idp_name": "",
+    "idp_entity_id": "",
+    "saml_login_url": "",
+    "login_binding_type": "HttpRedirect",
+    "site_base_url": "",
+    "sp_entity_id": "",
+    "acs_url": ""
+}

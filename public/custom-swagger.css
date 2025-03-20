@@ -1,0 +1,41 @@
+html header:before {
+    background-color:#777;
+}
+
+html header #logo img {
+    background-color: transparent;
+}
+
+html #swagger-ui.api-platform .information-container.wrapper {
+    margin-bottom:0px;
+}
+
+html #swagger-ui.api-platform .info .title {
+    color: #000;
+    padding-top: 1rem;
+    font-size: 2rem;
+}
+
+html #swagger-ui.api-platform .opblock-tag {
+    padding: 5px;
+}
+
+html #swagger-ui.api-platform .auth-wrapper > .btn.authorize  {
+    position: absolute;
+    margin-top: -60px;
+}
+
+html .swagger-ui .scheme-container {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+html .swagger-ui .opblock-tag-section {
+    margin-top: 30px;
+}
+
+.block-desktop > div > span:last-child {
+    display: none;
+}

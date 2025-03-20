@@ -1,0 +1,121 @@
+image: atlassian/default-image:3
+
+pipelines:
+  custom:
+    staging-migrations:
+      - step:
+          name: Apply staging migrations
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_STAGE_SERVER}"
+                SERVER: "${IP_STAGE_SERVER}"
+                COMMAND: 'docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_STAGE.1.")
+                php bin/console --no-interaction doctrine:migrations:migrate &&
+                docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_STAGE.1.")
+                php bin/console cache:clear'
+                DEBUG: 'true'
+    prod-migrations:
+      - step:
+          name: Apply staging migrations
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_PROD_SERVER}"
+                SERVER: "${IP_PROD_SERVER}"
+                COMMAND: 'docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_PROD.1.")
+                php bin/console --no-interaction doctrine:migrations:migrate &&
+                docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_PROD.1.")
+                php bin/console cache:clear'
+                DEBUG: 'true'
+    staging-clear-cache:
+      - step:
+          name: Clear cache stage
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_STAGE_SERVER}"
+                SERVER: "${IP_STAGE_SERVER}"
+                COMMAND: 'docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_STAGE.1.")
+                php bin/console --no-interaction cache:clear'
+                DEBUG: 'true'
+
+    staging-check-log:
+      - step:
+          name: Check log stage
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_STAGE_SERVER}"
+                SERVER: "${IP_STAGE_SERVER}"
+                COMMAND: 'docker exec -it \$(docker ps -qf "name=^$DOCKER_SERVICE_NAME_STAGE.1.")
+                tail --lines=1000 var/log/stage.log'
+                DEBUG: 'true'
+  branches:
+    develop:
+      - step:
+          name: Build Docker image stage
+          script:
+            - >-
+              docker build . --file .docker/common/Dockerfile --tag base-image &&
+              docker build . --file .docker/stage/Dockerfile --tag $DOCKER_IMAGE_NAME_STAGE
+            - pipe: atlassian/aws-ecr-push-image:1.2.1
+              variables:
+                AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+                AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+                AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+                IMAGE_NAME: "${DOCKER_IMAGE_NAME_STAGE}"
+                TAGS: "${BITBUCKET_TAG:-latest}"
+                DEBUG: "true"
+          services:
+            - docker
+          caches:
+            - docker
+      - step:
+          name: Deploy staging
+          deployment: Staging
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_STAGE_SERVER}"
+                SERVER: "${IP_STAGE_SERVER}"
+                COMMAND: 'aws --region $AWS_DEFAULT_REGION ecr get-login-password |
+                docker login --password-stdin --username AWS $ECR_ENDPOINT &&
+                docker pull $ECR_ENDPOINT/$DOCKER_IMAGE_NAME_STAGE:latest &&
+                docker service update --force $DOCKER_SERVICE_NAME_STAGE &&
+                docker system prune -af'
+                DEBUG: 'true'
+
+    master:
+      - step:
+          name: Build Docker image master
+          script:
+            - >-
+              docker build . --file .docker/common/Dockerfile --tag base-image &&
+              docker build . --file .docker/prod/Dockerfile --tag $DOCKER_IMAGE_NAME_PROD
+            - pipe: atlassian/aws-ecr-push-image:1.2.1
+              variables:
+                AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+                AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+                AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+                IMAGE_NAME: "${DOCKER_IMAGE_NAME_PROD}"
+                TAGS: "${BITBUCKET_TAG:-latest}"
+                DEBUG: "true"
+          services:
+            - docker
+          caches:
+            - docker
+      - step:
+          name: Deploy prod
+          deployment: Production
+          script:
+            - pipe: atlassian/ssh-run:0.2.6
+              variables:
+                SSH_USER: "${SSH_USER_PROD_SERVER}"
+                SERVER: "${IP_PROD_SERVER}"
+                COMMAND: 'aws --region $AWS_DEFAULT_REGION ecr get-login-password |
+                docker login --password-stdin --username AWS $ECR_ENDPOINT &&
+                docker pull $ECR_ENDPOINT/$DOCKER_IMAGE_NAME_PROD:latest &&
+                docker service update --force $DOCKER_SERVICE_NAME_PROD &&
+                docker system prune -af'
+                DEBUG: 'true'

@@ -1,0 +1,7 @@
+TR_FIELD_NOT_BLANK: 'el campo es obligatorio'
+TR_FIELD_TOO_LONG: 'el campo es demasiado largo'
+TR_EMAIL_USED: 'ya existe un registro con ese email'
+TR_PHONE_USED: 'ya existe un registro con ese número de teléfono'
+TR_UNIQUE: 'ya existe un registro con ese valor'
+TR_UNIQUE_USERNAME: 'ya existe un usuario con ese nombre'
+TR_PASSWORD_ERROR_VALIDATION: 'la clave debe contener 8 caracteres mínimo, una letra mayúscula, una minúscula y un número'
