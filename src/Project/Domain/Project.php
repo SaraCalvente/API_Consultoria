@@ -2,8 +2,8 @@
 
 namespace App\Project\Domain;
 
+use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\Profile;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -35,6 +35,10 @@ class Project
 
     #[ORM\ManyToMany(targetEntity: Consultant::class, inversedBy: 'project')]
     private Collection $consultant;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
     public function __construct()
     {
@@ -126,6 +130,18 @@ class Project
     public function removeConsultant(Consultant $consultant): static
     {
         $this->consultant->removeElement($consultant);
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): static
+    {
+        $this->client = $client;
 
         return $this;
     }
