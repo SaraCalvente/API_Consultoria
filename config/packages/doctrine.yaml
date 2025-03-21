@@ -16,6 +16,9 @@ doctrine:
             collate: utf8mb4_unicode_ci
 
         url: '%env(resolve:DATABASE_URL)%'
+        types:
+            email_vo: App\Shared\Infraestructure\Persistence\EmailType
+
     orm:
         auto_generate_proxy_classes: false
         naming_strategy: doctrine.orm.naming_strategy.underscore
@@ -27,6 +30,18 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+            User:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/User/Domain'
+                prefix: 'App\User\Domain'
+                alias: User
+            Consultant:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Consultant/Domain'
+                prefix: 'App\Consultant\Domain'
+                alias: Consultant
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
