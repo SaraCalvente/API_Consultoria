@@ -2,7 +2,10 @@
 
 namespace App\Project\Domain;
 
+use App\Consultant\Domain\Consultant;
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -27,7 +30,17 @@ class Task
     private ?\DateTimeInterface $time_estimation = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
+
+    #[ORM\ManyToMany(targetEntity: Consultant::class, inversedBy: 'tasks')]
+    #[ORM\JoinTable(name: 'task_consultant')]
+    private Collection $consultants;
+
+    public function __construct()
+    {
+        $this->consultants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -90,6 +103,30 @@ class Task
     public function setProject(?Project $project): static
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Consultant>
+     */
+    public function getConsultants(): Collection
+    {
+        return $this->consultants;
+    }
+
+    public function addConsultant(Consultant $consultant): self
+    {
+        if (!$this->consultants->contains($consultant)) {
+            $this->consultants[] = $consultant;
+        }
+
+        return $this;
+    }
+
+    public function removeConsultant(Consultant $consultant): self
+    {
+        $this->consultants->removeElement($consultant);
 
         return $this;
     }

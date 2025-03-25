@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Consultant\Domain\Ability;
 use App\Consultant\Domain\Consultant;
 use App\Consultant\Domain\Profile;
 use App\User\Domain\User;
@@ -37,7 +38,7 @@ class ConsultantFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return array(
-            UserFixtures::class
+            UserFixtures::class,
         );
     }
 

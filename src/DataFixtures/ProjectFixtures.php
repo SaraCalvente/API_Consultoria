@@ -12,12 +12,13 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProjectFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getProjectData() as [$name, $description, $startDate, $endDate, $status, $clientEmail, $consultantEmails]) {
-            // Buscar el cliente en la base de datos
-            #$client = $manager->getRepository(Client::class)->findOneBy(['email' => $clientEmail]);
-
+        foreach ($this->getProjectData() as [$name, $description, $startDate, $endDate, $status, $clientId, $consultantIds]) {
+            $client = $manager->getRepository(Client::class)->findOneBy(['id' => $clientId]);
 
             $project = new Project();
             $project->setName($name);
@@ -25,15 +26,11 @@ class ProjectFixtures extends Fixture implements DependentFixtureInterface
             $project->setStartDate(new \DateTimeImmutable($startDate));
             $project->setEndDate($endDate ? new \DateTimeImmutable($endDate) : null);
             $project->setStatus($status);
-            #$project->setClient($client);
+            $project->setClient($client);
 
-            // Asignar consultores al proyecto
-            foreach ($consultantEmails as $email) {
-                $consultant = $manager->getRepository(Consultant::class)->findOneBy(['user' => $email]);
+            foreach ($consultantIds as $id) {
 
-                if (!$consultant) {
-                    throw new \Exception("El consultor con email $email no fue encontrado en la base de datos.");
-                }
+                $consultant = $manager->getRepository(Consultant::class)->findOneBy(['id' => $id]);
 
                 $project->addConsultant($consultant);
             }
@@ -49,6 +46,7 @@ class ProjectFixtures extends Fixture implements DependentFixtureInterface
         return [
             UserFixtures::class,
             ConsultantFixtures::class,
+            ClientFixtures::class,
         ];
     }
 
@@ -61,7 +59,7 @@ class ProjectFixtures extends Fixture implements DependentFixtureInterface
                 '2024-01-01',
                 '2024-06-30',
                 Status::EN_PROCESO,
-                'user@example.com',
+                1,
                 [1, 2]
             ],
             [
@@ -70,8 +68,8 @@ class ProjectFixtures extends Fixture implements DependentFixtureInterface
                 '2024-03-15',
                 null,
                 Status::COMPLETADO,
-                'admin@example.com',
-                ['user@example.com']
+                2,
+                [3]
             ],
             [
                 'Project C',
@@ -79,8 +77,8 @@ class ProjectFixtures extends Fixture implements DependentFixtureInterface
                 '2024-02-10',
                 '2024-08-10',
                 Status::PENDIENTE,
-                'sara@calvente.es',
-                ['sara@calvente.es', 'user@example.com']
+                2,
+                [1, 3]
             ],
         ];
     }

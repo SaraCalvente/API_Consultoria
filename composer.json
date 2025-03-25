@@ -1,4 +1,6 @@
 {
+    "name": "cuatroochenta/api-consultorias",
+    "description": "API para la gestión de consultorías técnicas",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "dev",

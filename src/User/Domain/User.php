@@ -2,8 +2,11 @@
 
 namespace App\User\Domain;
 
+use App\ActivityHistory\Domain\ActivityHistory;
 use App\Repository\UserRepository;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,6 +30,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\ManyToMany(targetEntity: Notification::class, mappedBy: 'user')]
+    private Collection $notifications;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ActivityHistory::class)]
+    private Collection $activityHistories;
+
+    public function __construct()
+    {
+        $this->notifications = new ArrayCollection();
+        $this->activityHistories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -96,5 +111,62 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            $notification->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ActivityHistory>
+     */
+    public function getActivityHistories(): Collection
+    {
+        return $this->activityHistories;
+    }
+
+    public function addActivityHistory(ActivityHistory $activityHistory): static
+    {
+        if (!$this->activityHistories->contains($activityHistory)) {
+            $this->activityHistories->add($activityHistory);
+            $activityHistory->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityHistory(ActivityHistory $activityHistory): static
+    {
+        if ($this->activityHistories->removeElement($activityHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($activityHistory->getUser() === $this) {
+                $activityHistory->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

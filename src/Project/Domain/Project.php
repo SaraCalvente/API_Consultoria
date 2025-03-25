@@ -2,6 +2,7 @@
 
 namespace App\Project\Domain;
 
+use App\ActivityHistory\Domain\ActivityHistory;
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
 use App\Repository\ProjectRepository;
@@ -15,7 +16,7 @@ class Project
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column (type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -40,9 +41,13 @@ class Project
     #[ORM\JoinColumn(nullable: false)]
     private ?Client $client = null;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ActivityHistory::class)]
+    private Collection $activity_history;
+
     public function __construct()
     {
         $this->consultant = new ArrayCollection();
+        $this->activity_history = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -142,6 +147,36 @@ class Project
     public function setClient(?Client $client): static
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ActivityHistory>
+     */
+    public function getActivityHistory(): Collection
+    {
+        return $this->activity_history;
+    }
+
+    public function addActivityHistory(ActivityHistory $activityHistory): static
+    {
+        if (!$this->activity_history->contains($activityHistory)) {
+            $this->activity_history->add($activityHistory);
+            $activityHistory->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityHistory(ActivityHistory $activityHistory): static
+    {
+        if ($this->activity_history->removeElement($activityHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($activityHistory->getProject() === $this) {
+                $activityHistory->setProject(null);
+            }
+        }
 
         return $this;
     }

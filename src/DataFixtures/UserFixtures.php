@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\Bundle\FixturesBundle\Fixture;
