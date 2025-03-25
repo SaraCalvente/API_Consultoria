@@ -38,7 +38,11 @@ class UserFixtures extends Fixture
 
             ['user@example.com', 'passw', ['ROLE_USER']],
             ['admin@example.com', 'passw', ['ROLE_ADMIN']],
-            ['sara@calvente.es', 'passw', ['ROLE_ADMIN']],
+            ['sara@calvente.es', 'passw', ['ROLE_CONSULTANT']],
+            ['alex@gonzalez.com','passw', ['ROLE_CLIENT']],
+            ['ana@garcia.com', 'passw', ['ROLE_CLIENT']],
+            ['miguel@piquer.com', 'passw', ['ROLE_CLIENT']],
+
 
         ];
     }

@@ -3,3 +3,9 @@ api_login_check:
 
 gesdinet_jwt_refresh_token:
   path: /{_locale}/api/token/refresh
+
+api_controllers:
+  resource: '../src/UI/API/'
+  type: annotation
+  defaults: {_format: json}
+  prefix: /api
