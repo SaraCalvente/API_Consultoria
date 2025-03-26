@@ -23,9 +23,14 @@ security:
             refresh_jwt:
                 provider: user_entity
         api:
-            pattern: ^/%supported_locales_path%/api/private
+            pattern: ^/api
             stateless: true
-            jwt: null
+            entry_point: jwt
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
         public:
             pattern: ^/%supported_locales_path%/api/public
             stateless: true
@@ -34,6 +39,11 @@ security:
             stateless: true
             jwt: null
     access_control:
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS}
+        - { path: ^/api/all, roles: PUBLIC_ACCESS}
+        - { path: ^/api/client, roles: ROLE_CLIENT }
+        - { path: ^/api/consultant, roles: ROLE_CONSULTANT}
         -
             path: ^/%supported_locales_path%/api/login_nelmio
             roles: PUBLIC_ACCESS

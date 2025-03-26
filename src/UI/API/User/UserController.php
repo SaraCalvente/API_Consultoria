@@ -4,6 +4,7 @@
 
 namespace App\UI\API\User;
 
+use App\Client\Application\ClientService;
 use App\Consultant\Domain\Profile;
 use App\User\Application\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,10 +14,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    #[Route('/register', name: 'user_register', methods: ['POST'])]
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+    #[Route('/register/admin', name: 'admin_register', methods: ['POST'])]
     public function register(
-        Request $request,
-        UserService $userService
+        Request $request
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -24,7 +30,7 @@ class UserController extends AbstractController
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        return $userService->registerUser($data['email'], $data['password'], $data['userType'], $data['additionalData']);
+        return $this->userService->registerAdmin($data['email'], $data['password']);
     }
 
     #[Route('/login', name: 'user_login', methods: ['POST'])]
@@ -34,7 +40,6 @@ class UserController extends AbstractController
         if (!isset($data['email']) || !isset($data['password'])) {
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
-
         try{
             $response = $userService->loginUser($data['email'], $data['password']);
             return $response;
@@ -48,6 +53,22 @@ class UserController extends AbstractController
     public function getUsers(UserService $userService): JsonResponse
     {
         return $userService->getAllUsers();
+    }
+
+    #[Route('/admins', name: 'get_admin_users', methods: ['GET'])]
+    public function getAdminUsers(UserService $userService): JsonResponse
+    {
+        return $userService->getAdminUsers();
+    }
+
+    #[Route('/admin/{id}/delete', name: 'delete_admin', methods: ['DELETE'])]
+    public function deleteAdmin(int $id): JsonResponse
+    {
+        try {
+            return $this->userService->deleteAdmin($id);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 
 }

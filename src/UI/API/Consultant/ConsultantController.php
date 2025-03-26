@@ -4,6 +4,7 @@
 namespace App\UI\API\Consultant;
 
 use App\Consultant\Application\ConsultantService;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,32 +19,76 @@ class ConsultantController extends AbstractController
         $this->consultantService = $consultantService;
     }
 
-    #[Route('/consultant/{id}', name: 'get_consultant_by_id', methods: ['GET'])]
-    public function getConsultantById(int $id): JsonResponse
+    #[Route('/register/consultant', name: 'consultant_register', methods: ['POST'])]
+    public function register(
+        Request $request
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['email']) || !isset($data['password'])) {
+            return new JsonResponse(['error' => 'Email and password are required'], 400);
+        }
+
+        return $this->consultantService->registerConsultant($data['email'], $data['password'], $data['name'], $data['surnames'], $data['profile']);
+    }
+
+    #[Route('/consultant', name: 'get_consultant', methods: ['GET'])]
+    public function getConsultant(Security $security): JsonResponse
     {
+        $user = $security->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+        $userId = $user->getId();
         try {
-            $consultantData = $this->consultantService->getConsultantById($id);
+            $consultantData = $this->consultantService->getConsultant($userId);
             return new JsonResponse($consultantData, 200);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
     }
 
-    #[Route('/consultants', name: 'get_all_consultants', methods: ['GET'])]
+    #[Route('/all/consultants', name: 'get_all_consultants', methods: ['GET'])]
     public function getAllConsultants(): JsonResponse
     {
         return $this->consultantService->getAllConsultants();
     }
 
-    #[Route('/consultant/{id}/delete', name: 'delete_consultant', methods: ['DELETE'])]
-    public function deleteConsultant(int $id): JsonResponse
+    #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]
+    public function deleteConsultant(Security $security): JsonResponse
     {
+        $user = $security->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+        $userId = $user->getId();
         try {
-            $this->consultantService->deleteConsultant($id);
-            return new JsonResponse(['message' => 'Consultant deleted successfully'], 200);
+            return $this->consultantService->deleteConsultant($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/consultant/update', name: 'consultant_update', methods: ['POST'])]
+    public function updateConsultant(Request $request, Security $security): JsonResponse
+    {
+        $user = $security->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $userId = $user->getId();
+
+        return $this->consultantService->updateClient(
+            $userId,
+            $data['password'] ?? null,
+            $data['address'] ?? null,
+            $data['phoneNumber'] ?? null
+        );
     }
 
 }

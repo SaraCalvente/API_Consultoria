@@ -22,9 +22,8 @@ class ClientFixtures extends Fixture
             $client->setName($name);
             $client->setSurnames($surnames);
             $client->setAddress($address);
-            $client->setEmail($email);
             $client->setPhoneNumber($phoneNumber);
-            $client->setUserId($user);
+            $client->setUser($user);
 
             $manager->persist($client);
         }

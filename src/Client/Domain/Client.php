@@ -4,6 +4,7 @@ namespace App\Client\Domain;
 
 use App\Repository\ClientRepository;
 use App\User\Domain\User;
+use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
@@ -22,9 +23,6 @@ class Client
 
     #[ORM\Column(length: 255)]
     private ?string $address = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $email = null;
 
     #[ORM\Column(length: 30)]
     private ?string $phoneNumber = null;
@@ -74,18 +72,6 @@ class Client
         return $this;
     }
 
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
     public function getPhoneNumber(): string
     {
         return $this->phoneNumber;
@@ -98,14 +84,14 @@ class Client
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUserId(User $user_id): static
+    public function setUser(User $user): static
     {
-        $this->user = $user_id;
+        $this->user = $user;
 
         return $this;
     }
