@@ -73,7 +73,7 @@ class ClientController extends AbstractController
     /**
      * @throws \Exception
      */
-    #[Route('/client/update', name: 'client_update', methods: ['POST'])]
+    #[Route('/client/update', name: 'client_update', methods: ['PUT'])]
     public function updateClient(Request $request, Security $security): JsonResponse
     {
         $user = $security->getUser();

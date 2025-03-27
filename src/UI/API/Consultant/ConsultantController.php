@@ -72,7 +72,7 @@ class ConsultantController extends AbstractController
     /**
      * @throws \Exception
      */
-    #[Route('/consultant/update', name: 'consultant_update', methods: ['POST'])]
+    #[Route('/consultant/update', name: 'consultant_update', methods: ['PUT'])]
     public function updateConsultant(Request $request, Security $security): JsonResponse
     {
         $user = $security->getUser();
@@ -83,11 +83,9 @@ class ConsultantController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $userId = $user->getId();
 
-        return $this->consultantService->updateClient(
+        return $this->consultantService->updateConsultant(
             $userId,
-            $data['password'] ?? null,
-            $data['address'] ?? null,
-            $data['phoneNumber'] ?? null
+            $data['profile'] ?? null,
         );
     }
 

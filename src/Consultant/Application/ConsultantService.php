@@ -99,29 +99,22 @@ class ConsultantService
             if (!$consultant) {
                 return new JsonResponse(['error' => 'Client not found'], 404);
             }
-            $user = $client->getUser();
+            $user = $consultant->getUser();
 
             if ($profile !== null) {
-                $client->s($address);
+                $consultant->setProfile(Profile::from($profile));
             }
-            if ($phoneNumber !== null) {
-                $client->setPhoneNumber($phoneNumber);
-            }
-            /*if ($password !== null) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
-                $user->setPassword($hashedPassword);
-            }*/
+
             $this->entityManager->flush();
 
             return new JsonResponse([
                 'message' => 'Client updated successfully',
                 'user_id' => $user->getId(),
-                'client_id' => $client->getId(),
+                'client_id' => $consultant->getId(),
                 'email' => $user->getEmail(),
-                'name' => $client->getName(),
-                'surnames' => $client->getSurnames(),
-                'address' => $client->getAddress(),
-                'phone_number' => $client->getPhoneNumber()
+                'name' => $consultant->getName(),
+                'surnames' => $consultant->getSurnames(),
+                'phone_number' => $consultant->getProfile(),
             ], 200);
 
         } catch (\Exception $e) {

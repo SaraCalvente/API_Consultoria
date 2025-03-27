@@ -43,7 +43,7 @@ security:
         - { path: ^/api/register, roles: PUBLIC_ACCESS}
         - { path: ^/api/all, roles: PUBLIC_ACCESS}
         - { path: ^/api/client, roles: ROLE_CLIENT }
-        - { path: ^/api/consultant, roles: ROLE_CONSULTANT}
+        - { path: ^/api/consultant, roles: ROLE_CONSULTANT }
         -
             path: ^/%supported_locales_path%/api/login_nelmio
             roles: PUBLIC_ACCESS
