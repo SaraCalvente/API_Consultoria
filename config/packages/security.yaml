@@ -41,7 +41,7 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS}
-        - { path: ^/api/all, roles: PUBLIC_ACCESS}
+        - { path: ^/api/admin, roles: PUBLIC_ACCESS} ## CAMBIAR A ROLE_ADMIN
         - { path: ^/api/client, roles: [ROLE_CLIENT] }
         - { path: ^/api/consultant, roles: [ROLE_CONSULTANT] }
         - { path: ^/api/projects, roles: [ROLE_CLIENT, ROLE_CONSULTANT]}

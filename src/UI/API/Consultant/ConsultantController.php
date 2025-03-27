@@ -48,7 +48,7 @@ class ConsultantController extends AbstractController
         }
     }
 
-    #[Route('/all/consultants', name: 'get_all_consultants', methods: ['GET'])]
+    #[Route('/admin/consultants', name: 'get_all_consultants', methods: ['GET'])]
     public function getAllConsultants(): JsonResponse
     {
         return $this->consultantService->getAllConsultants();
@@ -64,6 +64,17 @@ class ConsultantController extends AbstractController
         $userId = $user->getId();
         try {
             return $this->consultantService->deleteConsultant($userId);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/admin/consultant/delete', name: 'admin_delete_consultant', methods: ['DELETE'])]
+    public function adminDeleteConsultant(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        try {
+            return $this->consultantService->adminDeleteConsultant($data['email']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -85,6 +96,17 @@ class ConsultantController extends AbstractController
 
         return $this->consultantService->updateConsultant(
             $userId,
+            $data['profile'] ?? null,
+        );
+    }
+
+    #[Route('/admin/consultant/update', name: 'admin_consultant_update', methods: ['PUT'])]
+    public function adminUpdateConsultant(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        return $this->consultantService->adminUpdateConsultant(
+            $data['email'],
             $data['profile'] ?? null,
         );
     }

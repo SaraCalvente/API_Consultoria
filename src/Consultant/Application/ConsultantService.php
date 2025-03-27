@@ -122,10 +122,68 @@ class ConsultantService
         }
     }
 
+    public function adminUpdateConsultant(
+        string $email, string $profile = null
+    ): JsonResponse {
+        try {
+            $userConsultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $email]);
+            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userConsultant->getId()]);
+            if (!$consultant) {
+                return new JsonResponse(['error' => 'Client not found'], 404);
+            }
+            $user = $consultant->getUser();
+
+            if ($profile !== null) {
+                $consultant->setProfile(Profile::from($profile));
+            }
+
+            $this->entityManager->flush();
+
+            return new JsonResponse([
+                'message' => 'Client updated successfully',
+                'user_id' => $user->getId(),
+                'client_id' => $consultant->getId(),
+                'email' => $user->getEmail(),
+                'name' => $consultant->getName(),
+                'surnames' => $consultant->getSurnames(),
+                'phone_number' => $consultant->getProfile(),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
     public function deleteConsultant(int $userId): JsonResponse
     {
         try {
             $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userId]);
+
+            if (!$consultant) {
+                return new JsonResponse(['error' => 'Consultant not found'], 404);
+            }
+
+            $projects = $consultant->getProject();
+
+            if (!$projects) {
+                throw new \Exception('Cannot delete consultant because there are associated projects.');
+            }
+
+            $this->entityManager->remove($consultant);
+            $this->entityManager->flush();
+            return new JsonResponse(['message' => 'Consultant and associated user deleted successfully'], 200);
+
+
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function adminDeleteConsultant(string $email): JsonResponse
+    {
+        try {
+            $userConsultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $email]);
+            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userConsultant->getId()]);
 
             if (!$consultant) {
                 return new JsonResponse(['error' => 'Consultant not found'], 404);

@@ -69,7 +69,7 @@ class ProjectController extends AbstractController
         }
     }
 
-    #[Route('/all/projects', name: 'get_all_projects', methods: ['GET'])]
+    #[Route('/admin/projects', name: 'get_all_projects', methods: ['GET'])]
     public function getAllConsultants(): JsonResponse
     {
         return $this->projectService->getAllProjects();

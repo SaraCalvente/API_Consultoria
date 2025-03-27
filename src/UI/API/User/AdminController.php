@@ -4,11 +4,12 @@ namespace App\UI\API\User;
 
 use App\User\Application\AdminService;
 use App\User\Application\UserService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController
+class AdminController extends AbstractController
 {
     private AdminService $adminService;
 
@@ -30,16 +31,16 @@ class AdminController
     }
 
     #[Route('/admins', name: 'get_admin_users', methods: ['GET'])]
-    public function getAdminUsers(UserService $userService): JsonResponse
+    public function getAdminUsers(): JsonResponse
     {
-        return $userService->getAdminUsers();
+        return $this->adminService->getAdminUsers();
     }
 
     #[Route('/admin/{id}/delete', name: 'delete_admin', methods: ['DELETE'])]
     public function deleteAdmin(int $id): JsonResponse
     {
         try {
-            return $this->userService->deleteAdmin($id);
+            return $this->adminService->deleteAdmin($id);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

@@ -22,9 +22,8 @@ class ClientController extends AbstractController
     }
 
     #[Route('/register/client', name: 'client_register', methods: ['POST'])]
-    public function register(
-        Request $request
-    ): JsonResponse {
+    public function register( Request $request ): JsonResponse {
+
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['email']) || !isset($data['password'])) {
@@ -42,14 +41,13 @@ class ClientController extends AbstractController
         }
         $userId = $user->getId();
         try {
-            $clientData = $this->clientService->getClient($userId);
-            return new JsonResponse($clientData, 200);
+            return $this->clientService->getClient($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
     }
 
-    #[Route('/all/clients', name: 'get_all_clients', methods: ['GET'])]
+    #[Route('/admin/clients', name: 'get_all_clients', methods: ['GET'])]
     public function getAllClients(): JsonResponse
     {
         return $this->clientService->getAllClients();
@@ -65,6 +63,17 @@ class ClientController extends AbstractController
         $userId = $user->getId();
         try {
             return $this->clientService->deleteClient($userId);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/admin/client/delete', name: 'admin_delete_client', methods: ['DELETE'])]
+    public function adminDeleteClient (Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        try {
+            return $this->clientService->adminDeleteClient($data['email']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -86,12 +95,24 @@ class ClientController extends AbstractController
 
         return $this->clientService->updateClient(
             $userId,
-            $data['password'] ?? null,
             $data['address'] ?? null,
             $data['phoneNumber'] ?? null
         );
     }
 
+    /**
+     * @throws \Exception
+     */
+    #[Route('/admin/client/update', name: 'admin_client_update', methods: ['PUT'])]
+    public function adminUpdateClient(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
+        return $this->clientService->adminUpdateClient(
+            $data['email'] ?? null,
+            $data['address'] ?? null,
+            $data['phoneNumber'] ?? null
+        );
+    }
 
 }
