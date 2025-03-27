@@ -20,25 +20,31 @@ class ProjectController extends AbstractController
         $this->projectService = $projectService;
     }
 
-    #[Route('/create/project', name: 'project_create', methods: ['POST'])]
-    public function register(
+    #[Route('/project/create', name: 'project_create', methods: ['POST'])]
+    public function createProject(
         Request $request
     ): JsonResponse {
         try {
             $data = json_decode($request->getContent(), true);
 
-            $requiredFields = ['name', 'description', 'startDate', 'endDate', 'status', 'clientEmail', 'consultantsIds'];
+            $requiredFields = ['name', 'description', 'startDate', 'status', 'clientEmail', 'consultantsEmails'];
             foreach ($requiredFields as $field) {
                 if (!isset($data[$field])) {
                     return new JsonResponse(['error' => "Missing required field: $field"], 400);
                 }
             }
 
+            if (!isset($data['endDate'])) {
+                $endDate = null;
+            }
+            else{
+                $endDate = $data['endDate'];
+            }
+
             return $this->projectService->createProject(
                 $data['clientEmail'], $data['name'],
-                $data['description'], $data['startDate'],
-                $data['endDate'], $data['status'],
-                $data['consultantsIds']);
+                $data['description'], $data['startDate'], $endDate,
+                $data['status'], $data['consultantsEmails']);
 
         } catch (\Exception $e){
             return new JsonResponse([
@@ -48,8 +54,8 @@ class ProjectController extends AbstractController
         }
     }
 
-    #[Route('/consultant', name: 'get_consultant', methods: ['GET'])]
-    public function getConsultant(Security $security): JsonResponse
+    #[Route('/projects', name: 'get_project', methods: ['GET'])]
+    public function getProjectsByUser(Security $security): JsonResponse
     {
         $user = $security->getUser();
         if (!$user) {
@@ -57,52 +63,42 @@ class ProjectController extends AbstractController
         }
         $userId = $user->getId();
         try {
-            $consultantData = $this->consultantService->getConsultant($userId);
-            return new JsonResponse($consultantData, 200);
+            return $this->projectService->getProjectsByUser($userId);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 404);
+            return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }
 
-    #[Route('/all/consultants', name: 'get_all_consultants', methods: ['GET'])]
+    #[Route('/all/projects', name: 'get_all_projects', methods: ['GET'])]
     public function getAllConsultants(): JsonResponse
     {
-        return $this->consultantService->getAllConsultants();
+        return $this->projectService->getAllProjects();
     }
 
-    #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]
-    public function deleteConsultant(Security $security): JsonResponse
+    #[Route('/project/update', name: 'project_update', methods: ['PUT'])]
+    public function updateProject(Request $request, Security $security): JsonResponse
     {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
-        }
-        $userId = $user->getId();
+        $data = json_decode($request->getContent(), true);
+        return $this->projectService->updateProject(
+
+            $data['name'] ?? null,
+            $data['description'] ?? null,
+            $data['status'] ?? null,
+            $data['endDate'] ?? null,
+            $data['consultantsEmails'] ?? null,
+
+        );
+    }
+
+    #[Route('/project/delete', name: 'delete_project', methods: ['DELETE'])]
+    public function deleteProject(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
         try {
-            return $this->consultantService->deleteConsultant($userId);
+            return $this->projectService->deleteProject($data['name']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
-    }
-
-    /**
-     * @throws \Exception
-     */
-    #[Route('/consultant/update', name: 'consultant_update', methods: ['PUT'])]
-    public function updateConsultant(Request $request, Security $security): JsonResponse
-    {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        $userId = $user->getId();
-
-        return $this->consultantService->updateConsultant(
-            $userId,
-            $data['profile'] ?? null,
-        );
     }
 
 }

@@ -26,7 +26,7 @@ class ConsultantFixtures extends Fixture implements DependentFixtureInterface
             $consultant = new Consultant();
             $consultant->setName($name);
             $consultant->setSurnames($surname);
-            $consultant->setUserId($user);
+            $consultant->setUser($user);
             $consultant->setProfile($profile);
 
             $manager->persist($consultant);

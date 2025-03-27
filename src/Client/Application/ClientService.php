@@ -108,10 +108,6 @@ class ClientService
             if ($phoneNumber !== null) {
                 $client->setPhoneNumber($phoneNumber);
             }
-            /*if ($password !== null) {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
-                $user->setPassword($hashedPassword);
-            }*/
             $this->entityManager->flush();
 
             return new JsonResponse([
