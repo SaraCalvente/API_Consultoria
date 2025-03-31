@@ -3,31 +3,47 @@
 namespace App\Client\Application;
 
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
+use App\Client\Domain\ClientDTO;
+use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Project\Domain\Project;
+use App\Shared\Domain\Exception\ClientNotFoundException;
+use App\Shared\Domain\ValueObject\StringValueObject;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+
 class ClientService
 {
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
+    private ClientRepositoryInterface $clientRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
+        ClientRepositoryInterface $clientRepository
+    )
     {
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
+        $this->clientRepository = $clientRepository;
     }
+
+
     public function registerClient(
         string $email, string $password,
         string $name, string $surnames,
         string $address, string $phoneNumber): JsonResponse
     {
-        if ($this->entityManager->getRepository(User::class)->findOneBy(['email' => $email])) {
-            return new JsonResponse(['error' => 'Email is already registered'], 409);
+        if(!$this->clientRepository->checkIfUserExists($email)){
+            return new JsonResponse([
+                'error' => 'El cliente ya existe',
+
+            ], 400);
         }
 
         $user = new User();
@@ -38,23 +54,20 @@ class ClientService
         $this->entityManager->persist($user);
 
         $client = new Client();
-        $client->setUser($user);
-        $client->setName($name);
-        $client->setSurnames($surnames);
-        $client->setPhoneNumber($phoneNumber);
-        $client->setAddress($address);
-        $this->entityManager->persist($client);
+        $client
+            ->setUser($user)
+            ->setName($name)
+            ->setSurnames($surnames)
+            ->setPhoneNumber($phoneNumber)
+            ->setAddress($address);
 
-        $this->entityManager->flush();
+        $this->clientRepository->add($client);
 
         return new JsonResponse([
-            'message' => 'User registered successfully',
-            'user_id' => $user->getId(),
-            'client_id' => $client->getId(),
-            'email' => $user->getEmail(),
-            'name' => $client->getName(),
-            'roles' => $user->getRoles(),
+            'message' => 'Cliente registrado correctamente',
+            'client' => ClientDTO::fromEntity($client)
         ], 201);
+
     }
 
     public function getClient(int $userId): JsonResponse
@@ -62,16 +75,10 @@ class ClientService
         $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $userId]);
 
         if (!$client) {
-            throw new \Exception('Client not found');
+            throw new ClientNotFoundException();
         }
 
-        return new JsonResponse( [
-            'client_id' => $client->getId(),
-            'name' => $client->getName(),
-            'surnames' => $client->getSurnames(),
-            'address' => $client->getAddress(),
-            'phone_number' => $client->getPhoneNumber(),
-        ], 200);
+        return new JsonResponse(ClientDTO::fromEntity($client));
     }
 
     public function getAllClients(): JsonResponse
@@ -80,42 +87,28 @@ class ClientService
 
         $clientData = [];
         foreach ($clients as $client) {
-            $clientData[] = [
-                'client_id' => $client->getId(),
-                'user_id' => $client->getUser()->getId(),
-                'email' => $client->getUser()->getEmail(),
-                'name' => $client->getName(),
-                'surnames' => $client->getSurnames(),
-                'address' => $client->getAddress(),
-                'phone_number' => $client->getPhoneNumber(),
-            ];
+            $clientData[] = ClientDTO::fromEntity($client);
         }
 
         return new JsonResponse($clientData, 200);
     }
 
-    public function updateClient(
+    public function updateClientById(
         int $userId, ?string $address = null, ?string $phoneNumber = null
     ): JsonResponse {
-        return $this->modifyClient($userId, null, $address, $phoneNumber);
+        return $this->modifyClient(['id' => $userId], $address, $phoneNumber);
     }
 
-    public function adminUpdateClient(
+    public function updateClientByEmail(
         string $email, ?string $address = null, ?string $phoneNumber = null
     ): JsonResponse {
-        return $this->modifyClient(null, $email, $address, $phoneNumber);
+        return $this->modifyClient(['email' => $email], $address, $phoneNumber);
     }
 
-    private function modifyClient(?int $userId, ?string $email, ?string $address, ?string $phoneNumber): JsonResponse
+    private function modifyClient(array $criteria, ?string $address, ?string $phoneNumber): JsonResponse
     {
-        $criteria = $email ? ['email' => $email] : ['id' => $userId];
-        $user = $this->entityManager->getRepository(User::class)->findOneBy($criteria);
+        [, $client] = $this->findUserAndClient($criteria);
 
-        if (!$user) { return new JsonResponse(['error' => 'User not found'], 404);}
-
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-
-        if (!$client) { return new JsonResponse(['error' => 'Client not found'], 404); }
 
         if ($address !== null) {
             $client->setAddress($address);
@@ -126,36 +119,22 @@ class ClientService
 
         $this->entityManager->flush();
 
-        return new JsonResponse([
-            'message' => 'Client updated successfully',
-            'user_id' => $user->getId(),
-            'client_id' => $client->getId(),
-            'email' => $user->getEmail(),
-            'address' => $client->getAddress(),
-            'phone_number' => $client->getPhoneNumber(),
-        ], 200);
+        return new JsonResponse(ClientDTO::fromEntity($client));
     }
 
-    public function deleteClient(int $userId): JsonResponse
+    public function deleteClientById(int $userId): JsonResponse
     {
-        return $this->removeClient($userId, null);
+        return $this->removeClient(['id' => $userId]);
     }
 
-    public function adminDeleteClient(string $email): JsonResponse
+    public function deleteClientByEmail(string $email): JsonResponse
     {
-        return $this->removeClient(null, $email);
+        return $this->removeClient(['email' => $email]);
     }
 
-    private function removeClient(?int $userId, ?string $email): JsonResponse
+    private function removeClient(array $criteria): JsonResponse
     {
-        $criteria = $email ? ['email' => $email] : ['id' => $userId];
-        $user = $this->entityManager->getRepository(User::class)->findOneBy($criteria);
-
-        if (!$user) { return new JsonResponse(['error' => 'User not found'], 404); }
-
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-
-        if (!$client) { return new JsonResponse(['error' => 'Client not found'], 404);}
+        [$user, $client] = $this->findUserAndClient($criteria);
 
         $projects = $this->entityManager->getRepository(Project::class)->findBy(['client' => $client->getId()]);
 
@@ -169,8 +148,6 @@ class ClientService
 
         return new JsonResponse(['message' => 'Client and associated user deleted successfully'], 200);
     }
-
-
 
 
 

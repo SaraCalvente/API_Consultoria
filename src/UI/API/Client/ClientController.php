@@ -2,8 +2,7 @@
 namespace App\UI\API\Client;
 
 use App\Client\Application\ClientService;
-use App\User\Application\UserService;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,12 +12,12 @@ use Symfony\Component\Security\Core\Security;
 class ClientController extends AbstractController
 {
     private ClientService $clientService;
-    private JWTTokenManagerInterface $jwtManager;
+    private AuthChecker $authChecker;
 
-    public function __construct(ClientService $clientService, JWTTokenManagerInterface $jwtManager)
+    public function __construct(ClientService $clientService, AuthChecker $authChecker)
     {
         $this->clientService = $clientService;
-        $this->jwtManager = $jwtManager;
+        $this->authChecker = $authChecker;
     }
 
     #[Route('/register/client', name: 'client_register', methods: ['POST'])]
@@ -30,17 +29,19 @@ class ClientController extends AbstractController
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        return $this->clientService->registerClient($data['email'], $data['password'], $data['name'], $data['surnames'], $data['address'], $data['phoneNumber']);
+        return $this->clientService->registerClient(
+            $data['email'],
+            $data['password'],
+            $data['name'],
+            $data['surnames'],
+            $data['address'],
+            $data['phoneNumber']);
     }
     #[Route('/client', name: 'get_client', methods: ['GET'])]
     public function getClient(Security $security): JsonResponse
     {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
-        }
-        $userId = $user->getId();
         try {
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
             return $this->clientService->getClient($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
@@ -56,13 +57,9 @@ class ClientController extends AbstractController
     #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
     public function deleteClient (Security $security): JsonResponse
     {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
-        }
-        $userId = $user->getId();
         try {
-            return $this->clientService->deleteClient($userId);
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            return $this->clientService->deleteClientById($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -73,7 +70,7 @@ class ClientController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         try {
-            return $this->clientService->adminDeleteClient($data['email']);
+            return $this->clientService->deleteClientByEmail($data['email']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
@@ -85,19 +82,17 @@ class ClientController extends AbstractController
     #[Route('/client/update', name: 'client_update', methods: ['PUT'])]
     public function updateClient(Request $request, Security $security): JsonResponse
     {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        try {
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            $data = json_decode($request->getContent(), true);
+            return $this->clientService->updateClientById(
+                $userId,
+                $data['address'] ?? null,
+                $data['phoneNumber'] ?? null
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 401);
         }
-
-        $data = json_decode($request->getContent(), true);
-        $userId = $user->getId();
-
-        return $this->clientService->updateClient(
-            $userId,
-            $data['address'] ?? null,
-            $data['phoneNumber'] ?? null
-        );
     }
 
     /**
@@ -108,11 +103,12 @@ class ClientController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        return $this->clientService->adminUpdateClient(
+        return $this->clientService->updateClientByEmail(
             $data['email'] ?? null,
             $data['address'] ?? null,
             $data['phoneNumber'] ?? null
         );
     }
+
 
 }

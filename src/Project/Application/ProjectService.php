@@ -4,12 +4,15 @@ namespace App\Project\Application;
 
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\Profile;
 use App\Project\Domain\Project;
+use App\Project\Domain\ProjectDTO;
 use App\Project\Domain\Status;
+use App\Shared\Domain\Exception\ClientNotFoundException;
+use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\Shared\Domain\Exception\ProjectNotFoundException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectService
@@ -24,53 +27,45 @@ class ProjectService
     /**
      * @throws \DateMalformedStringException
      */
-    public function createProject(string $clientEmail, string $name, string $description, string $startDate, ?string $endDate, string $status, array $consultantsEmails): JsonResponse
+    public function createProject(
+        string $clientEmail, string $name,
+        string $description, string $startDate,
+        ?string $endDate, string $status,
+        array $consultantsEmails
+    ): JsonResponse
     {
-        if (!$this->checkDates($startDate, $endDate)) {
-            return new JsonResponse(['error' => 'startDate no puede ser nula, ni mayor a endDate, el formato es (Y-m-d)'], 404);
+        if ($this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name])) {
+            return new JsonResponse(['error' => 'A project with this name is already registered, duplicated KEY'], 409);
         }
+
+        if (!$this->checkDates($startDate, $endDate)) {
+            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
+        }
+
+        $client = $this->findClientByEmail($clientEmail);
 
         $project = new Project();
-        $clientUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $clientEmail]);
-        if (!$clientUser) {
-            return new JsonResponse(['error' => 'Client not found'], 404);
-        }
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $clientUser->getId()]);
-        if (!$client) {
-            return new JsonResponse(['error' => 'Client not found'], 404);
-        }
-
-        $project->setClient($client);
-        $project->setName($name);
-        $project->setDescription($description);
-        $project->setStartDate(new \DateTime($startDate));
+        $project
+            ->setClient($client)
+            ->setName($name)
+            ->setDescription($description)
+            ->setStartDate(new \DateTime($startDate));
         if ($endDate) {
             $project->setEndDate(new \DateTime($endDate));
         }
         $project->setStatus(Status::from($status));
 
         foreach ($consultantsEmails as $consultantEmail) {
-            $consultantUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $consultantEmail]);
-            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $consultantUser->getId()]);
-            if (!$consultant) {
-                return new JsonResponse(['error' => 'Consultant not found'], 404);
-            }
+            $consultant = $this->findConsultantByEmail($consultantEmail);
             $project->addConsultant($consultant);
         }
-
 
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
         return new JsonResponse([
             'message' => 'Project created successfully',
-            'client_id' => $project->getClient()->getId(),
-            'name' => $project->getName(),
-            'description' => $project->getDescription(),
-            'start_date' => $project->getStartDate()->format('Y-m-d'),
-            'end_date' => $project->getEndDate()?->format('Y-m-d'),
-            'status' => $project->getStatus(),
-            'consultantsId' => array_map(fn($c) => $c->getId(), $project->getConsultant()->toArray())
+            'project' => ProjectDTO::fromEntity($project),
         ], 201);
     }
 
@@ -79,53 +74,26 @@ class ProjectService
         $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user_id]);
         $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user_id]);
 
-        $projectsAsClient = [];
-        if ($client) {
-            $projectsAsClient = $this->entityManager->getRepository(Project::class)->findBy(['client' => $client]);
-        }
-
-        $projectsAsConsultant = [];
-        if($consultant){
-            $projectsAsConsultant = $consultant->getProject()->toArray();
-
-        }
-
-        if ($client) {
-            $projects = $projectsAsClient;
-            $role = 'client';
-        } elseif ($consultant) {
-            $projects = $projectsAsConsultant;
-            $role = 'consultant';
-        } else {
+        if (!$client && !$consultant) {
             return new JsonResponse(['error' => 'User has no associated projects'], 404);
         }
-        return new JsonResponse(array_map(fn($project) => [
-            'user_id' => $role === 'client' ? $client->getId() : $consultant->getId(),
-            'role' => $role,
-            'name' => $project->getName(),
-            'description' => $project->getDescription(),
-            'start_date' => $project->getStartDate()->format('Y-m-d'),
-            'end_date' => $project->getEndDate() ? $project->getEndDate()->format('Y-m-d') : null,
-            'status' => $project->getStatus(),
-        ], $projects), 200);
+
+        $projects = $client ? $this->entityManager->getRepository(Project::class)->findBy(['client' => $client]) : $consultant->getProject()->toArray();
+        return new JsonResponse([
+            'message' => 'Projects retrieved successfully',
+            $client ? 'current_client_id' : 'current_consultant_id' => $client ? $client->getId() : $consultant->getId(),
+            'projects' => array_map(fn($project) => ProjectDTO::fromEntity($project), $projects),
+        ], 200);
     }
 
 
-        public function getAllProjects(): JsonResponse
+    public function getAllProjects(): JsonResponse
     {
         $projects = $this->entityManager->getRepository(Project::class)->findAll();
 
         $projectsData = [];
         foreach ($projects as $project) {
-            $projectsData[] = [
-                'client_id' => $project->getClient()->getId(),
-                'name' => $project->getName(),
-                'description' => $project->getDescription(),
-                'start_date' => $project->getStartDate()->format('Y-m-d'),
-                'end_date' => $project->getEndDate()?->format('Y-m-d'),
-                'status' => $project->getStatus(),
-                'consultantsId' => array_map(fn($c) => $c->getId(), $project->getConsultant()->toArray())
-            ];
+            $projectsData[] = ProjectDTO::fromEntity($project);
         }
 
         return new JsonResponse($projectsData, 200);
@@ -135,90 +103,101 @@ class ProjectService
        string $name, string $description = null, string $status = null, string $endDate = null,
        array $consultantsEmails = null
     ): JsonResponse {
+        $project = $this->findProjectByName($name);
+
+        if ($description !== null) {
+            $project->setDescription($description);
+        }
+        if ($status !== null) {
+            $project->setStatus(Status::from($status));
+        }
+        $startDate = $project->getStartDate()->format('Y-m-d');
         try {
-            $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-            if (!$project) {
-                return new JsonResponse(['error' => 'Client not found'], 404);
-            }
-
-            if ($description !== null) {
-                $project->setDescription($description);
-            }
-            if ($status !== null) {
-                $project->setStatus(Status::from($status));
-            }
-            $startDate = $project->getStartDate()->format('Y-m-d');
-            try {
-                $this->checkDates($startDate, $endDate);
-            } catch (\Exception $e) {
-                return new JsonResponse(['error' => $e->getMessage()], 400);
-            }
-
-            if ($endDate !== null) {
-                $project->setEndDate(new \DateTime($endDate));
-            }
-            if ($consultantsEmails !== null) {
-                foreach ($consultantsEmails as $consultantEmail) {
-                    $consultantUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $consultantEmail]);
-                    $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $consultantUser->getId()]);
-                    $project->addConsultant($consultant);
-                }
-            }
-
-            $this->entityManager->flush();
-
-            return new JsonResponse([
-                'message' => 'Project updated successfully',
-                'client_id' => $project->getClient()->getId(),
-                'name' => $project->getName(),
-                'description' => $project->getDescription(),
-                'start_date' => $project->getStartDate()->format('Y-m-d'),
-                'end_date' => $project->getEndDate()?->format('Y-m-d'),
-                'status' => $project->getStatus(),
-                'consultantsId' => array_map(fn($c) => $c->getId(), $project->getConsultant()->toArray())
-            ], 200);
-
+            $this->checkDates($startDate, $endDate);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
+
+        if ($endDate !== null) {
+            $this->checkDates($startDate, $endDate);
+            $project->setEndDate(new \DateTime($endDate));
+        }
+        if ($consultantsEmails !== null) {
+            foreach ($consultantsEmails as $consultantEmail) {
+                $consultant = $this->findConsultantByEmail($consultantEmail);
+                if (!$project->getConsultant()->contains($consultant)) {
+                    $project->addConsultant($consultant);
+                }
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'message' => 'Project updated successfully',
+            'project' => ProjectDTO::fromEntity($project),
+        ], 200);
+
     }
 
     public function deleteProject(string $name): JsonResponse
     {
-        try {
-            $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-
-            if (!$project) {
-                return new JsonResponse(['error' => 'Project not found'], 404);
-            }
-
-            $this->entityManager->remove($project);
-            $this->entityManager->flush();
-            return new JsonResponse(['message' => 'Project deleted successfully'], 200);
-
-
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+        $project = $this->findProjectByName($name);
+        foreach ($project->getConsultant() as $consultant) {
+            $project->removeConsultant($consultant);
         }
+        $this->entityManager->remove($project);
+        $this->entityManager->flush();
+        return new JsonResponse(['message' => 'Project deleted successfully'], 200);
     }
 
-    private function checkDates(string $startDate, string $endDate): bool
+    private function findUserByEmail(string $email): User
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+        return $user;
+    }
+
+    private function findClientByEmail(string $email): Client
+    {
+        $user = $this->findUserByEmail($email);
+        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
+        if (!$client) {
+            throw new ClientNotFoundException();
+        }
+        return $client;
+    }
+
+    private function findConsultantByEmail(string $email): Consultant
+    {
+        $user = $this->findUserByEmail($email);
+        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
+        if (!$consultant) {
+            throw new ConsultantNotFoundException();
+        }
+        return $consultant;
+    }
+
+    private function findProjectByName(string $name): Project
+    {
+        $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
+        if (!$project) {
+            throw new ProjectNotFoundException();
+        }
+        return $project;
+    }
+
+    private function checkDates(string $startDate, ?string $endDate): bool
     {
         $start = \DateTime::createFromFormat('Y-m-d', $startDate);
-        if (!$start) {
-            return false;
-        }
-        if (!empty($endDate) && trim($endDate) !== '') {
+        if (!$start) return false;
+        if ($endDate) {
             $end = \DateTime::createFromFormat('Y-m-d', $endDate);
-            if (!$end) {
-                return false;
-            }
-            if ($start > $end) {
-                return false;
-            }
+            return $end && $start <= $end;
         }
         return true;
     }
-
 
 }

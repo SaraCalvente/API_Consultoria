@@ -4,6 +4,7 @@ namespace App\UI\API\Project;
 
 use App\Consultant\Application\ConsultantService;
 use App\Project\Application\ProjectService;
+use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,10 +15,12 @@ use Symfony\Component\Security\Core\Security;
 class ProjectController extends AbstractController
 {
     private ProjectService $projectService;
+    private AuthChecker $authChecker;
 
-    public function __construct(ProjectService $projectService)
+    public function __construct(ProjectService $projectService, authChecker $authChecker)
     {
         $this->projectService = $projectService;
+        $this->authChecker = $authChecker;
     }
 
     #[Route('/project/create', name: 'project_create', methods: ['POST'])]
@@ -34,12 +37,7 @@ class ProjectController extends AbstractController
                 }
             }
 
-            if (!isset($data['endDate'])) {
-                $endDate = null;
-            }
-            else{
-                $endDate = $data['endDate'];
-            }
+            $endDate = $data['endDate'] ?? null;
 
             return $this->projectService->createProject(
                 $data['clientEmail'], $data['name'],
@@ -57,12 +55,8 @@ class ProjectController extends AbstractController
     #[Route('/projects', name: 'get_project', methods: ['GET'])]
     public function getProjectsByUser(Security $security): JsonResponse
     {
-        $user = $security->getUser();
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not authenticated'], 401);
-        }
-        $userId = $user->getId();
         try {
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
             return $this->projectService->getProjectsByUser($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
@@ -78,23 +72,25 @@ class ProjectController extends AbstractController
     #[Route('/project/update', name: 'project_update', methods: ['PUT'])]
     public function updateProject(Request $request, Security $security): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        return $this->projectService->updateProject(
-
-            $data['name'] ?? null,
-            $data['description'] ?? null,
-            $data['status'] ?? null,
-            $data['endDate'] ?? null,
-            $data['consultantsEmails'] ?? null,
-
-        );
+        try {
+            $data = json_decode($request->getContent(), true);
+            return $this->projectService->updateProject(
+                $data['name'] ?? null,
+                $data['description'] ?? null,
+                $data['status'] ?? null,
+                $data['endDate'] ?? null,
+                $data['consultantsEmails'] ?? null
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 
     #[Route('/project/delete', name: 'delete_project', methods: ['DELETE'])]
     public function deleteProject(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
         try {
+            $data = json_decode($request->getContent(), true);
             return $this->projectService->deleteProject($data['name']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

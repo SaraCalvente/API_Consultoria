@@ -1,11 +1,16 @@
 <?php
-// src/Consultant/Application/ConsultantService.php
 
 namespace App\Consultant\Application;
 
 use App\Client\Domain\Client;
+use App\Client\Domain\ClientDTO;
 use App\Consultant\Domain\Consultant;
+use App\Consultant\Domain\ConsultantDTO;
 use App\Consultant\Domain\Profile;
+use App\Project\Domain\Project;
+use App\Shared\Domain\Exception\ClientNotFoundException;
+use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +30,10 @@ class ConsultantService
 
     public function registerConsultant(string $email, string $password, string $name, string $surnames, string $profile): JsonResponse
     {
+        if ($this->entityManager->getRepository(User::class)->findOneBy(['email' => $email])) {
+            return new JsonResponse(['error' => 'Email is already registered'], 409);
+        }
+
         $user = new User();
         $user->setEmail(new EmailValueObject($email));
 
@@ -42,34 +51,20 @@ class ConsultantService
 
         $this->entityManager->flush();
 
-        return new JsonResponse([
-            'message' => 'User registered successfully',
-            'user_id' => $user->getId(),
-            'consultant_id' => $consultant->getId(),
-            'email' => $user->getEmail(),
-            'name' => $consultant->getName(),
-            'profile' => $consultant->getProfile(),
-            'roles' => $user->getRoles(),
-        ], 201);
+        return new JsonResponse(ConsultantDTO::fromEntity($consultant), 201);
     }
 
 
 
-    public function getConsultant(int $userId): array
+    public function getConsultant(int $userId): JsonResponse
     {
         $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userId]);
 
         if (!$consultant) {
-            throw new \Exception('Consultant not found');
+            throw new ConsultantNotFoundException();
         }
 
-        return [
-            'consultant_id' => $consultant->getId(),
-            'name' => $consultant->getName(),
-            'email' => $consultant->getUser()->getEmail(),
-            'surnames' => $consultant->getSurnames(),
-            'profile' => $consultant->getProfile(),
-        ];
+        return new JsonResponse(ConsultantDTO::fromEntity($consultant));
     }
 
     public function getAllConsultants(): JsonResponse
@@ -78,131 +73,76 @@ class ConsultantService
 
         $consultantData = [];
         foreach ($consultants as $consultant) {
-            $consultantData[] = [
-                'consultant_id' => $consultant->getId(),
-                'user_id' => $consultant->getUser()->getId(),
-                'email' => $consultant->getUser()->getEmail(),
-                'name' => $consultant->getName(),
-                'surnames' => $consultant->getSurnames(),
-                'profile' => $consultant->getProfile(),
-            ];
+            $consultantData[] = ConsultantDTO::fromEntity($consultant);
         }
 
         return new JsonResponse($consultantData, 200);
     }
 
-    public function updateConsultant(
-        int $userId, string $profile = null
+    public function updateConsultantById(
+        int $userId, ?string $profile = null
     ): JsonResponse {
-        try {
-            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userId]);
-            if (!$consultant) {
-                return new JsonResponse(['error' => 'Client not found'], 404);
-            }
-            $user = $consultant->getUser();
-
-            if ($profile !== null) {
-                $consultant->setProfile(Profile::from($profile));
-            }
-
-            $this->entityManager->flush();
-
-            return new JsonResponse([
-                'message' => 'Client updated successfully',
-                'user_id' => $user->getId(),
-                'client_id' => $consultant->getId(),
-                'email' => $user->getEmail(),
-                'name' => $consultant->getName(),
-                'surnames' => $consultant->getSurnames(),
-                'phone_number' => $consultant->getProfile(),
-            ], 200);
-
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+        return $this->modifyConsultant(['id' => $userId], $profile);
     }
 
-    public function adminUpdateConsultant(
-        string $email, string $profile = null
+    public function updateConsultantByEmail(
+        string $email, ?string $profile = null
     ): JsonResponse {
-        try {
-            $userConsultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $email]);
-            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userConsultant->getId()]);
-            if (!$consultant) {
-                return new JsonResponse(['error' => 'Client not found'], 404);
-            }
-            $user = $consultant->getUser();
-
-            if ($profile !== null) {
-                $consultant->setProfile(Profile::from($profile));
-            }
-
-            $this->entityManager->flush();
-
-            return new JsonResponse([
-                'message' => 'Client updated successfully',
-                'user_id' => $user->getId(),
-                'client_id' => $consultant->getId(),
-                'email' => $user->getEmail(),
-                'name' => $consultant->getName(),
-                'surnames' => $consultant->getSurnames(),
-                'phone_number' => $consultant->getProfile(),
-            ], 200);
-
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+        return $this->modifyConsultant(['email' => $email], $profile);
     }
 
-    public function deleteConsultant(int $userId): JsonResponse
+    private function modifyConsultant(array $criteria, ?string $profile): JsonResponse
     {
-        try {
-            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userId]);
-
-            if (!$consultant) {
-                return new JsonResponse(['error' => 'Consultant not found'], 404);
-            }
-
-            $projects = $consultant->getProject();
-
-            if (!$projects) {
-                throw new \Exception('Cannot delete consultant because there are associated projects.');
-            }
-
-            $this->entityManager->remove($consultant);
-            $this->entityManager->flush();
-            return new JsonResponse(['message' => 'Consultant and associated user deleted successfully'], 200);
+        [, $consultant] = $this->findUserAndConsultant($criteria);
 
 
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+        if ($profile !== null) {
+            $consultant->setProfile(Profile::from($profile));
         }
+        $this->entityManager->flush();
+
+        return new JsonResponse(ConsultantDTO::fromEntity($consultant));
     }
 
-    public function adminDeleteConsultant(string $email): JsonResponse
+    public function deleteConsultantById(int $userId): JsonResponse
     {
-        try {
-            $userConsultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $email]);
-            $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $userConsultant->getId()]);
+        return $this->removeConsultant(['id' => $userId]);
+    }
 
-            if (!$consultant) {
-                return new JsonResponse(['error' => 'Consultant not found'], 404);
-            }
+    public function deleteConsultantByEmail(string $email): JsonResponse
+    {
+        return $this->removeConsultant(['email' => $email]);
+    }
 
-            $projects = $consultant->getProject();
+    private function removeConsultant(array $criteria): JsonResponse
+    {
+        [$user, $consultant] = $this->findUserAndConsultant($criteria);
 
-            if (!$projects) {
-                throw new \Exception('Cannot delete consultant because there are associated projects.');
-            }
-
-            $this->entityManager->remove($consultant);
-            $this->entityManager->flush();
-            return new JsonResponse(['message' => 'Consultant and associated user deleted successfully'], 200);
-
-
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+        $projects = $consultant->getProject();
+        if (count($projects) > 0) {
+            return new JsonResponse(['error' => 'Cannot delete client because there are associated projects.'], 400);
         }
+
+        $this->entityManager->remove($consultant);
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Consultant and associated user deleted successfully'], 200);
+    }
+
+    private function findUserAndConsultant(array $criteria): array
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy($criteria);
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
+        if (!$consultant) {
+            throw new ConsultantNotFoundException();
+        }
+
+        return [$user, $consultant];
     }
 
 }

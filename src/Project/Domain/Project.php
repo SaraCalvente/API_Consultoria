@@ -37,7 +37,7 @@ class Project
     #[ORM\ManyToMany(targetEntity: Consultant::class, inversedBy: 'project')]
     private Collection $consultant;
 
-    #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Client $client = null;
 
