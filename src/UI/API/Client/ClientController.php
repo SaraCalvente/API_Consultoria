@@ -1,7 +1,14 @@
 <?php
 namespace App\UI\API\Client;
 
+use App\Client\Application\ClientDeleteByEmail;
+use App\Client\Application\ClientDeleteById;
+use App\Client\Application\ClientFindAllService;
+use App\Client\Application\ClientFindService;
+use App\Client\Application\ClientRegisterService;
 use App\Client\Application\ClientService;
+use App\Client\Application\ClientUpdateByEmail;
+use App\Client\Application\ClientUpdateById;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +28,7 @@ class ClientController extends AbstractController
     }
 
     #[Route('/register/client', name: 'client_register', methods: ['POST'])]
-    public function register( Request $request ): JsonResponse {
+    public function register(Request $request, ClientRegisterService $clientRegister ): JsonResponse {
 
         $data = json_decode($request->getContent(), true);
 
@@ -29,7 +36,7 @@ class ClientController extends AbstractController
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        return $this->clientService->registerClient(
+        return $clientRegister(
             $data['email'],
             $data['password'],
             $data['name'],
@@ -38,54 +45,32 @@ class ClientController extends AbstractController
             $data['phoneNumber']);
     }
     #[Route('/client', name: 'get_client', methods: ['GET'])]
-    public function getClient(Security $security): JsonResponse
+    public function getClient(Security $security, ClientFindService $clientFindService): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $this->clientService->getClient($userId);
+            $user = $this->authChecker->getAuthenticatedUserId($security);
+            return $clientFindService($user);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
     }
 
     #[Route('/admin/clients', name: 'get_all_clients', methods: ['GET'])]
-    public function getAllClients(): JsonResponse
+    public function getAllClients(ClientFindAllService $clientFindAllService): JsonResponse
     {
-        return $this->clientService->getAllClients();
-    }
-
-    #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
-    public function deleteClient (Security $security): JsonResponse
-    {
-        try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $this->clientService->deleteClientById($userId);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
-    }
-
-    #[Route('/admin/client/delete', name: 'admin_delete_client', methods: ['DELETE'])]
-    public function adminDeleteClient (Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        try {
-            return $this->clientService->deleteClientByEmail($data['email']);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+        return $clientFindAllService();
     }
 
     /**
      * @throws \Exception
      */
     #[Route('/client/update', name: 'client_update', methods: ['PUT'])]
-    public function updateClient(Request $request, Security $security): JsonResponse
+    public function updateClient(Request $request, Security $security, ClientUpdateById $clientUpdateById): JsonResponse
     {
         try {
             $userId = $this->authChecker->getAuthenticatedUserId($security);
             $data = json_decode($request->getContent(), true);
-            return $this->clientService->updateClientById(
+            return $clientUpdateById(
                 $userId,
                 $data['address'] ?? null,
                 $data['phoneNumber'] ?? null
@@ -99,16 +84,40 @@ class ClientController extends AbstractController
      * @throws \Exception
      */
     #[Route('/admin/client/update', name: 'admin_client_update', methods: ['PUT'])]
-    public function adminUpdateClient(Request $request): JsonResponse
+    public function adminUpdateClient(Request $request, ClientUpdateByEmail $clientUpdateByEmail): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        return $this->clientService->updateClientByEmail(
+        return $clientUpdateByEmail(
             $data['email'] ?? null,
             $data['address'] ?? null,
             $data['phoneNumber'] ?? null
         );
     }
+
+    #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
+    public function deleteClient (Security $security, ClientDeleteById $clientDeleteById): JsonResponse
+    {
+        try {
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            return $clientDeleteById($userId);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/admin/client/delete', name: 'admin_delete_client', methods: ['DELETE'])]
+    public function adminDeleteClient (Request $request, ClientDeleteByEmail $clientDeleteByEmail): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        try {
+            return $clientDeleteByEmail($data['email']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+
 
 
 }
