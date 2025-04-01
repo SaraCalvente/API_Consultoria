@@ -5,7 +5,7 @@ namespace App\Client\Application;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientUpdateById
+class ClientUpdateByEmailService
 {
     private ClientRepositoryInterface $clientRepository;
 
@@ -18,8 +18,8 @@ class ClientUpdateById
     }
 
     public function __invoke(
-        int $userId, ?string $address = null, ?string $phoneNumber = null
+        string $email, ?string $address = null, ?string $phoneNumber = null
     ): JsonResponse {
-        return $this->clientRepository->modifyClient(['id' => $userId], $address, $phoneNumber);
+        return $this->clientRepository->modifyClient(['email' => $email], $address, $phoneNumber);
     }
 }

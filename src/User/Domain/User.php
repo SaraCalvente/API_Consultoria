@@ -3,8 +3,8 @@
 namespace App\User\Domain;
 
 use App\ActivityHistory\Domain\ActivityHistory;
-use App\Repository\UserRepository;
 use App\User\Domain\ValueObject\EmailValueObject;
+use App\User\Infraestructure\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

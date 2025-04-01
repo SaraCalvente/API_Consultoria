@@ -36,7 +36,7 @@ class ClientRegisterService
     {
         if(!$this->clientRepository->checkIfUserExists($email)){
             return new JsonResponse([
-                'error' => 'El cliente ya existe',
+                'error' => 'El usuario ya existe',
 
             ], 400);
         }

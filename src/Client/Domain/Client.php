@@ -2,9 +2,8 @@
 
 namespace App\Client\Domain;
 
-use App\Repository\ClientRepository;
+use App\Client\Infraestructure\ClientRepository;
 use App\User\Domain\User;
-use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]

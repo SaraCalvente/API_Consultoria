@@ -10,6 +10,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\UniqueConstraint(name: "unique_project_name", columns: ["name", "project_id"])]
 class Task
 {
     #[ORM\Id]
@@ -24,10 +26,16 @@ class Task
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    private ?Status $status = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $time_estimation = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $start_date = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $end_date = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $time_estimation = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -71,26 +79,53 @@ class Task
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?Status
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(Status $status): static
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getTimeEstimation(): ?\DateTimeInterface
+    public function getTimeEstimation(): ?string
     {
         return $this->time_estimation;
     }
 
-    public function setTimeEstimation(\DateTimeInterface $time_estimation): static
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function setTimeEstimation(): static
     {
-        $this->time_estimation = $time_estimation;
+        if (empty($this->start_date) || empty($this->end_date)) {
+            return $this;
+        }
+        $time_estimation = $this->end_date->diff($this->start_date);
+        $this->time_estimation = $time_estimation->format('%dd %hh %mm');
+        return $this;
+    }
+    public function getStartDate(): ?\DateTime
+    {
+        return $this->start_date;
+    }
+
+    public function setStartDate(\DateTime $start_date): static
+    {
+        $this->start_date = $start_date;
+
+        return $this;
+    }
+    public function getEndDate(): ?\DateTime
+    {
+        return $this->end_date;
+    }
+
+    public function setEndDate(\DateTime $end_date): static
+    {
+        $this->end_date = $end_date;
 
         return $this;
     }

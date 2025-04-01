@@ -2,7 +2,13 @@
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\ConsultantService;
+use App\Consultant\Application\ConsultantDeleteByEmailService;
+use App\Consultant\Application\ConsultantDeleteByIdService;
+use App\Consultant\Application\ConsultantFindAllService;
+use App\Consultant\Application\ConsultantFindByIdService;
+use App\Consultant\Application\ConsultantRegisterService;
+use App\Consultant\Application\ConsultantUpdateByEmailService;
+use App\Consultant\Application\ConsultantUpdateByIdService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,18 +18,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ConsultantController extends AbstractController
 {
-    private ConsultantService $consultantService;
+
     private AuthChecker $authChecker;
 
-    public function __construct(ConsultantService $consultantService, AuthChecker $authChecker)
+    public function __construct( AuthChecker $authChecker)
     {
-        $this->consultantService = $consultantService;
         $this->authChecker = $authChecker;
     }
 
     #[Route('/register/consultant', name: 'consultant_register', methods: ['POST'])]
     public function register(
-        Request $request
+        Request $request, ConsultantRegisterService $consultantRegisterService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -31,7 +36,7 @@ class ConsultantController extends AbstractController
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        return $this->consultantService->registerConsultant(
+        return $consultantRegisterService(
             $data['email'],
             $data['password'],
             $data['name'],
@@ -40,54 +45,32 @@ class ConsultantController extends AbstractController
     }
 
     #[Route('/consultant', name: 'get_consultant', methods: ['GET'])]
-    public function getConsultant(Security $security): JsonResponse
+    public function getConsultant(Security $security, ConsultantFindByIdService $consultantFindByIdService): JsonResponse
     {
         try {
             $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $this->consultantService->getConsultant($userId);
+            return $consultantFindByIdService($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
     }
 
     #[Route('/admin/consultants', name: 'get_all_consultants', methods: ['GET'])]
-    public function getAllConsultants(): JsonResponse
+    public function getAllConsultants(ConsultantFindAllService $consultantFindAllService): JsonResponse
     {
-        return $this->consultantService->getAllConsultants();
-    }
-
-    #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]
-    public function deleteConsultant(Security $security): JsonResponse
-    {
-        try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $this->consultantService->deleteConsultantById($userId);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
-    }
-
-    #[Route('/admin/consultant/delete', name: 'admin_delete_consultant', methods: ['DELETE'])]
-    public function adminDeleteConsultant(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        try {
-            return $this->consultantService->deleteConsultantByEmail($data['email']);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+        return $consultantFindAllService();
     }
 
     /**
      * @throws \Exception
      */
     #[Route('/consultant/update', name: 'consultant_update', methods: ['PUT'])]
-    public function updateConsultant(Request $request, Security $security): JsonResponse
+    public function updateConsultant(Request $request, Security $security, ConsultantUpdateByIdService $consultantUpdateById): JsonResponse
     {
         try {
             $userId = $this->authChecker->getAuthenticatedUserId($security);
             $data = json_decode($request->getContent(), true);
-            return $this->consultantService->updateConsultantById(
+            return $consultantUpdateById(
                 $userId,
                 $data['profile'] ?? null
             );
@@ -97,13 +80,35 @@ class ConsultantController extends AbstractController
     }
 
     #[Route('/admin/consultant/update', name: 'admin_consultant_update', methods: ['PUT'])]
-    public function adminUpdateConsultant(Request $request): JsonResponse
+    public function adminUpdateConsultant(Request $request, ConsultantUpdateByEmailService $consultantUpdateByEmail): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        return $this->consultantService->updateConsultantByEmail(
+        return $consultantUpdateByEmail(
             $data['email'] ?? null,
             $data['profile'] ?? null
         );
+    }
+
+    #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]
+    public function deleteConsultant(Security $security, ConsultantDeleteByIdService $consultantDeleteByIdService): JsonResponse
+    {
+        try {
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            return $consultantDeleteByIdService($userId);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/admin/consultant/delete', name: 'admin_delete_consultant', methods: ['DELETE'])]
+    public function adminDeleteConsultant(Request $request, ConsultantDeleteByEmailService $consultantDeleteByEmailService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        try {
+            return $consultantDeleteByEmailService($data['email']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 
 

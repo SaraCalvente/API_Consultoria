@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientFindService
+class ClientFindByIdService
 {
     private ClientRepositoryInterface $clientRepository;
 

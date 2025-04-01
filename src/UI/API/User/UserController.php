@@ -6,6 +6,8 @@ namespace App\UI\API\User;
 
 use App\Client\Application\ClientService;
 use App\Consultant\Domain\Profile;
+use App\User\Application\UserFindAllService;
+use App\User\Application\UserLoginService;
 use App\User\Application\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,22 +16,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-    private UserService $userService;
-
-    public function __construct(UserService $userService)
-    {
-        $this->userService = $userService;
-    }
 
     #[Route('/login', name: 'user_login', methods: ['POST'])]
-    public function login(Request $request, UserService $userService): JsonResponse {
+    public function login(Request $request, UserLoginService $loginService): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['email']) || !isset($data['password'])) {
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
         try{
-            $response = $userService->loginUser($data['email'], $data['password']);
+            $response = $loginService($data['email'], $data['password']);
             return $response;
 
         } catch (\Exception $exception) {
@@ -38,9 +34,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/users', name: 'get_all_users', methods: ['GET'])]
-    public function getUsers(UserService $userService): JsonResponse
+    public function getUsers(UserFindAllService $userFindAllService): JsonResponse
     {
-        return $userService->getAllUsers();
+        return $userFindAllService();
     }
 
 

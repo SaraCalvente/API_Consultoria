@@ -5,7 +5,7 @@ namespace App\Client\Application;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientDeleteById
+class ClientDeleteByEmailService
 {
     private ClientRepositoryInterface $clientRepository;
 
@@ -17,8 +17,8 @@ class ClientDeleteById
         $this->clientRepository = $clientRepository;
     }
 
-    public function __invoke(int $userId): JsonResponse
+    public function __invoke(string $email): JsonResponse
     {
-        return $this->clientRepository->removeClient(['id' => $userId]);
+        return $this->clientRepository->removeClient(['email' => $email]);
     }
 }

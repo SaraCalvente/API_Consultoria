@@ -2,9 +2,9 @@
 
 namespace App\Consultant\Domain;
 
+use App\Consultant\Infraestructure\ConsultantRepository;
 use App\Project\Domain\Project;
 use App\Project\Domain\Task;
-use App\Repository\ConsultantRepository;
 use App\User\Domain\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

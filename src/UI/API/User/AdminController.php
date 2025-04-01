@@ -2,24 +2,29 @@
 
 namespace App\UI\API\User;
 
+use App\Shared\Domain\Auth\AuthChecker;
+use App\User\Application\AdminDeleteByIdService;
+use App\User\Application\AdminFindAllService;
+use App\User\Application\AdminRegisterService;
 use App\User\Application\AdminService;
 use App\User\Application\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class AdminController extends AbstractController
 {
-    private AdminService $adminService;
+    private AuthChecker $authChecker;
 
-    public function __construct(AdminService $adminService)
+    public function __construct(AuthChecker $authChecker)
     {
-        $this->adminService = $adminService;
+        $this->authChecker = $authChecker;
     }
     #[Route('/register/admin', name: 'admin_register', methods: ['POST'])]
     public function register(
-        Request $request
+        Request $request, AdminRegisterService $adminRegisterService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
@@ -27,20 +32,21 @@ class AdminController extends AbstractController
             return new JsonResponse(['error' => 'Email and password are required'], 400);
         }
 
-        return $this->adminService->registerAdmin($data['email'], $data['password']);
+        return $adminRegisterService($data['email'], $data['password']);
     }
 
     #[Route('/admins', name: 'get_admin_users', methods: ['GET'])]
-    public function getAdminUsers(): JsonResponse
+    public function getAdminUsers(AdminFindAllService $adminFindAllService): JsonResponse
     {
-        return $this->adminService->getAdminUsers();
+        return $adminFindAllService();
     }
 
-    #[Route('/admin/{id}/delete', name: 'delete_admin', methods: ['DELETE'])]
-    public function deleteAdmin(int $id): JsonResponse
+    #[Route('/admin/delete', name: 'delete_admin', methods: ['DELETE'])]
+    public function deleteAdmin( Security $security, AdminDeleteByIdService $adminDeleteByIdService): JsonResponse
     {
         try {
-            return $this->adminService->deleteAdmin($id);
+            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            return $adminDeleteByIdService($userId);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

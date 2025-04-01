@@ -5,27 +5,31 @@ namespace App\Client\Infraestructure;
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
-use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
 use App\Shared\Domain\Exception\ClientNotFoundException;
-use App\Shared\Domain\Exception\ConsultantNotFoundException;
 use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PharIo\Manifest\Exception;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientRepository implements ClientRepositoryInterface
+
+/**
+ * @extends ServiceEntityRepository<Client>
+ *
+ * @method Client|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Client|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Client[]    findAll()
+ * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ClientRepository extends ServiceEntityRepository implements ClientRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
-    private UserPasswordHasherInterface $passwordHasher;
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher)
+    public function __construct( EntityManagerInterface $entityManager, ManagerRegistry $registry)
     {
+        parent::__construct($registry, Client::class);
         $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
     }
 
     public function add(Client $client): void
@@ -105,4 +109,5 @@ class ClientRepository implements ClientRepositoryInterface
 
         return new JsonResponse(['message' => 'Client and associated user deleted successfully'], 200);
     }
+
 }
