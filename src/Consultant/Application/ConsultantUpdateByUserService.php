@@ -6,7 +6,7 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantUpdateByIdService
+class ConsultantUpdateByUserService
 {
     private ConsultantRepositoryInterface $consultantRepository;
 

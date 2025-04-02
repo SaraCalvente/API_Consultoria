@@ -2,23 +2,35 @@
 
 namespace App\Project\Application\Project;
 
+use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project;
 use App\Project\Domain\ProjectDTO;
 use App\Project\Domain\Status;
+use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectCreateService
 {
 
     private ProjectRepositoryInterface $projectRepository;
+    private UserRepositoryInterface $userRepository;
+    private ClientRepositoryInterface $clientRepository;
+    private ConsultantRepositoryInterface $consultantRepository;
 
 
     public function __construct(
-        ProjectRepositoryInterface $projectRepository
+        ProjectRepositoryInterface $projectRepository,
+        UserRepositoryInterface $userRepository,
+        ClientRepositoryInterface $clientRepository,
+        ConsultantRepositoryInterface $consultantRepository
     )
     {
         $this->projectRepository = $projectRepository;
+        $this->userRepository = $userRepository;
+        $this->clientRepository = $clientRepository;
+        $this->consultantRepository = $consultantRepository;
     }
 
     /**
@@ -40,7 +52,8 @@ class ProjectCreateService
             return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
         }
 
-        $client = $this->projectRepository->findClientByEmail($clientEmail);
+        $clientUser = $this->userRepository->findUserByEmail($clientEmail);
+        $client = $this->clientRepository->findClientByUser($clientUser);
 
         $project = new Project();
         $project
@@ -54,7 +67,8 @@ class ProjectCreateService
         $project->setStatus(Status::from($status));
 
         foreach ($consultantsEmails as $consultantEmail) {
-            $consultant = $this->projectRepository->findConsultantByEmail($consultantEmail);
+            $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
+            $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
             $project->addConsultant($consultant);
         }
 

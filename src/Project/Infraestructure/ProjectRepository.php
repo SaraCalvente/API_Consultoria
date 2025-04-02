@@ -45,35 +45,6 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
         $this->entityManager->flush();
     }
 
-    public function findUserByEmail(string $email): User
-    {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if (!$user) {
-            throw new UserNotFoundException();
-        }
-        return $user;
-    }
-
-    public function findClientByEmail(string $email): ?Client
-    {
-        $user = $this->findUserByEmail($email);
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-        if (!$client) {
-            throw new ClientNotFoundException();
-        }
-        return $client;
-    }
-
-    public function findConsultantByEmail(string $email): ?Consultant
-    {
-        $user = $this->findUserByEmail($email);
-        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
-        if (!$consultant) {
-            throw new ConsultantNotFoundException();
-        }
-        return $consultant;
-    }
-
     public function findProjectByName(string $name): ?Project
     {
         $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
@@ -92,16 +63,6 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
     {
 
         return $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-    }
-
-    public function findClientById(int $id): ?Client
-    {
-        return $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $id]);
-    }
-
-    public function findConsultantById(int $id): ?Consultant
-    {
-        return $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $id]);
     }
 
     public function findProjectByClient(Client $client): array

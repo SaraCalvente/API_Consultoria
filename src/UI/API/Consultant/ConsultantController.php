@@ -2,19 +2,19 @@
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\ConsultantDeleteByEmailService;
+use App\Consultant\Application\Admin\ConsultantDeleteByEmailService;
+use App\Consultant\Application\Admin\ConsultantFindAllService;
+use App\Consultant\Application\Admin\ConsultantUpdateByEmailService;
 use App\Consultant\Application\ConsultantDeleteByIdService;
-use App\Consultant\Application\ConsultantFindAllService;
-use App\Consultant\Application\ConsultantFindByIdService;
+use App\Consultant\Application\ConsultantFindByUserService;
 use App\Consultant\Application\ConsultantRegisterService;
-use App\Consultant\Application\ConsultantUpdateByEmailService;
-use App\Consultant\Application\ConsultantUpdateByIdService;
+use App\Consultant\Application\ConsultantUpdateByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class ConsultantController extends AbstractController
 {
@@ -45,7 +45,7 @@ class ConsultantController extends AbstractController
     }
 
     #[Route('/consultant', name: 'get_consultant', methods: ['GET'])]
-    public function getConsultant(Security $security, ConsultantFindByIdService $consultantFindByIdService): JsonResponse
+    public function getConsultant(Security $security, ConsultantFindByUserService $consultantFindByIdService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);
@@ -65,7 +65,7 @@ class ConsultantController extends AbstractController
      * @throws \Exception
      */
     #[Route('/consultant/update', name: 'consultant_update', methods: ['PUT'])]
-    public function updateConsultant(Request $request, Security $security, ConsultantUpdateByIdService $consultantUpdateById): JsonResponse
+    public function updateConsultant(Request $request, Security $security, ConsultantUpdateByUserService $consultantUpdateById): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);
