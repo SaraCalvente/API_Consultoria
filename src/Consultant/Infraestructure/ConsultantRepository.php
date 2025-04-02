@@ -78,6 +78,25 @@ class ConsultantRepository extends ServiceEntityRepository implements Consultant
         return $consultant;
     }
 
+    public function findUserByEmail(string $email): User
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+        return $user;
+    }
+
+    public function findConsultantByEmail(string $email): ?Consultant
+    {
+        $user = $this->findUserByEmail($email);
+        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
+        if (!$consultant) {
+            throw new ConsultantNotFoundException();
+        }
+        return $consultant;
+    }
+
     public function findAllConsultants(): array{
         return $this->entityManager->getRepository(Consultant::class)->findAll();
     }

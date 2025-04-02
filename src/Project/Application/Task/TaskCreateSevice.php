@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Project\Application\Task;
 
@@ -55,7 +56,7 @@ class TaskCreateSevice
         $task->setStatus(Status::from($status));
         foreach ($consultantsEmails as $consultantEmail) {
             $consultant = $this->taskRepository->findConsultantByEmail($consultantEmail);
-            $project->addConsultant($consultant);
+            $task->addConsultant($consultant);
         }
 
         $this->taskRepository->add($task);

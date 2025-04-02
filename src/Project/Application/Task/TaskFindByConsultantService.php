@@ -3,35 +3,31 @@ declare(strict_types=1);
 
 namespace App\Project\Application\Task;
 
+use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\ProjectDTO;
 use App\Project\Domain\TaskDTO;
+use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\Shared\Domain\Exception\ProjectNotFoundException;
+use App\Shared\Domain\Exception\TaskNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskFindByUserService
+class TaskFindByConsultantService
 {
     private TaskRepositoryInterface $taskRepository;
 
 
     public function __construct(
-        TaskRepositoryInterface $taskRepository
+        TaskRepositoryInterface $taskRepository,
     )
     {
         $this->taskRepository = $taskRepository;
     }
 
-    public function __invoke(int $user_id): JsonResponse
+    public function __invoke(string $email): JsonResponse
     {
-        $consultant = $this->taskRepository->findConsultantById($user_id);
-
-        if (!$consultant) {
-            return new JsonResponse(['error' => 'User has no associated tasks'], 404);
-        }
-
-        $tasks = $consultant->getTasks()->toArray();
+        $tasks = $this->taskRepository->findTaskByConsultant($email);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',
-            'current_consultant_id' => $consultant->getId(),
             'tasks' => array_map(fn($task) => TaskDTO::fromEntity($task), $tasks),
         ], 200);
     }

@@ -4,6 +4,7 @@ namespace App\Consultant\Domain\Model;
 
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 interface ConsultantRepositoryInterface
@@ -15,5 +16,7 @@ interface ConsultantRepositoryInterface
     public function modifyConsultant(array $criteria, ?string $profile): JsonResponse;
     public function removeConsultant(array $criteria): JsonResponse;
     public function save(): void;
+    public function findUserByEmail(string $email): User;
+    public function findConsultantByEmail(string $email): ?Consultant;
 
 }

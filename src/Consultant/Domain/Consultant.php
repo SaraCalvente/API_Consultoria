@@ -35,6 +35,7 @@ class  Consultant
     private Collection $project;
 
     #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'consultants')]
+    #[ORM\JoinTable(name: 'task_consultant')]
     private Collection $tasks;
 
     #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'consultant')]
