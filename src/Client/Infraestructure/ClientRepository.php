@@ -1,13 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Client\Infraestructure;
 
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
-use App\Project\Domain\Project;
 use App\Shared\Domain\Exception\ClientNotFoundException;
-use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,40 +31,9 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         $this->entityManager = $entityManager;
     }
 
-    public function add(Client $client): void
+
+    public function findClientByUser(User $user): ?Client
     {
-        $this->entityManager->persist($client);
-        $this->entityManager->flush();
-    }
-
-    public function findUserAndClient(array $criteria): array
-    {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy($criteria);
-        if (!$user) {
-            throw new UserNotFoundException();
-        }
-
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-        if (!$client) {
-            throw new ClientNotFoundException();
-        }
-
-        return [$user, $client];
-    }
-
-    public function checkIfUserExists(string $email): bool{
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if ($user) {
-            return false;
-        }
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-        if ($client) {
-            return false;
-        }
-        return true;
-    }
-
-    public function findClientById(int $user): ?Client{
         $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
         if (!$client) {
             throw new ClientNotFoundException();
@@ -73,13 +41,23 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         return $client;
     }
 
-    public function findAllClients(): array{
+    public function checkIfClientExists(User $user): bool
+    {
+        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
+        if ($client) {
+            return false;
+        }
+        return true;
+    }
+
+    public function findAllClients(): array
+    {
         return $this->entityManager->getRepository(Client::class)->findAll();
     }
 
-    public function modifyClient(array $criteria, ?string $address, ?string $phoneNumber): JsonResponse
+    public function updateClient(User $user, ?string $address, ?string $phoneNumber): JsonResponse
     {
-        [, $client] = $this->findUserAndClient($criteria);
+        $client = $this->findClientByUser($user);
 
         if ($address !== null) {
             $client->setAddress($address);
@@ -87,27 +65,44 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         if ($phoneNumber !== null) {
             $client->setPhoneNumber($phoneNumber);
         }
-
-        $this->entityManager->flush();
-
+        $this->saveClient();
         return new JsonResponse(ClientDTO::fromEntity($client));
     }
 
-    public function removeClient(array $criteria): JsonResponse
-    {
-        [$user, $client] = $this->findUserAndClient($criteria);
-
-        $projects = $this->entityManager->getRepository(Project::class)->findBy(['client' => $client->getId()]);
+    public function findClientProjects(array $projects): ?array{
 
         if (count($projects) > 0) {
-            return new JsonResponse(['error' => 'Cannot delete client because there are associated projects.'], 400);
+            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
+
+            return $projectDetails;
         }
-
-        $this->entityManager->remove($client);
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
-
-        return new JsonResponse(['message' => 'Client and associated user deleted successfully'], 200);
+        return null;
     }
 
+    public function deleteClient(Client $client): JsonResponse
+    {
+        $this->removeClient($client);
+
+        return new JsonResponse([
+            'success' => 'Client was successfully deleted',
+        ]);
+    }
+
+    public function addClient(Client $client): void
+    {
+        $this->entityManager->persist($client);
+        $this->entityManager->flush();
+    }
+
+    public function saveClient(): void
+    {
+        $this->entityManager->flush();
+    }
+
+    public function removeClient(Client $client): void
+    {
+        $this->entityManager->remove($client);
+        $this->entityManager->flush();
+
+    }
 }

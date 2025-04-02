@@ -1,16 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Client\Application;
 
-use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
-use App\Shared\Domain\Exception\ClientNotFoundException;
-use Doctrine\ORM\EntityManagerInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientFindByIdService
+class ClientFindByUserService
 {
     private ClientRepositoryInterface $clientRepository;
 
@@ -22,9 +20,9 @@ class ClientFindByIdService
         $this->clientRepository = $clientRepository;
     }
 
-    public function __invoke(int $id): JsonResponse
+    public function __invoke(User $user): JsonResponse
     {
-        $client = $this->clientRepository->findClientById($id);
+        $client = $this->clientRepository->findClientByUser($user);
         return new JsonResponse(ClientDTO::fromEntity($client));
     }
 }

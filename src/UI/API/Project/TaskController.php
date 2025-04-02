@@ -7,7 +7,8 @@ use App\Project\Application\Project\ProjectDeleteByNameService;
 use App\Project\Application\Project\ProjectFindAllService;
 use App\Project\Application\Project\ProjectFindByUserService;
 use App\Project\Application\Project\ProjectUpdateByNameService;
-use App\Project\Application\Task\TareaUpdateByNameService;
+use App\Project\Application\Task\TaskDeleteByNameService;
+use App\Project\Application\Task\TaskUpdateByNameAndProjectService;
 use App\Project\Application\Task\TaskCreateSevice;
 use App\Project\Application\Task\TaskFindAllService;
 use App\Project\Application\Task\TaskFindByConsultantService;
@@ -100,7 +101,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/update', name: 'task_update', methods: ['PUT'])]
-    public function updateProject(Request $request, TareaUpdateByNameService $tareaUpdateByNameService): JsonResponse
+    public function updateProject(Request $request, TaskUpdateByNameAndProjectService $tareaUpdateByNameService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
@@ -120,11 +121,11 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/delete', name: 'delete_task', methods: ['DELETE'])]
-    public function deleteProject(Request $request, ProjectDeleteByNameService $projectDeleteByNameService): JsonResponse
+    public function deleteTask(Request $request, TaskDeleteByNameService $taskDeleteByNameService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $projectDeleteByNameService($data['name']);
+            return $taskDeleteByNameService($data['name'], $data['projectName']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

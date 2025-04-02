@@ -1,17 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Client\Domain\Model;
 
 use App\Client\Domain\Client;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 interface ClientRepositoryInterface
 {
-    public function findUserAndClient(array $criteria): array;
-    public function checkIfUserExists(string $email): bool;
-    public function findClientById(int $user): ?Client;
+    public function findClientByUser(User $user): ?Client;
+    public function checkIfClientExists(User $user): bool;
     public function findAllClients(): array;
-    public function modifyClient(array $criteria, ?string $address, ?string $phoneNumber): JsonResponse;
-    public function removeClient(array $criteria): JsonResponse;
+    public function updateClient(User $user, string $address, string $phoneNumber): JsonResponse;
+    public function deleteClient(Client $client): JsonResponse;
+    public function addClient(Client $client): void;
+    public function saveClient(): void;
+    public function removeClient(Client $client): void;
+    public function findClientProjects(array $projects): ?array;
+
+
 
 }

@@ -79,7 +79,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     public function checkIfUserExists(string $email): bool{
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if ($user) {
+        if (!$user) {
             return false;
         }
         return true;

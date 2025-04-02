@@ -1,32 +1,33 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Client\Application;
 
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ClientRegisterService
 {
-    private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
     private ClientRepositoryInterface $clientRepository;
+    private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        ClientRepositoryInterface $clientRepository
+        ClientRepositoryInterface   $clientRepository,
+        UserRepositoryInterface     $userRepository
     )
     {
-        $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
         $this->clientRepository = $clientRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function __invoke(
@@ -34,9 +35,10 @@ class ClientRegisterService
         string $name, string $surnames,
         string $address, string $phoneNumber): JsonResponse
     {
-        if(!$this->clientRepository->checkIfUserExists($email)){
+        if ($this->userRepository->checkIfUserExists($email)){
+            $user = $this->userRepository->findUserByEmail($email);
             return new JsonResponse([
-                'error' => 'El usuario ya existe',
+                'error' => 'User ' . $user->getEmail() . ' exists as ' . implode(', ', $user->getRoles()),
 
             ], 400);
         }
@@ -46,7 +48,6 @@ class ClientRegisterService
         $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_CLIENT']);
-        $this->entityManager->persist($user);
 
         $client = new Client();
         $client
@@ -56,7 +57,8 @@ class ClientRegisterService
             ->setPhoneNumber($phoneNumber)
             ->setAddress($address);
 
-        $this->clientRepository->add($client);
+        $this->userRepository->add($user);
+        $this->clientRepository->addClient($client);
 
         return new JsonResponse([
             'message' => 'Cliente registrado correctamente',

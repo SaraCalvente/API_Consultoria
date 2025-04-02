@@ -9,7 +9,7 @@ use App\Project\Domain\Status;
 use App\Project\Domain\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TareaUpdateByNameService
+class TaskUpdateByNameAndProjectService
 {
     private TaskRepositoryInterface $taskRepository;
 

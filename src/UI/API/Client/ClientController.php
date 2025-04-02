@@ -1,14 +1,14 @@
 <?php
 namespace App\UI\API\Client;
 
-use App\Client\Application\ClientDeleteByEmailService;
-use App\Client\Application\ClientDeleteByIdService;
-use App\Client\Application\ClientFindAllService;
-use App\Client\Application\ClientFindByIdService;
+use App\Client\Application\Admin\ClientDeleteByEmailService;
+use App\Client\Application\Admin\ClientFindAllService;
+use App\Client\Application\Admin\ClientUpdateByEmailService;
+use App\Client\Application\ClientDeleteByUserService;
+use App\Client\Application\ClientFindByUserService;
 use App\Client\Application\ClientRegisterService;
 use App\Client\Application\ClientService;
-use App\Client\Application\ClientUpdateByEmailService;
-use App\Client\Application\ClientUpdateByIdService;
+use App\Client\Application\ClientUpdateByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -42,11 +42,12 @@ class ClientController extends AbstractController
             $data['address'],
             $data['phoneNumber']);
     }
+
     #[Route('/client', name: 'get_client', methods: ['GET'])]
-    public function getClient(Security $security, ClientFindByIdService $clientFindService): JsonResponse
+    public function getClient(Security $security, ClientFindByUserService $clientFindService): JsonResponse
     {
         try {
-            $user = $this->authChecker->getAuthenticatedUserId($security);
+            $user = $this->authChecker->getAuthenticated($security);
             return $clientFindService($user);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
@@ -63,13 +64,13 @@ class ClientController extends AbstractController
      * @throws \Exception
      */
     #[Route('/client/update', name: 'client_update', methods: ['PUT'])]
-    public function updateClient(Request $request, Security $security, ClientUpdateByIdService $clientUpdateById): JsonResponse
+    public function updateClient(Request $request, Security $security, ClientUpdateByUserService $clientUpdateById): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            $user = $this->authChecker->getAuthenticated($security);
             $data = json_decode($request->getContent(), true);
             return $clientUpdateById(
-                $userId,
+                $user,
                 $data['address'] ?? null,
                 $data['phoneNumber'] ?? null
             );
@@ -94,11 +95,11 @@ class ClientController extends AbstractController
     }
 
     #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
-    public function deleteClient (Security $security, ClientDeleteByIdService $clientDeleteById): JsonResponse
+    public function deleteClient (Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $clientDeleteById($userId);
+            $user = $this->authChecker->getAuthenticated($security);
+            return $clientDeleteById($user);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

@@ -29,4 +29,5 @@ interface TaskRepositoryInterface
     public function findTasksByProject(string $projectName): array;
 
     public function save(): void;
+    public function remove(Task $task): void;
 }

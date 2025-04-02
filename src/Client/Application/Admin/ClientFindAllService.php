@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Client\Application;
+namespace App\Client\Application\Admin;
 
-use App\Client\Domain\Client;
+
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
