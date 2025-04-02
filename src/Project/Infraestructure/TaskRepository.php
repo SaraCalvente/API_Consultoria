@@ -55,20 +55,20 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
         return $project;
     }
 
-    public function checkIfTaskExists(string $name, Project $project): ?Task{
+    public function checkIfTaskExists(string $name, Project $project): bool{
         $task = $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $name, 'project' => $project]);
         if(!$task) {
-            throw new TaskNotFoundException();
+            return false;
         }
-        return $task;
+        return true;
     }
 
     public function checkDates(string $startDate, ?string $endDate): bool
     {
-        $start = \DateTime::createFromFormat('Y-m-d', $startDate);
+        $start = \DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
         if (!$start) return false;
         if ($endDate) {
-            $end = \DateTime::createFromFormat('Y-m-d', $endDate);
+            $end = \DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
             return $end && $start <= $end;
         }
         return true;

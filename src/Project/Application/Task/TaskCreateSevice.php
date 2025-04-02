@@ -38,13 +38,13 @@ class TaskCreateSevice
         }
         $project = $this->taskRepository->findProjectByName($projectName);
 
-        /*if($this->taskRepository->checkIfTaskExists($name, $project)){
+        if($this->taskRepository->checkIfTaskExists($name, $project)){
             return new JsonResponse(['error' => 'La tarea ya existe'], 404);
-        }*/
+        }
 
-        /*if (!$this->taskRepository->checkDates($startDate, $endDate)) {
+        if (!$this->taskRepository->checkDates($startDate, $endDate)) {
             return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
-        }*/
+        }
 
         $task = new Task();
         $task->setProject($project);

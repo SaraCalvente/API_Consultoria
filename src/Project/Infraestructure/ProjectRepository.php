@@ -90,6 +90,7 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
 
     public function checkIfProjectExists(string $name): ?Project
     {
+
         return $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
     }
 
