@@ -3,8 +3,11 @@
 namespace App\UI\API\Project;
 
 use App\Project\Application\Project\ProjectCreateService;
+use App\Project\Application\Project\ProjectDeleteByNameService;
 use App\Project\Application\Project\ProjectFindAllService;
 use App\Project\Application\Project\ProjectFindByUserService;
+use App\Project\Application\Project\ProjectUpdateByNameService;
+use App\Project\Application\Task\TareaUpdateByNameService;
 use App\Project\Application\Task\TaskCreateSevice;
 use App\Project\Application\Task\TaskFindAllService;
 use App\Project\Application\Task\TaskFindByConsultantService;
@@ -65,7 +68,7 @@ class TaskController extends AbstractController
         }
     }
 
-    #[Route('/admin/task', name: 'get_task_by_name_and_project', methods: ['GET'])]
+    #[Route('/task', name: 'get_task_by_name_and_project', methods: ['GET'])]
     public function getTasksById(Request $request, TaskFindByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
@@ -94,5 +97,36 @@ class TaskController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         return $taskFindByProjectService($data['projectName']);
+    }
+
+    #[Route('/task/update', name: 'task_update', methods: ['PUT'])]
+    public function updateProject(Request $request, TareaUpdateByNameService $tareaUpdateByNameService): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            return $tareaUpdateByNameService(
+                $data['name'],
+                $data['projectName'],
+                $data['description'] ?? null,
+                $data['status'] ?? null,
+                $data['endDate'] ?? null,
+                $data['addConsultantsEmails'] ?? null,
+                $data['erraseConsultantsEmails'] ?? null,
+
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/task/delete', name: 'delete_task', methods: ['DELETE'])]
+    public function deleteProject(Request $request, ProjectDeleteByNameService $projectDeleteByNameService): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            return $projectDeleteByNameService($data['name']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        }
     }
 }

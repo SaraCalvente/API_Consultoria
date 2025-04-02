@@ -24,7 +24,7 @@ class ProjectUpdateByNameService
      */
     public function __invoke(
         string $name, string $description = null, string $status = null, string $endDate = null,
-        array $consultantsEmails = null
+        array  $addConsultantsEmails = null, array $erraseConsultantsEmails = null
     ): JsonResponse {
         $project = $this->projectRepository->findProjectByName($name);
 
@@ -47,11 +47,19 @@ class ProjectUpdateByNameService
             }
             $project->setEndDate(new \DateTime($endDate));
         }
-        if ($consultantsEmails !== null) {
-            foreach ($consultantsEmails as $consultantEmail) {
+        if ($addConsultantsEmails !== null) {
+            foreach ($addConsultantsEmails as $consultantEmail) {
                 $consultant = $this->projectRepository->findConsultantByEmail($consultantEmail);
                 if (!$project->getConsultant()->contains($consultant)) {
                     $project->addConsultant($consultant);
+                }
+            }
+        }
+        if ($erraseConsultantsEmails !== null) {
+            foreach ($erraseConsultantsEmails as $consultantEmail) {
+                $consultant = $this->projectRepository->findConsultantByEmail($consultantEmail);
+                if ($project->getConsultant()->contains($consultant)) {
+                    $project->removeConsultant($consultant);
                 }
             }
         }

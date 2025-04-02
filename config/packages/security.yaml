@@ -42,6 +42,7 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS}
         - { path: ^/api/admin, roles: ROLE_ADMIN} ## CAMBIAR A ROLE_ADMIN
+        - { path: ^/api/project, roles: ROLE_ADMIN }
         - { path: ^/api/client, roles: [ROLE_CLIENT] }
         - { path: ^/api/consultant, roles: [ROLE_CONSULTANT] }
         - { path: ^/api/user/projects, roles: [ROLE_CLIENT, ROLE_CONSULTANT, ROLE_ADMIN]}

@@ -63,7 +63,7 @@ class ProjectController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }
-    #[Route('/admin/project', name: 'get_project', methods: ['GET'])]
+    #[Route('/project', name: 'get_project', methods: ['GET'])]
     public function getProjectsByName(Request $request, ProjectFindByNameService $projectFindByNameService): JsonResponse
     {
         try {
@@ -86,11 +86,12 @@ class ProjectController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             return $projectUpdateByNameService(
-                $data['name'] ?? null,
+                $data['name'],
                 $data['description'] ?? null,
                 $data['status'] ?? null,
                 $data['endDate'] ?? null,
-                $data['consultantsEmails'] ?? null
+                $data['addConsultantsEmails'] ?? null,
+                $data['erraseConsultantEmails'] ?? null
             );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
