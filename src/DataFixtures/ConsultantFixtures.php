@@ -46,7 +46,7 @@ class ConsultantFixtures extends Fixture implements DependentFixtureInterface
         return [
             ['John', 'Doe', new EmailValueObject('user@example.com'), Profile::DESARROLLADOR],
             ['Sara', 'Calvente', new EmailValueObject('sara@calvente.es'), Profile::LIDER_TECNICO],
-            ['Ana', 'Prueba', new EmailValueObject('admin@example.com'), Profile::PROJECT_MANAGER],
+            ['Ana', 'Prueba', new EmailValueObject('prueba@example.com'), Profile::PROJECT_MANAGER],
 
         ];
     }

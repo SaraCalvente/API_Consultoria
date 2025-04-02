@@ -1,11 +1,9 @@
 <?php
 namespace App\Consultant\Application;
 
-use App\Client\Domain\Model\ClientRepositoryInterface;
-use App\Consultant\Domain\Consultant;
 use App\Consultant\Domain\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantFindByIdService
@@ -20,9 +18,9 @@ class ConsultantFindByIdService
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function __invoke(int $userId): JsonResponse
+    public function __invoke(User $user): JsonResponse
     {
-        $consultant = $this->consultantRepository->findConsultantById($userId);
+        $consultant = $this->consultantRepository->findConsultantByUser($user);
         return new JsonResponse(ConsultantDTO::fromEntity($consultant));
     }
 }

@@ -69,22 +69,12 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         return new JsonResponse(ClientDTO::fromEntity($client));
     }
 
-    public function findClientProjects(array $projects): ?array{
-
-        if (count($projects) > 0) {
-            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
-
-            return $projectDetails;
-        }
-        return null;
-    }
-
     public function deleteClient(Client $client): JsonResponse
     {
         $this->removeClient($client);
 
         return new JsonResponse([
-            'success' => 'Client was successfully deleted',
+            'success' => 'Client and associated user deleted successfully',
         ]);
     }
 

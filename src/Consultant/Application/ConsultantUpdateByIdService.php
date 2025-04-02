@@ -3,6 +3,7 @@
 namespace App\Consultant\Application;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantUpdateByIdService
@@ -17,8 +18,8 @@ class ConsultantUpdateByIdService
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function __invoke( int $userId, ?string $profile = null
+    public function __invoke( User $user, ?string $profile = null
     ): JsonResponse {
-        return $this->consultantRepository->modifyConsultant(['id' => $userId], $profile);
+        return $this->consultantRepository->updateConsultant($user, $profile);
     }
 }

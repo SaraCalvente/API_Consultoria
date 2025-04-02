@@ -48,8 +48,8 @@ class ConsultantController extends AbstractController
     public function getConsultant(Security $security, ConsultantFindByIdService $consultantFindByIdService): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $consultantFindByIdService($userId);
+            $user = $this->authChecker->getAuthenticated($security);
+            return $consultantFindByIdService($user);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
@@ -68,10 +68,10 @@ class ConsultantController extends AbstractController
     public function updateConsultant(Request $request, Security $security, ConsultantUpdateByIdService $consultantUpdateById): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
+            $user = $this->authChecker->getAuthenticated($security);
             $data = json_decode($request->getContent(), true);
             return $consultantUpdateById(
-                $userId,
+                $user,
                 $data['profile'] ?? null
             );
         } catch (\Exception $e) {
@@ -93,8 +93,8 @@ class ConsultantController extends AbstractController
     public function deleteConsultant(Security $security, ConsultantDeleteByIdService $consultantDeleteByIdService): JsonResponse
     {
         try {
-            $userId = $this->authChecker->getAuthenticatedUserId($security);
-            return $consultantDeleteByIdService($userId);
+            $user = $this->authChecker->getAuthenticated($security);
+            return $consultantDeleteByIdService($user);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

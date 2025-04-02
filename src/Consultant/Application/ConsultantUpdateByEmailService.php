@@ -3,23 +3,28 @@
 namespace App\Consultant\Application;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantUpdateByEmailService
 {
     private ConsultantRepositoryInterface $consultantRepository;
+    private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
-        ConsultantRepositoryInterface $consultantRepository
+        ConsultantRepositoryInterface $consultantRepository,
+        UserRepositoryInterface       $userRepository
     )
     {
         $this->consultantRepository = $consultantRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function __invoke( string $email, ?string $profile = null
     ): JsonResponse {
-        return $this->consultantRepository->modifyConsultant(['email' => $email], $profile);
+        $user = $this->userRepository->findUserByEmail($email);
+        return $this->consultantRepository->updateConsultant($user, $profile);
 
     }
 

@@ -9,14 +9,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 interface ConsultantRepositoryInterface
 {
-    public function findUserAndConsultant(array $criteria): array;
-    public function checkIfUserExists(string $email): bool;
-    public function findConsultantById(int $user): ?Consultant;
+    public function findConsultantByUser(User $user): ?Consultant;
+    public function checkIfConsultantExists(User $user): bool;
     public function findAllConsultants(): array;
-    public function modifyConsultant(array $criteria, ?string $profile): JsonResponse;
-    public function removeConsultant(array $criteria): JsonResponse;
-    public function save(): void;
-    public function findUserByEmail(string $email): User;
-    public function findConsultantByEmail(string $email): ?Consultant;
+    public function updateConsultant(User $user, ?string $profile): JsonResponse;
+    public function deleteConsultant(Consultant $consultant): JsonResponse;
+    public function addConsultant(Consultant $consultant): void;
+    public function saveConsultant(): void;
+    public function removeConsultant(Consultant $consultant): void;
 
 }

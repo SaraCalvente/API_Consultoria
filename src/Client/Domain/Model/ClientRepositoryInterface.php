@@ -17,7 +17,6 @@ interface ClientRepositoryInterface
     public function addClient(Client $client): void;
     public function saveClient(): void;
     public function removeClient(Client $client): void;
-    public function findClientProjects(array $projects): ?array;
 
 
 
