@@ -39,7 +39,7 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
         $this->entityManager = $entityManager;
     }
 
-    public function add(Project $project): void
+    public function addProject(Project $project): void
     {
         $this->entityManager->persist($project);
         $this->entityManager->flush();
@@ -59,10 +59,13 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
         return $projects;
     }
 
-    public function checkIfProjectExists(string $name): ?Project
+    public function checkIfProjectExists(Project $project): bool
     {
-
-        return $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
+        $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $project->getName()]);
+        if(!$project){
+            return false;
+        }
+        return true;
     }
 
     public function findProjectByClient(Client $client): array
@@ -81,11 +84,11 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
         return true;
     }
 
-    public function save(): void{
+    public function saveProject(): void{
         $this->entityManager->flush();
     }
 
-    public function remove(Project $project): void{
+    public function removeProject(Project $project): void{
         $this->entityManager->remove($project);
         $this->entityManager->flush();
     }

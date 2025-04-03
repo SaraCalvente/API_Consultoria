@@ -43,7 +43,8 @@ class ProjectCreateService
         array $consultantsEmails
     ): JsonResponse
     {
-        if($this->projectRepository->checkIfProjectExists($name)){
+        $project = $this->projectRepository->findProjectByName($name);
+        if($this->projectRepository->checkIfProjectExists($project)){
             return new JsonResponse(['error' => 'Ya existe un proyecto con este nombre'], 404);
         }
 
@@ -72,7 +73,7 @@ class ProjectCreateService
             $project->addConsultant($consultant);
         }
 
-        $this->projectRepository->add($project);
+        $this->projectRepository->addProject($project);
 
         return new JsonResponse([
             'message' => 'Project created successfully',

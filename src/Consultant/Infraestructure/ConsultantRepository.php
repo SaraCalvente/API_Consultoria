@@ -3,21 +3,16 @@
 namespace App\Consultant\Infraestructure;
 
 use App\Client\Domain\Client;
-use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Consultant\Domain\Consultant;
 use App\Consultant\Domain\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Consultant\Domain\Profile;
-use App\Project\Domain\Project;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
-use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @extends ServiceEntityRepository<Consultant>

@@ -10,23 +10,26 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class TaskDeleteByNameService
 {
     private TaskRepositoryInterface $taskRepository;
+    private ProjectRepositoryInterface $projectRepository;
 
 
     public function __construct(
-        TaskRepositoryInterface $taskRepository
+        TaskRepositoryInterface $taskRepository,
+        ProjectRepositoryInterface $projectRepository
     )
     {
         $this->taskRepository = $taskRepository;
+        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(string $name, string $projectName): JsonResponse
     {
-        $project = $this->taskRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($projectName);
         $task = $this->taskRepository->findTaskFromProject($name, $project);
         foreach ($task->getConsultants() as $consultant) {
             $task->removeConsultant($consultant);
         }
-        $this->taskRepository->remove($task);
+        $this->taskRepository->removeTask($task);
         return new JsonResponse(['message' => 'Task deleted successfully'], 200);
     }
 }

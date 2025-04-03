@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Project\Application\Task;
 
+use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\Project;
 use App\Project\Domain\TaskDTO;
@@ -13,22 +14,25 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class TaskFindByNameAndProjectService
 {
     private TaskRepositoryInterface $taskRepository;
+    private ProjectRepositoryInterface $projectRepository;
 
 
     public function __construct(
-        TaskRepositoryInterface $taskRepository
+        TaskRepositoryInterface $taskRepository,
+        ProjectRepositoryInterface $projectRepository
     )
     {
         $this->taskRepository = $taskRepository;
+        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(string $name, string $projectName): JsonResponse
     {
-        $project = $this->taskRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($projectName);
         if (!$project) {
             throw new ProjectNotFoundException();
         }
-        if (!$this->taskRepository->checkIfTaskExists($name, $project)) {
+        if (!$this->taskRepository->checkIfTaskFromProjectExists($name, $project)) {
             throw new TaskNotFoundException();
         }
         $task = $this->taskRepository->findTaskFromProject($name, $project);

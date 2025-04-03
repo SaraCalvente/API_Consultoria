@@ -43,32 +43,23 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function add(Task $task): void
+    public function addTask(Task $task): void
     {
         $this->entityManager->persist($task);
         $this->entityManager->flush();
     }
 
-    public function checkIfProjectExists(string $name): ?Project
-    {
-        $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-        if(!$project) {
-            throw new ProjectNotFoundException();
-        }
-        return $project;
-    }
-
-    public function checkIfTaskExists(string $name, Project $project): bool{
-        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $name, 'project' => $project]);
+    public function checkIfTaskFromProjectExists(string $taskName, Project $project): bool{
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $taskName, 'project' => $project]);
         if(!$task) {
             return false;
         }
         return true;
     }
 
-    public function findTaskFromProject(string $name, Project $project): Task
+    public function findTaskFromProject(string $taskName, Project $project): Task
     {
-        return $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $name, 'project' => $project]);
+        return $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $taskName, 'project' => $project]);
     }
 
     public function findAllTasks(): array
@@ -77,9 +68,8 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
     }
 
 
-    public function findTaskByConsultant(string $email): array
+    public function findTaskByConsultant(Consultant $consultant): array
     {
-        $consultant = $this->consultantRepository->findConsultantByEmail($email);
         if (!$consultant) {
             throw new ConsultantNotFoundException();
         }
@@ -96,51 +86,16 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
         return true;
     }
 
-    public function findUserByEmail(string $email): User
-    {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if (!$user) {
-            throw new UserNotFoundException();
-        }
-        return $user;
-    }
-
-    public function findConsultantById(int $id): ?Consultant
-    {
-        return $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $id]);
-    }
-
-
-    public function findConsultantByEmail(string $email): ?Consultant
-    {
-        $user = $this->findUserByEmail($email);
-        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
-        if (!$consultant) {
-            throw new ConsultantNotFoundException();
-        }
-        return $consultant;
-    }
-
-    public function findProjectByName(string $name): ?Project
-    {
-        $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-        if (!$project) {
-            throw new ProjectNotFoundException();
-        }
-        return $project;
-    }
-
-    public function findTasksByProject(string $projectName): array{
-        $project = $this->findProjectByName($projectName);
+    public function findTasksByProject(Project $project): array{
         $tasks = $this->entityManager->getRepository(Task::class)->findBy(['project' => $project]);
         return $tasks;
     }
 
-    public function save(): void{
+    public function saveTask(): void{
         $this->entityManager->flush();
     }
 
-    public function remove(Task $task): void{
+    public function removeTask(Task $task): void{
         $this->entityManager->remove($task);
         $this->entityManager->flush();
     }

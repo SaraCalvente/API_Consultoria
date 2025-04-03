@@ -9,14 +9,14 @@ use App\User\Domain\User;
 
 interface ProjectRepositoryInterface
 {
-    public function add(Project $project): void;
+    public function addProject(Project $project): void;
     public function findProjectByName(string $name): ?Project;
     public function checkDates(string $startDate, ?string $endDate): bool;
-    public function checkIfProjectExists(string $name): ?Project;
+    public function checkIfProjectExists(Project $project): bool;
     public function findProjectByClient(Client $client): array;
     public function findAllProjects(): array;
-    public function save(): void;
-    public function remove(Project $project): void;
+    public function saveProject(): void;
+    public function removeProject(Project $project): void;
 
 
     }

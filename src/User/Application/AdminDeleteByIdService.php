@@ -17,9 +17,9 @@ class AdminDeleteByIdService
         $this->repository = $repository;
     }
 
-    public function __invoke(int $id): JsonResponse
+    public function __invoke(User $user): JsonResponse
     {
-        $user = $this->repository->findUserById($id);
+        $user = $this->repository->findUserById($user->getId());
         $this->repository->remove($user);
         return new JsonResponse([
             'message' => 'Admin deleted successfully',

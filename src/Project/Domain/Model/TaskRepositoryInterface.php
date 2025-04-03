@@ -5,29 +5,24 @@ namespace App\Project\Domain\Model;
 use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
 use App\Project\Domain\Task;
+use App\User\Domain\User;
 
 interface TaskRepositoryInterface
 {
-    public function add(Task $task): void;
+    public function addTask(Task $task): void;
 
-    public function checkIfProjectExists(string $name): ?Project;
-
-    public function checkIfTaskExists(string $name, Project $project): bool;
+    public function checkIfTaskFromProjectExists(string $taskName, Project $project): bool;
 
     public function checkDates(string $startDate, ?string $endDate): bool;
 
-    public function findProjectByName(string $name): ?Project;
-
-    public function findConsultantById(int $id): ?Consultant;
-
-    public function findTaskFromProject(string $name, Project $project): Task;
+    public function findTaskFromProject(string $taskName, Project $project): Task;
 
     public function findAllTasks(): array;
 
-    public function findTaskByConsultant(string $email): array;
+    public function findTaskByConsultant(Consultant $consultant): array;
 
-    public function findTasksByProject(string $projectName): array;
+    public function findTasksByProject(Project $project): array;
 
-    public function save(): void;
-    public function remove(Task $task): void;
+    public function saveTask(): void;
+    public function removeTask(Task $task): void;
 }
