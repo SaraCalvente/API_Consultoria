@@ -25,11 +25,11 @@ class AdminRegisterService
 
     public function __invoke(string $email, string $password): JsonResponse
     {
-        if(!$this->repository->checkIfUserExists($email)){
+        if($this->repository->checkIfUserExists($email)){
             return new JsonResponse([
-                'error' => 'El usuario ya existe',
+                'error' => 'User ' . $email . ' already exists',
 
-            ], 400);
+            ], 402);
         }
         $user = new User();
         $user->setEmail(new EmailValueObject($email));
@@ -40,7 +40,7 @@ class AdminRegisterService
         $this->repository->add($user);
 
         return new JsonResponse([
-            'message' => 'User registered successfully',
+            'message' => 'Admin registered successfully',
             'user_id' => $user->getId(),
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),

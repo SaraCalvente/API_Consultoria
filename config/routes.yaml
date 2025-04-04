@@ -6,6 +6,6 @@ gesdinet_jwt_refresh_token:
 
 api_controllers:
   resource: '../src/UI/API/'
-  type: annotation
+  type: attribute
   defaults: {_format: json}
   prefix: /api

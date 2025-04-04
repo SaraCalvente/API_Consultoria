@@ -31,6 +31,9 @@ class AdminFindAllService
             ];
         }
 
-        return new JsonResponse($adminsData, 200);
+        return new JsonResponse([
+            'message' => 'Admins retrieved successfully',
+            'All admins' => $adminsData,
+            200]);
     }
 }

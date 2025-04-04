@@ -1,23 +1,25 @@
 <?php
+declare(strict_types=1);
 
-// src/UI/API/User/UserController.php
+namespace App\UI\API\Admin;
 
-namespace App\UI\API\User;
-
-use App\User\Application\UserLoginService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes as OA;
+use App\User\Application\AdminRegisterService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
-class UserLoginController extends AbstractController
+
+class AdminRegisterController extends AbstractController
 {
-    #[Route('/login', name: 'user_login', methods: ['POST'])]
+    #[Route('/register/admin', name: 'admin_register', methods: ['POST'])]
+
     #[OA\Post(
-        path: "/login",
-        description: "Login a user.",
-        summary: "User login.",
+        path: "/register/admin",
+        description: "Register a new admin user.",
+        summary: "Administrator register.",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -35,9 +37,10 @@ class UserLoginController extends AbstractController
                 description: "Admin registered successfully.",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "User logged in successfully"),
-                        new OA\Property(property: "id", type: "integer", example: "2"),
-                        new OA\Property(property: "token", type: "string", example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...."),
+                        new OA\Property(property: "message", type: "string", example: "Admin registered successfully"),
+                        new OA\Property(property: "id", type: "int", example: "2"),
+                        new OA\Property(property: "email", type: "string", example: "admin@example.com"),
+                        new OA\Property(property: "roles", type: "string", example: "ROLE_ADMIN")
                     ]
                 )
             ),
@@ -52,7 +55,10 @@ class UserLoginController extends AbstractController
         ]
     )]
 
-    public function login(Request $request, UserLoginService $loginService): JsonResponse {
+    #[Security(name: "Bearer")]
+    public function register(
+        Request $request, AdminRegisterService $adminRegisterService
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         $validationErrors = $this->validateEmailAndPassword($request);
@@ -60,13 +66,8 @@ class UserLoginController extends AbstractController
         if ($validationErrors !== null) {
             return new JsonResponse(['error' => $validationErrors], 400);
         }
-        try{
-            $response = $loginService($data['email'], $data['password']);
-            return $response;
 
-        } catch (\Exception $exception) {
-            return new JsonResponse(['error' => $exception->getMessage()], 400);
-        }
+        return $adminRegisterService($data['email'], $data['password']);
     }
 
     private function validateEmailAndPassword(Request $request): ?string
@@ -78,5 +79,4 @@ class UserLoginController extends AbstractController
         }
         return null;
     }
-
 }

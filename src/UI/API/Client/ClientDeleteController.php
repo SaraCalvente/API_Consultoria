@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use OpenApi\Attributes as OA;
 
 class ClientDeleteController extends AbstractController
 {
@@ -20,14 +21,30 @@ class ClientDeleteController extends AbstractController
     }
 
     #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: "/client/delete",
+        description: "Deletes the authenticated client.",
+        summary: "Client deleted successfully",
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Client deleted successfully",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Client deleted successfully")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Not authorized"
+            ),
+        ]
+    )]
     public function deleteClient (Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
     {
-        try {
-            $user = $this->authChecker->getAuthenticated($security);
-            return $clientDeleteById($user);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+        $user = $this->authChecker->getAuthenticated($security);
+        return $clientDeleteById($user);
     }
 
 }

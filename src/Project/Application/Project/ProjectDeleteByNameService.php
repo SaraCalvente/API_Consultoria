@@ -20,10 +20,10 @@ class ProjectDeleteByNameService
 
     public function __invoke(string $name): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($name);
-        if (!$this->projectRepository->checkIfProjectExists($project)) {
-            return new JsonResponse(['error' => 'The project ' . $project->getName() . ' does not exist'], 400);
+        if (!$this->projectRepository->checkIfProjectExists($name)) {
+            return new JsonResponse(['error' => 'The project ' . $name . ' does not exist'], 400);
         }
+        $project = $this->projectRepository->findProjectByName($name);
         foreach ($project->getConsultant() as $consultant) {
             $project->removeConsultant($consultant);
         }

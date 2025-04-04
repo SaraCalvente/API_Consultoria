@@ -9,18 +9,66 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Attributes as OA;
 
 class ConsultantRegisterController extends AbstractController
 {
 
     #[Route('/register/consultant', name: 'consultant_register', methods: ['POST'])]
+    #[OA\Post(
+        path: "/register/consultant",
+        description: "Register a new consultant user.",
+        summary: "Consultant register.",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["email", "password", "name", "surNames", "profile"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", example: "user@example.com"),
+                    new OA\Property(property: "password", type: "string", example: "SecurePassword123"),
+                    new OA\Property(property: "name", type: "string", example: "Ana"),
+                    new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
+                    new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                ],
+                type: "object"
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Consultant registered successfully.",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Consultant registered successfully"),
+                        new OA\Property(property: "id", type: "integer", example: 1),
+                        new OA\Property(property: "user_id", type: "integer", example: 1),
+                        new OA\Property(property: "email", type: "string", example: "user@example.com"),
+                        new OA\Property(property: "name", type: "string", example: "Ana"),
+                        new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
+                        new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                        new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Email and password are required and cannot be empty.",
+            ),
+            new OA\Response(
+                response: 402,
+                description: "User already exists"
+            )
+        ]
+    )]
     public function register(
         Request $request, ConsultantRegisterService $consultantRegisterService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['email']) || !isset($data['password'])) {
-            return new JsonResponse(['error' => 'Email and password are required'], 400);
+        $validationErrors = $this->validateEmailAndPassword($request);
+
+        if ($validationErrors !== null) {
+            return new JsonResponse(['error' => $validationErrors], 400);
         }
 
         return $consultantRegisterService(
@@ -29,6 +77,16 @@ class ConsultantRegisterController extends AbstractController
             $data['name'],
             $data['surnames'],
             $data['profile']);
+    }
+
+    private function validateEmailAndPassword(Request $request): ?string
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['email']) || empty($data['email']) || !isset($data['password']) || empty($data['password'])) {
+            return 'Email and password are required and cannot be empty';
+        }
+        return null;
     }
 
 }

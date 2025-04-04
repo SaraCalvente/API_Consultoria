@@ -12,7 +12,7 @@ interface ProjectRepositoryInterface
     public function addProject(Project $project): void;
     public function findProjectByName(string $name): ?Project;
     public function checkDates(string $startDate, ?string $endDate): bool;
-    public function checkIfProjectExists(Project $project): bool;
+    public function checkIfProjectExists(string $name): bool;
     public function findProjectByClient(Client $client): array;
     public function findAllProjects(): array;
     public function saveProject(): void;

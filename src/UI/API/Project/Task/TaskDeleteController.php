@@ -1,29 +1,28 @@
 <?php
 
-namespace App\UI\API\Project;
+namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Project\ProjectDeleteByNameService;
-use App\Project\Application\Project\ProjectFindByNameService;
+use App\Project\Application\Task\TaskDeleteByNameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
 
-class ProjectDeleteController extends AbstractController
+class TaskDeleteController extends AbstractController
 {
-
-    #[Route('/project/delete', name: 'delete_project', methods: ['DELETE'])]
+    #[Route('/task/delete', name: 'delete_task', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/project/delete",
-        description: "Deletes the authenticated project.",
-        summary: "Project deleted successfully",
+        path: "/task/delete",
+        description: "Deletes the authenticated task.",
+        summary: "Task deleted successfully",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["name"],
+                required: ["name", "projectName"],
                 properties: [
-                    new OA\Property(property: "name", type: "string", example: "This is the name of a project."),
+                    new OA\Property(property: "name", type: "string", example: "This is the name of a task"),
+                    new OA\Property(property: "projectName", type: "string", example: "Project 1"),
                 ],
                 type: "object"
             )
@@ -31,10 +30,10 @@ class ProjectDeleteController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Project deleted successfully",
+                description: "Task deleted successfully",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Project deleted successfully")
+                        new OA\Property(property: "message", type: "string", example: "Task deleted successfully")
                     ]
                 )
             ),
@@ -44,14 +43,13 @@ class ProjectDeleteController extends AbstractController
             ),
         ]
     )]
-    public function deleteProject(Request $request, ProjectDeleteByNameService $projectDeleteByNameService): JsonResponse
+    public function deleteTask(Request $request, TaskDeleteByNameService $taskDeleteByNameService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $projectDeleteByNameService($data['name']);
+            return $taskDeleteByNameService($data['name'], $data['projectName']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }
-
 }

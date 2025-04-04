@@ -38,7 +38,7 @@ class ClientDeleteByEmailService
             return new JsonResponse([
                 'error' => 'Cannot delete client because there are associated projects.',
                 'projects' => $projectDetails
-            ], 400);
+            ], 402);
         }
         return $this->clientRepository->deleteClient($client);
 

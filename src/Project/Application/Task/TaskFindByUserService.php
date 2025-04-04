@@ -13,20 +13,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskFindByUserService
 {
-    private TaskRepositoryInterface $taskRepository;
     private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
 
     public function __construct(
-        TaskRepositoryInterface $taskRepository,
         ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
     )
     {
-        $this->taskRepository = $taskRepository;
         $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function __invoke(User $user): JsonResponse

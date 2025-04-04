@@ -45,11 +45,12 @@ class TaskCreateSevice
         array $consultantsEmails
     ): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
 
-        if(!$this->projectRepository->checkIfProjectExists($project)){
+        if(!$this->projectRepository->checkIfProjectExists($projectName)){
             return new JsonResponse(['error' => 'El proyecto no existe'], 404);
         }
+
+        $project = $this->projectRepository->findProjectByName($projectName);
 
         if($this->taskRepository->checkIfTaskFromProjectExists($name, $project)){
             return new JsonResponse(['error' => 'La tarea ya existe'], 404);
