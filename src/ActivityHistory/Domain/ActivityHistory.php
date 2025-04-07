@@ -2,8 +2,8 @@
 
 namespace App\ActivityHistory\Domain;
 
+use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
 use App\Project\Domain\Project;
-use App\Repository\ActivityHistoryRepository;
 use App\User\Domain\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

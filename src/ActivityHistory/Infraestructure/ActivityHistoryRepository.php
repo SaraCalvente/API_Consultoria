@@ -1,36 +1,29 @@
 <?php
 
-namespace App\Project\Infraestructure;
+namespace App\ActivityHistory\Infraestructure;
 
-
+use App\ActivityHistory\Domain\ActivityHistory;
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\Project;
 use App\Project\Domain\Task;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
-use App\Shared\Domain\Exception\TaskNotFoundException;
-use App\Shared\Domain\Exception\UserNotFoundException;
-use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use function PHPUnit\Framework\throwException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @extends ServiceEntityRepository<Project>
+ * @extends ServiceEntityRepository<ActivityHistory>
  *
- * @method Client|null find($id, $lockMode = null, $lockVersion = null)
- * @method Client|null findOneBy(array $criteria, array $orderBy = null)
- * @method Client[]    findAll()
- * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ActivityHistory|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ActivityHistory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ActivityHistory[]    findAll()
+ * @method ActivityHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
+class ActivityHistoryRepository extends ServiceEntityRepository
 {
-
     private EntityManagerInterface $entityManager;
 
     public function __construct(
