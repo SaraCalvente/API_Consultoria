@@ -47,17 +47,17 @@ class TaskCreateSevice
     {
 
         if(!$this->projectRepository->checkIfProjectExists($projectName)){
-            return new JsonResponse(['error' => 'El proyecto no existe'], 404);
+            return new JsonResponse(['error' => 'Project with name ' . $name . ' was not found'], 404);
         }
 
         $project = $this->projectRepository->findProjectByName($projectName);
 
         if($this->taskRepository->checkIfTaskFromProjectExists($name, $project)){
-            return new JsonResponse(['error' => 'La tarea ya existe'], 404);
+            return new JsonResponse(['error' => 'A task with this name (' . $name . ') in project ' . $projectName . ' already exists'], 403);
         }
 
         if (!$this->taskRepository->checkDates($startDate, $endDate)) {
-            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
+            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
         $task = new Task();

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ClientFindByUserService;
-use App\Client\Application\ClientRegisterService;
+use App\Client\Application\ActivityHistoryFindByUserService;
+use App\Client\Application\ActivityHistoryRegisterService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,7 +61,7 @@ class ClientRegisterController extends AbstractController
             )
         ]
     )]
-    public function register(Request $request, ClientRegisterService $clientRegister ): JsonResponse {
+    public function register(Request $request, ActivityHistoryRegisterService $clientRegister ): JsonResponse {
 
         $data = json_decode($request->getContent(), true);
 

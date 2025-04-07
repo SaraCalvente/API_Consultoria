@@ -6,6 +6,7 @@ use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
 use App\User\Domain\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 interface ProjectRepositoryInterface
 {
@@ -17,6 +18,9 @@ interface ProjectRepositoryInterface
     public function findAllProjects(): array;
     public function saveProject(): void;
     public function removeProject(Project $project): void;
+    public function checkIfClientHasProjects(Client $client): ?JsonResponse;
+    public function checkIfConsultantHasProjects(Consultant $consultant): ?JsonResponse;
+
 
 
     }

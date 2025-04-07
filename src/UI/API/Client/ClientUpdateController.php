@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ClientUpdateByUserService;
+use App\Client\Application\ActivityHistoryUpdateByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,7 +67,7 @@ class ClientUpdateController extends AbstractController
             )
         ]
     )]
-    public function updateClient(Request $request, Security $security, ClientUpdateByUserService $clientUpdateById): JsonResponse
+    public function updateClient(Request $request, Security $security, ActivityHistoryUpdateByUserService $clientUpdateById): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

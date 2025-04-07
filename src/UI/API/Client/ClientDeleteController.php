@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ClientDeleteByUserService;
+use App\Client\Application\ActivityHistoryDeleteByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,7 +41,7 @@ class ClientDeleteController extends AbstractController
             ),
         ]
     )]
-    public function deleteClient (Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
+    public function deleteClient (Security $security, ActivityHistoryDeleteByUserService $clientDeleteById): JsonResponse
     {
         $user = $this->authChecker->getAuthenticated($security);
         return $clientDeleteById($user);

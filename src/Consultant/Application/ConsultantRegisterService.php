@@ -35,9 +35,9 @@ class ConsultantRegisterService
         if ($this->userRepository->checkIfUserExists($email)){
             $user = $this->userRepository->findUserByEmail($email);
             return new JsonResponse([
-                'error' => 'User ' . $user->getEmail() . ' exists as ' . implode(', ', $user->getRoles()),
+                'error' => 'User ' . $user->getEmail() . ' already exists as ' . implode(', ', $user->getRoles()),
 
-            ], 400);
+            ], 403);
         }
 
         $user = new User();
@@ -56,7 +56,7 @@ class ConsultantRegisterService
         $this->consultantRepository->addConsultant($consultant);
 
         return new JsonResponse([
-            'message' => 'Consultor registrado correctamente',
+            'message' => 'Consultant successfully registered',
             'consultant' => ConsultantDTO::fromEntity($consultant)
             ], 201);
     }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Client\Application;
+namespace App\ActivityHistory\Application;
 
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
@@ -12,7 +12,7 @@ use App\User\Domain\ValueObject\EmailValueObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientRegisterService
+class ActivityHistoryRegisterService
 {
     private UserPasswordHasherInterface $passwordHasher;
     private ClientRepositoryInterface $clientRepository;

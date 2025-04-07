@@ -30,17 +30,11 @@ class ClientDeleteByEmailService
     {
         $user = $this->userRepository->findUserByEmail($email);
         $client = $this->clientRepository->findClientByUser($user);
-        $projects = $this->projectRepository->findProjectByClient($client);
-        if (count($projects) > 0) {
-
-            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
-
-            return new JsonResponse([
-                'error' => 'Cannot delete client because there are associated projects.',
-                'projects' => $projectDetails
-            ], 402);
+        $projects = $this->projectRepository->checkIfClientHasProjects($client);
+        if (!$projects) {
+            return $this->clientRepository->deleteClient($client);
         }
-        return $this->clientRepository->deleteClient($client);
+        return $projects;
 
     }
 }

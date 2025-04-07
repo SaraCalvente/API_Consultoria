@@ -44,7 +44,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
     public function checkIfClientExists(User $user): bool
     {
         $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-        if ($client) {
+        if (!$client) {
             return false;
         }
         return true;

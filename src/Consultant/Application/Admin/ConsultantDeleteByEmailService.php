@@ -3,21 +3,26 @@
 namespace App\Consultant\Application\Admin;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantDeleteByEmailService
 {
     private ConsultantRepositoryInterface $consultantRepository;
+    private ProjectRepositoryInterface $projectRepository;
     private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
         ConsultantRepositoryInterface $consultantRepository,
+        ProjectRepositoryInterface $projectRepository,
         UserRepositoryInterface       $userRepository
     )
     {
         $this->consultantRepository = $consultantRepository;
+        $this->projectRepository = $projectRepository;
         $this->userRepository = $userRepository;
     }
 
@@ -25,16 +30,10 @@ class ConsultantDeleteByEmailService
     {
         $user = $this->userRepository->findUserByEmail($email);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
-        $projects = $consultant->getProject()->toArray();
-
-        if (count($projects) > 0) {
-            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
-
-            return new JsonResponse([
-                'error' => 'Cannot delete consultant because there are associated projects.',
-                'projects' => $projectDetails
-            ], 400);
+        $projects = $this->projectRepository->checkIfConsultantHasProjects($consultant);
+        if(!$projects){
+            return $this->consultantRepository->deleteConsultant($consultant);
         }
-        return $this->consultantRepository->deleteConsultant($consultant);
+        return $projects;
     }
 }

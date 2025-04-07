@@ -43,14 +43,14 @@ class ConsultantRepository extends ServiceEntityRepository implements Consultant
     {
         $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
         if (!$consultant) {
-            throw new ConsultantNotFoundException();
+            throw new ConsultantNotFoundException($user->getEmail());
         }
         return $consultant;    }
 
     public function checkIfConsultantExists(User $user): bool
     {
         $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
-        if ($consultant) {
+        if (!$consultant) {
             return false;
         }
         return true;

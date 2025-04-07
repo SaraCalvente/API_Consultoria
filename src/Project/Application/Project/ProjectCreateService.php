@@ -44,12 +44,12 @@ class ProjectCreateService
     ): JsonResponse
     {
         if($this->projectRepository->checkIfProjectExists($name)){
-            return new JsonResponse(['error' => 'Ya existe un proyecto con este nombre'], 404);
+            return new JsonResponse(['error' => 'A project with this name: (' . $name .') already exists'], 403);
         }
 
 
         if (!$this->projectRepository->checkDates($startDate, $endDate)) {
-            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
+            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
         $clientUser = $this->userRepository->findUserByEmail($clientEmail);

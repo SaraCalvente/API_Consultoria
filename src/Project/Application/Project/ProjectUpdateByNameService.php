@@ -48,15 +48,12 @@ class ProjectUpdateByNameService
             $project->setStatus(Status::from($status));
         }
         $startDate = $project->getStartDate()->format('Y-m-d');
-        try {
-            $this->projectRepository->checkDates($startDate, $endDate);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+
+        $this->projectRepository->checkDates($startDate, $endDate);
 
         if ($endDate !== null) {
             if (!$this->projectRepository->checkDates($startDate, $endDate)) {
-                return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
+                return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
             }
             $project->setEndDate(new \DateTime($endDate));
         }

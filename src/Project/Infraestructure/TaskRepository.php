@@ -71,7 +71,7 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
     public function findTaskByConsultant(Consultant $consultant): array
     {
         if (!$consultant) {
-            throw new ConsultantNotFoundException();
+            throw new ConsultantNotFoundException($consultant->getName);
         }
         return $consultant->getTasks()->toArray();
     }

@@ -21,13 +21,13 @@ class ProjectDeleteByNameService
     public function __invoke(string $name): JsonResponse
     {
         if (!$this->projectRepository->checkIfProjectExists($name)) {
-            return new JsonResponse(['error' => 'The project ' . $name . ' does not exist'], 400);
+            return new JsonResponse(['error' => 'The project (' . $name . ') does not exist'], 400);
         }
         $project = $this->projectRepository->findProjectByName($name);
         foreach ($project->getConsultant() as $consultant) {
             $project->removeConsultant($consultant);
         }
         $this->projectRepository->removeProject($project);
-        return new JsonResponse(['message' => 'Project deleted successfully'], 200);
+        return new JsonResponse(['message' => 'Project deleted successfully'], 201);
     }
 }

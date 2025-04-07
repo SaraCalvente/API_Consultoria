@@ -50,6 +50,7 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ProjectFixtures::class,
+            ConsultantFixtures::class,
         ];
     }
 

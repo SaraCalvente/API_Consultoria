@@ -16,6 +16,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
@@ -91,5 +92,35 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
     public function removeProject(Project $project): void{
         $this->entityManager->remove($project);
         $this->entityManager->flush();
+    }
+
+    public function checkIfClientHasProjects(Client $client): ?JsonResponse
+    {
+        $projects = $this->findProjectByClient($client);
+
+        if (count($projects) > 0) {
+            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
+
+            return new JsonResponse([
+                'error' => 'Cannot delete client because there are associated projects.',
+                'projects' => $projectDetails
+            ], 402);
+        }
+        return null;
+    }
+
+    public function checkIfConsultantHasProjects(Consultant $consultant): ?JsonResponse
+    {
+        $projects = $consultant->getProject()->toArray();
+
+        if (count($projects) > 0) {
+            $projectDetails = array_map(fn($p) => ['id' => $p->getId(), 'name' => $p->getName()], $projects);
+
+            return new JsonResponse([
+                'error' => 'Cannot delete consultant because there are associated projects.',
+                'projects' => $projectDetails
+            ], 402);
+        }
+        return null;
     }
 }
