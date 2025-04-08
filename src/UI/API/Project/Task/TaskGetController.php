@@ -14,7 +14,7 @@ class TaskGetController extends AbstractController
 {
     #[Route('/task', name: 'get_task_by_name_and_project', methods: ['GET'])]
     #[OA\Get(
-        path: "/admin/tasks",
+        path: "/task",
         description: "Retrieve task by name and project name for admin.",
         summary: "Get task",
         requestBody: new OA\RequestBody(
@@ -69,5 +69,4 @@ class TaskGetController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }
-
 }

@@ -3,6 +3,7 @@
 namespace App\ActivityHistory\Infraestructure;
 
 use App\ActivityHistory\Domain\ActivityHistory;
+use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
@@ -22,7 +23,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method ActivityHistory[]    findAll()
  * @method ActivityHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ActivityHistoryRepository extends ServiceEntityRepository
+class ActivityHistoryRepository extends ServiceEntityRepository implements ActivityHistoryRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
 
@@ -34,60 +35,42 @@ class ActivityHistoryRepository extends ServiceEntityRepository
         $this->entityManager = $entityManager;
     }
 
-    public function addTask(Task $task): void
-    {
-        $this->entityManager->persist($task);
-        $this->entityManager->flush();
-    }
 
-    public function checkIfTaskFromProjectExists(string $taskName, Project $project): bool{
-        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $taskName, 'project' => $project]);
-        if(!$task) {
+    public function checkIfActivityHistoryFromProjectExists(string $activityHistoryName, Project $project): bool{
+        $activity = $this->entityManager->getRepository(ActivityHistory::class)->findOneBy(['name' => $activityHistoryName, 'project' => $project]);
+        if(!$activity) {
             return false;
         }
         return true;
     }
 
-    public function findTaskFromProject(string $taskName, Project $project): Task
+    public function addActivityHistory(ActivityHistory $activityHistory): void
     {
-        return $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $taskName, 'project' => $project]);
-    }
+        $this->entityManager->persist($activityHistory);
+        $this->entityManager->flush();    }
 
-    public function findAllTasks(): array
+    public function findActivityHistoryFromProject(string $activityHistoryName, Project $project): ActivityHistory
     {
-        return $this->entityManager->getRepository(Task::class)->findAll();
+        return $this->entityManager->getRepository(ActivityHistory::class)->findOneBy(['name' => $activityHistoryName, 'project' => $project]);
     }
 
-
-    public function findTaskByConsultant(Consultant $consultant): array
+    public function findAllActivityHistories(): array
     {
-        if (!$consultant) {
-            throw new ConsultantNotFoundException();
-        }
-        return $consultant->getTasks()->toArray();
+        return $this->entityManager->getRepository(ActivityHistory::class)->findAll();
     }
-    public function checkDates(string $startDate, ?string $endDate): bool
+
+    public function findActivitiesHistoriesByProject(Project $project): array
     {
-        $start = \DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
-        if (!$start) return false;
-        if ($endDate) {
-            $end = \DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
-            return $end && $start <= $end;
-        }
-        return true;
+        return $this->entityManager->getRepository(ActivityHistory::class)->findBy(['project' => $project]);
     }
 
-    public function findTasksByProject(Project $project): array{
-        $tasks = $this->entityManager->getRepository(Task::class)->findBy(['project' => $project]);
-        return $tasks;
-    }
-
-    public function saveTask(): void{
+    public function saveActivityHistory(): void
+    {
         $this->entityManager->flush();
     }
 
-    public function removeTask(Task $task): void{
-        $this->entityManager->remove($task);
-        $this->entityManager->flush();
-    }
+    public function removeActivityHistory(ActivityHistory $activityHistory): void
+    {
+        $this->entityManager->remove($activityHistory);
+        $this->entityManager->flush();    }
 }

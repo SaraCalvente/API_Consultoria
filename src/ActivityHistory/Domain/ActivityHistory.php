@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityHistoryRepository::class)]
+#[ORM\UniqueConstraint(name: "unique_project_name", columns: ["name", "project_id"])]
 class ActivityHistory
 {
     #[ORM\Id]
@@ -18,6 +19,9 @@ class ActivityHistory
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -42,6 +46,18 @@ class ActivityHistory
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }

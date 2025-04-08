@@ -13,8 +13,9 @@ class ActivityHistoryFixtures extends Fixture implements DependentFixtureInterfa
 {
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getActivityHistoryData() as [$description, $userEmail, $projectId]) {
+        foreach ($this->getActivityHistoryData() as [$name, $description, $userEmail, $projectId]) {
             $activityHistory = new ActivityHistory();
+            $activityHistory->setName($name);
             $activityHistory->setDate(new \DateTimeImmutable());
             $activityHistory->setDescription($description);
 
@@ -40,10 +41,10 @@ class ActivityHistoryFixtures extends Fixture implements DependentFixtureInterfa
     protected function getActivityHistoryData(): array
     {
         return [
-            ['Project created', 'user@example.com', 1],
-            ['Requirements phase started', 'admin@example.com', 1],
-            ['Deployment completed', 'sara@calvente.es', 2],
-            ['Design review completed', 'user@example.com', 3],
+            ['Act 1','Project created', 'user@example.com', 1],
+            ['Act 2','Requirements phase started', 'admin@example.com', 1],
+            ['Act 3','Deployment completed', 'sara@calvente.es', 2],
+            ['Act 4','Design review completed', 'sara@calvente.es', 3],
         ];
     }
 }
