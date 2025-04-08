@@ -3,28 +3,30 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Task\TaskFindByUserService;
-use App\Shared\Domain\Auth\AuthChecker;
+use App\Project\Application\Task\TaskFindByConsultantEmailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 use OpenApi\Attributes as OA;
 
-class TasksGetByUserController extends AbstractController
+class TasksGetByConsultantEmailController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
-    {
-        $this->authChecker = $authChecker;
-    }
-
-    #[Route('/user/tasks', name: 'get_user_tasks', methods: ['GET'])]
+    #[Route('/admin/consultant/tasks', name: 'get_all_consultant_tasks', methods: ['GET'])]
     #[OA\Get(
-        path: "/user/tasks",
-        description: "Retrieve all tasks for an authenticated user.",
-        summary: "Get all user tasks",
+        path: "/admin/consultant/tasks",
+        description: "Retrieve all tasks for a consultant.",
+        summary: "Get all consultant tasks",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["consultantEmail"],
+                properties: [
+                    new OA\Property(property: "email", type: "string", example: "consultant@email.com"),
+                    ],
+                type: "object"
+            )
+        ),
         responses: [
             new OA\Response(
                 response: 200,
@@ -61,14 +63,10 @@ class TasksGetByUserController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getTasksByUser(Security $security, TaskFindByUserService $taskFindByUserService): JsonResponse
+    public function getAllConsultantTasks(Request $request, TaskFindByConsultantEmailService $taskFindByConsultant): JsonResponse
     {
-        try {
-            $user = $this->authChecker->getAuthenticated($security);
-            return $taskFindByUserService($user);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
-        }
+        $data = json_decode($request->getContent(), true);
+        return $taskFindByConsultant($data['email']);
     }
 
 }

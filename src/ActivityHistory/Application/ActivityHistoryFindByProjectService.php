@@ -1,35 +1,37 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Project\Application\Task;
+namespace App\ActivityHistory\Application;
 
+use App\ActivityHistory\Domain\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskFindByProjectService
+class ActivityHistoryFindByProjectService
 {
-    private TaskRepositoryInterface $taskRepository;
+    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
     private ProjectRepositoryInterface $projectRepository;
 
 
     public function __construct(
-        TaskRepositoryInterface $taskRepository,
+        ActivityHistoryRepositoryInterface $activityHistoryRepository,
         ProjectRepositoryInterface $projectRepository
     )
     {
-        $this->taskRepository = $taskRepository;
+        $this->activityHistoryRepository = $activityHistoryRepository;
         $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(string $projectName): JsonResponse
     {
         $project = $this->projectRepository->findProjectByName($projectName);
-        $tasks = $this->taskRepository->findTasksByProject($project);
+        $activities = $this->activityHistoryRepository->findActivitiesHistoriesByProject($project);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',
-            'tasks' => array_map(fn($task) => TaskDTO::fromEntity($task), $tasks),
+            'tasks' => array_map(fn($activity) => ActivityHistoryDTO::fromEntity($activity), $activities),
         ], 201);
     }
 }

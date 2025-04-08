@@ -3,31 +3,25 @@ declare(strict_types=1);
 
 namespace App\UI\API\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryCreateService;
-use App\Project\Application\Task\TaskCreateSevice;
+use App\ActivityHistory\Application\ActivityHistoryFindByProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
-
-class ActivityHistoryCreateController extends AbstractController
+class ActivityHistoryGetByProjectController extends AbstractController
 {
-    #[Route('/activity/create', name: 'activity_create', methods: ['POST'])]
-    #[OA\Post(
-        path: "/activity/create",
-        description: "Create a new activity history.",
-        summary: "Activity history creation.",
+    #[Route('/activity/project/activities', name: 'get_all_project_activities', methods: ['GET'])]
+    #[OA\Get(
+        path: "/project/activities",
+        description: "Retrieve all activities for a project.",
+        summary: "Get all project activities",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["projectName", "name", "description", "date", "consultantEmail"],
+                required: ["projectName"],
                 properties: [
                     new OA\Property(property: "projectName", type: "string", example: "Project 1"),
-                    new OA\Property(property: "name", type: "string", example: "This is the name of a task"),
-                    new OA\Property(property: "description", type: "string", example: "This is a task description."),
-                    new OA\Property(property: "date", type: "string", example: "2025-03-20"),
-                    new OA\Property(property: "userEmail", type: "string", example: "consultant@example.com"),
                 ],
                 type: "object"
             )
@@ -57,29 +51,9 @@ class ActivityHistoryCreateController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function createActivityHistory(
-        Request $request, ActivityHistoryCreateService $activityHistoryCreateService
-    ): JsonResponse {
-        try {
-            $data = json_decode($request->getContent(), true);
-
-            $requiredFields = ['projectName', 'name', 'description', 'date', 'consultantEmail'];
-            foreach ($requiredFields as $field) {
-                if (!isset($data[$field])) {
-                    return new JsonResponse(['error' => "Missing required field: $field"], 400);
-                }
-            }
-
-            return $activityHistoryCreateService(
-                $data['name'], $data['description'], $data['date'],
-                $data['projectName'], $data['consultantEmail']);
-
-        } catch (\Exception $e){
-            return new JsonResponse([
-                'error' => 'An unexpected error occurred',
-                'details' => $e->getMessage()
-            ], 500);
-        }
+    public function getAllProjectTasks(Request $request, ActivityHistoryFindByProjectService $taskFindByProjectService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        return $taskFindByProjectService($data['projectName']);
     }
-
 }

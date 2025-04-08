@@ -4,16 +4,14 @@ namespace App\ActivityHistory\Infraestructure;
 
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
-use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
-use App\Project\Domain\Task;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
-use App\Shared\Domain\Exception\ProjectNotFoundException;
+use App\Shared\Domain\Exception\UserNotFoundException;
+use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @extends ServiceEntityRepository<ActivityHistory>
@@ -31,7 +29,7 @@ class ActivityHistoryRepository extends ServiceEntityRepository implements Activ
         EntityManagerInterface $entityManager,
         ManagerRegistry        $registry, )
     {
-        parent::__construct($registry, Task::class);
+        parent::__construct($registry, ActivityHistory::class);
         $this->entityManager = $entityManager;
     }
 
@@ -72,5 +70,15 @@ class ActivityHistoryRepository extends ServiceEntityRepository implements Activ
     public function removeActivityHistory(ActivityHistory $activityHistory): void
     {
         $this->entityManager->remove($activityHistory);
-        $this->entityManager->flush();    }
+        $this->entityManager->flush();
+    }
+
+    public function findActivitiesByConsultant(User $user): array
+    {
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+        return $user->getActivityHistories()->toArray();
+    }
+
 }

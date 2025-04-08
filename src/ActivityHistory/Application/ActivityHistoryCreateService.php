@@ -72,6 +72,8 @@ class ActivityHistoryCreateService
         $activityHistory->setUser($user);
         $activityHistory->setDescription($description);
         $activityHistory->setDate(new \DateTime($date));
+        $project->addActivityHistory($activityHistory);
+        $user->addActivityHistory($activityHistory);
 
         $this->activityHistoryRepository->addActivityHistory($activityHistory);
 

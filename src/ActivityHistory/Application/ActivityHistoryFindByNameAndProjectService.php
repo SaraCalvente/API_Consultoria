@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Application;
 
+use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
@@ -15,6 +16,7 @@ use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
 use App\Shared\Domain\Exception\TaskNotFoundException;
 use App\User\Domain\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryFindByNameAndProjectService
@@ -38,14 +40,16 @@ class ActivityHistoryFindByNameAndProjectService
         if (!$project) {
             throw new ProjectNotFoundException();
         }
+
         if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($name, $project)) {
             throw new ActivityHistoryNotFoundException();
         }
+
         $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($name, $project);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',
-            'task' => ActivityHistoryDTO::fromEntity($activity),
-        ], 200);
+            'task' => ActivityHistoryDTO::fromEntity($activity)
+        ], 201);
     }
 
 }

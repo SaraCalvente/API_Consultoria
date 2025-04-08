@@ -39,7 +39,7 @@ class TaskFindByNameAndProjectService
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',
             'task' => TaskDTO::fromEntity($task),
-        ], 200);
+        ], 201);
     }
 
 }
