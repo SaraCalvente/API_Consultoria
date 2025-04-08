@@ -21,7 +21,7 @@ class ActivityHistoryGetByConsultantController extends AbstractController
         $this->authChecker = $authChecker;
     }
 
-    #[Route('/consultant/activities', name: 'get_consultant_email_activities', methods: ['GET'])]
+    #[Route('/activity/consultant/activities', name: 'get_consultant_email_activities', methods: ['GET'])]
     #[OA\Get(
         path: "/consultant/activities",
         description: "Retrieve all activities for an authenticated user.",
