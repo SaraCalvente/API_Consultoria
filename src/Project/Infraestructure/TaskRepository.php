@@ -4,21 +4,14 @@ namespace App\Project\Infraestructure;
 
 
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Project\Domain\Model\ProjectRepositoryInterface;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\Project;
 use App\Project\Domain\Task;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
-use App\Shared\Domain\Exception\ProjectNotFoundException;
-use App\Shared\Domain\Exception\TaskNotFoundException;
-use App\Shared\Domain\Exception\UserNotFoundException;
-use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use function PHPUnit\Framework\throwException;
 
 /**
  * @extends ServiceEntityRepository<Project>

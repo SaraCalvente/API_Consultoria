@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Consultant\Application;
+namespace App\Consultant\Application\Consultant;
 
-use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\ConsultantDTO;
+use App\Consultant\Domain\Ability\Ability;
+use App\Consultant\Domain\Ability\Level;
+use App\Consultant\Domain\Consultant\Consultant;
+use App\Consultant\Domain\Consultant\ConsultantDTO;
+use App\Consultant\Domain\Consultant\Profile;
+use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Consultant\Domain\Profile;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
@@ -17,20 +20,24 @@ class ConsultantRegisterService
     private UserPasswordHasherInterface $passwordHasher;
     private ConsultantRepositoryInterface $consultantRepository;
     private UserRepositoryInterface $userRepository;
+    private AbilityRepositoryInterface $abilityRepository;
+
 
 
     public function __construct(
         UserPasswordHasherInterface   $passwordHasher,
         ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface       $userRepository
+        UserRepositoryInterface       $userRepository,
+        AbilityRepositoryInterface $abilityRepository
     )
     {
         $this->passwordHasher = $passwordHasher;
         $this->consultantRepository = $consultantRepository;
         $this->userRepository = $userRepository;
+        $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke(string $email, string $password, string $name, string $surnames, string $profile): JsonResponse
+    public function __invoke(string $email, string $password, string $name, string $surnames, string $profile, ?array $abilities): JsonResponse
     {
         if ($this->userRepository->checkIfUserExists($email)){
             $user = $this->userRepository->findUserByEmail($email);
@@ -53,6 +60,17 @@ class ConsultantRegisterService
         $consultant->setSurnames($surnames);
         $consultant->setProfile(Profile::from($profile));
         $consultant->setUser($user);
+        if ($abilities !== null) {
+            foreach ($abilities as $ability) {
+                if($this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level'])){
+                    $ability = new Ability();
+                    $ability->setName($ability['abilityName']);
+                    $ability->setLevel(Level::from($ability['level']));
+                    $consultant->addAbility($ability);
+                }
+            }
+        }
+
         $this->consultantRepository->addConsultant($consultant);
 
         return new JsonResponse([

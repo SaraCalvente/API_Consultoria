@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\ConsultantUpdateByUserService;
+use App\Consultant\Application\Consultant\ConsultantUpdateByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use OpenApi\Attributes as OA;
 
 class ConsultantUpdateController extends AbstractController
 {
@@ -37,6 +37,8 @@ class ConsultantUpdateController extends AbstractController
                 properties: [
                     new OA\Property(property: "email", type: "string", example: "user@example.com"),
                     new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                    new Oa\Property(property: "abilityName", type: "string", example: "Habilidad 1"),
+                    new Oa\Property(property: "level", type: "string", example: "Medio"),
                 ]
             )
         ),
@@ -53,6 +55,8 @@ class ConsultantUpdateController extends AbstractController
                         new OA\Property(property: "name", type: "string", example: "Ana"),
                         new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
                         new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                        new Oa\Property(property: "abilityName", type: "string", example: "Habilidad 1"),
+                        new Oa\Property(property: "level", type: "string", example: "Medio"),
                         new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
                     ]
                 )
@@ -74,7 +78,9 @@ class ConsultantUpdateController extends AbstractController
             $data = json_decode($request->getContent(), true);
             return $consultantUpdateById(
                 $user,
-                $data['profile'] ?? null
+                $data['profile'] ?? null,
+                $data['addAbilities'] ?? null,
+                $data['removeAbilities'] ?? null,
             );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);

@@ -47,7 +47,7 @@ class TaskCreateSevice
     {
 
         if(!$this->projectRepository->checkIfProjectExists($projectName)){
-            return new JsonResponse(['error' => 'Project with name ' . $name . ' was not found'], 404);
+            return new JsonResponse(['error' => 'Project with name ' . $projectName . ' was not found'], 404);
         }
 
         $project = $this->projectRepository->findProjectByName($projectName);

@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Consultant\Application;
+namespace App\Consultant\Application\Consultant;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

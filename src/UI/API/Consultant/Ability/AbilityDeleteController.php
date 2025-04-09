@@ -1,17 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace App\UI\API\Consultant;
+namespace App\UI\API\Consultant\Ability;
 
+use App\Consultant\Application\Ability\AbilityDeleteService;
 use App\Consultant\Application\Consultant\ConsultantDeleteByIdService;
 use App\Shared\Domain\Auth\AuthChecker;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
-class ConsultantDeleteController extends AbstractController
+class AbilityDeleteController extends AbstractController
 {
     private AuthChecker $authChecker;
 
@@ -20,18 +22,18 @@ class ConsultantDeleteController extends AbstractController
         $this->authChecker = $authChecker;
     }
 
-    #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]
+    #[Route('/ability/delete', name: 'delete_ability', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/consultant/delete",
-        description: "Deletes the authenticated consultant.",
-        summary: "Consultant deleted successfully",
+        path: "/ability/delete",
+        description: "Deletes the authenticated ability.",
+        summary: "Ability deleted successfully",
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Consultant deleted successfully",
+                description: "Ability deleted successfully",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Consultant deleted successfully")
+                        new OA\Property(property: "message", type: "string", example: "Ability deleted successfully")
                     ]
                 )
             ),
@@ -41,13 +43,16 @@ class ConsultantDeleteController extends AbstractController
             ),
         ]
     )]
-    public function deleteConsultant(Security $security, ConsultantDeleteByIdService $consultantDeleteByIdService): JsonResponse
+    public function deleteConsultant(Request $request, AbilityDeleteService $abilityDeleteService): JsonResponse
     {
         try {
-            $user = $this->authChecker->getAuthenticated($security);
-            return $consultantDeleteByIdService($user);
+            $data = json_decode($request->getContent(), true);
+            return $abilityDeleteService(
+                $data['name'],
+                $data['level']
+            );
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => $e->getMessage()], 401);
         }
     }
 

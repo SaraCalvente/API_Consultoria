@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Consultant\Domain;
+namespace App\Consultant\Domain\Consultant;
 
 enum Profile: string
 {

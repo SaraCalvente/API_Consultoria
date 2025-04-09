@@ -3,10 +3,8 @@
 namespace App\Consultant\Infraestructure;
 
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\ConsultantDTO;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Consultant\Domain\Profile;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -56,17 +54,21 @@ class ConsultantRepository extends ServiceEntityRepository implements Consultant
         return true;
     }
 
-    public function updateConsultant(User $user, ?string $profile): JsonResponse
+   /* public function updateConsultant(User $user, ?string $profile, ?Ability $ability): JsonResponse
     {
         $consultant = $this->findConsultantByUser($user);
 
         if ($profile !== null) {
             $consultant->setProfile(Profile::from($profile));
         }
+        if ($ability !== null) {
+            $consultant->addAbility($ability);
+        }
+
         $this->saveConsultant();
 
         return new JsonResponse(ConsultantDTO::fromEntity($consultant));
-    }
+    }*/
 
     public function deleteConsultant(Consultant $consultant): JsonResponse
     {

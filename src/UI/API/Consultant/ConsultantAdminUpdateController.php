@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\Admin\ConsultantUpdateByEmailService;
-use App\Shared\Domain\Auth\AuthChecker;
+use App\Consultant\Application\Consultant\Admin\ConsultantUpdateByEmailService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 class ConsultantAdminUpdateController extends AbstractController
 {
@@ -55,13 +54,20 @@ class ConsultantAdminUpdateController extends AbstractController
             )
         ]
     )]
+
     public function adminUpdateConsultant(Request $request, ConsultantUpdateByEmailService $consultantUpdateByEmail): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        return $consultantUpdateByEmail(
-            $data['email'] ?? null,
-            $data['profile'] ?? null
-        );
+        try {
+            $data = json_decode($request->getContent(), true);
+            return $consultantUpdateByEmail(
+                $data['email'] ?? null,
+                $data['profile'] ?? null,
+                $data['addAbilities'] ?? null,
+                $data['removeAbilities'] ?? null,
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 401);
+        }
     }
 
 }

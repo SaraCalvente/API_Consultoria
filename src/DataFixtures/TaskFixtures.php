@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Consultant\Domain\Consultant;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Project\Domain\Project;
 use App\Project\Domain\Status;
 use App\Project\Domain\Task;

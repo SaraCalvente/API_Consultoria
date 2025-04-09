@@ -1,12 +1,12 @@
 <?php
+namespace App\Consultant\Application\Consultant;
 
-namespace App\Consultant\Application;
-
+use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantUpdateByUserService
+class ConsultantFindByUserService
 {
     private ConsultantRepositoryInterface $consultantRepository;
 
@@ -18,8 +18,9 @@ class ConsultantUpdateByUserService
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function __invoke( User $user, ?string $profile = null
-    ): JsonResponse {
-        return $this->consultantRepository->updateConsultant($user, $profile);
+    public function __invoke(User $user): JsonResponse
+    {
+        $consultant = $this->consultantRepository->findConsultantByUser($user);
+        return new JsonResponse(ConsultantDTO::fromEntity($consultant));
     }
 }

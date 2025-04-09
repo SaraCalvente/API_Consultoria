@@ -4,7 +4,7 @@ namespace App\Project\Domain;
 
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Project\Infraestructure\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

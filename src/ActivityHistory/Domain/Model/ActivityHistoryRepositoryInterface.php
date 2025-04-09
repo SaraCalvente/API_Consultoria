@@ -3,10 +3,7 @@
 namespace App\ActivityHistory\Domain\Model;
 
 use App\ActivityHistory\Domain\ActivityHistory;
-use App\ActivityHistory\Domain\ActivityHistoryDTO;
-use App\Consultant\Domain\Consultant;
 use App\Project\Domain\Project;
-use App\Project\Domain\Task;
 use App\User\Domain\User;
 
 interface ActivityHistoryRepositoryInterface

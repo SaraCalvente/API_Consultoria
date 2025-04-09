@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Consultant\Application\Admin;
+namespace App\Consultant\Application\Consultant\Admin;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
-use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantDeleteByEmailService

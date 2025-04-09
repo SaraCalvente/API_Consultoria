@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\ConsultantRegisterService;
-use App\Shared\Domain\Auth\AuthChecker;
+use App\Consultant\Application\Consultant\ConsultantRegisterService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 class ConsultantRegisterController extends AbstractController
 {
@@ -29,6 +28,8 @@ class ConsultantRegisterController extends AbstractController
                     new OA\Property(property: "name", type: "string", example: "Ana"),
                     new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
                     new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                    new OA\Property(property: "abilityName", type: "string", example: "Habilidad 1"),
+                    new OA\Property(property: "level", type: "string", example: "Alto"),
                 ],
                 type: "object"
             )
@@ -46,6 +47,8 @@ class ConsultantRegisterController extends AbstractController
                         new OA\Property(property: "name", type: "string", example: "Ana"),
                         new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
                         new OA\Property(property: "profile", type: "string", example: "Desarrollador"),
+                        new OA\Property(property: "abilityName", type: "string", example: "Habilidad 1"),
+                        new OA\Property(property: "level", type: "string", example: "Alto"),
                         new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
                     ]
                 )
@@ -76,7 +79,8 @@ class ConsultantRegisterController extends AbstractController
             $data['password'],
             $data['name'],
             $data['surnames'],
-            $data['profile']);
+            $data['profile'],
+            $data['addAbilities']);
     }
 
     private function validateEmailAndPassword(Request $request): ?string

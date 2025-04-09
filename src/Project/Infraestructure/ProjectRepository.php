@@ -3,7 +3,7 @@
 namespace App\Project\Infraestructure;
 
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project;
 use App\Shared\Domain\Exception\ProjectNotFoundException;

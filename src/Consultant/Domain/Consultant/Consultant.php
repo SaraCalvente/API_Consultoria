@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Consultant\Domain;
+namespace App\Consultant\Domain\Consultant;
 
+use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Infraestructure\ConsultantRepository;
 use App\Project\Domain\Project;
 use App\Project\Domain\Task;
@@ -38,7 +39,7 @@ class  Consultant
     #[ORM\JoinTable(name: 'task_consultant')]
     private Collection $tasks;
 
-    #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'consultant')]
+    #[ORM\ManyToMany(targetEntity: Ability::class, mappedBy: 'consultant', cascade: ['persist', 'remove'])]
     private Collection $abilities;
 
 

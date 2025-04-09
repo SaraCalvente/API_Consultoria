@@ -3,9 +3,8 @@
 namespace App\Project\Domain\Model;
 
 use App\Client\Domain\Client;
-use App\Consultant\Domain\Consultant;
+use App\Consultant\Domain\Consultant\Consultant;
 use App\Project\Domain\Project;
-use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 interface ProjectRepositoryInterface

@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\Admin\ConsultantDeleteByEmailService;
+use App\Consultant\Application\Consultant\Admin\ConsultantDeleteByEmailService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 class ConsultantAdminDeleteController extends AbstractController
 {

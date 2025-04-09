@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Consultant\Application\Admin;
+namespace App\Consultant\Application\Consultant\Admin;
 
-use App\Consultant\Domain\ConsultantDTO;
+use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

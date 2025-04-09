@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant;
 
-use App\Consultant\Application\ConsultantFindByUserService;
+use App\Consultant\Application\Consultant\ConsultantFindByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use OpenApi\Attributes as OA;
 
 class ConsultantGetController extends AbstractController
 {

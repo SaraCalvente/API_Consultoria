@@ -2,9 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Consultant\Domain\Ability;
-use App\Consultant\Domain\Consultant;
-use App\Consultant\Domain\Profile;
+use App\Consultant\Domain\Consultant\Consultant;
+use App\Consultant\Domain\Consultant\Profile;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\Bundle\FixturesBundle\Fixture;

@@ -2,7 +2,8 @@
 
 namespace App\Consultant\Domain;
 
-use App\Repository\AvailabilityRepository;
+use App\Consultant\Domain\Consultant\Consultant;
+use App\Consultant\Infraestructure\AvailabilityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 

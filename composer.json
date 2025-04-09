@@ -73,7 +73,8 @@
         "symfony/var-dumper": "6.4.*",
         "symfony/var-exporter": "6.4.*",
         "symfony/yaml": "6.4.*",
-        "thecodingmachine/safe": "2.1"
+        "thecodingmachine/safe": "2.1",
+      "ext-http": "*"
     },
     "config": {
         "preferred-install": {
