@@ -3,9 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Consultant\Domain\Consultant\Consultant;
-use App\Project\Domain\Project;
+use App\Project\Domain\Project\Project;
 use App\Project\Domain\Status;
-use App\Project\Domain\Task;
+use App\Project\Domain\Task\Task;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

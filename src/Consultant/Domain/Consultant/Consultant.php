@@ -4,8 +4,8 @@ namespace App\Consultant\Domain\Consultant;
 
 use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Infraestructure\ConsultantRepository;
-use App\Project\Domain\Project;
-use App\Project\Domain\Task;
+use App\Project\Domain\Project\Project;
+use App\Project\Domain\Task\Task;
 use App\User\Domain\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

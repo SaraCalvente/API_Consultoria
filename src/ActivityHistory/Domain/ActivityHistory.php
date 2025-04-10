@@ -3,7 +3,7 @@
 namespace App\ActivityHistory\Domain;
 
 use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
-use App\Project\Domain\Project;
+use App\Project\Domain\Project\Project;
 use App\User\Domain\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

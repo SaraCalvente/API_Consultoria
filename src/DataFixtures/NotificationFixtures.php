@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\User\Domain\Notification;
 use App\User\Domain\User;
+use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -12,10 +13,12 @@ class NotificationFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getNotificationsData() as [$message, $users]) {
+        foreach ($this->getNotificationsData() as [$creatorEmail, $message, $users]) {
             $notification = new Notification();
             $notification->setMessage($message);
             $notification->setDate(new \DateTime());
+            $user = $manager->getRepository(User::class)->findOneBy(['email' => new EmailValueObject($creatorEmail)]);
+            $notification->setCreatorUser($user);
 
             foreach ($users as $userId) {
                 $user = $manager->getRepository(User::class)->findOneBy(['id' => $userId]);
@@ -41,9 +44,9 @@ class NotificationFixtures extends Fixture implements DependentFixtureInterface
     protected function getNotificationsData(): array
     {
         return [
-            ['New update available', [1, 2]],
-            ['Reminder: Project deadline approaching', [2, 3]],
-            ['Your task has been approved', [1]],
+            ['user@example.com','New update available', [1, 2]],
+            ['ana@garcia.com', 'Reminder: Project deadline approaching', [2, 3]],
+            ['user@example.com','Your task has been approved', [1]],
         ];
     }
 }

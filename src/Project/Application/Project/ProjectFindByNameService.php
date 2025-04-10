@@ -3,7 +3,7 @@
 namespace App\Project\Application\Project;
 
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\ProjectDTO;
+use App\Project\Domain\Project\ProjectDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectFindByNameService

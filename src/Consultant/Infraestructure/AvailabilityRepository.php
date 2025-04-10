@@ -55,8 +55,12 @@ class AvailabilityRepository extends ServiceEntityRepository implements Availabi
         return true;
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function findAvailabilityByStartDateAndConsultant(Consultant $consultant, string $startDate): ?Availability
     {
+        $startDate = new \DateTime($startDate);
         return $this->entityManager->getRepository(Availability::class)->findOneBy(['consultant' => $consultant, 'start_date' => $startDate]);
     }
 
@@ -72,8 +76,10 @@ class AvailabilityRepository extends ServiceEntityRepository implements Availabi
             $availability->setAvailable($available);
         }
         $this->saveAvailability();
-
-        return new JsonResponse(AvailabilityDTO::fromEntity($availability));
+        return new JsonResponse([
+            'message' => 'Availability successfully updated.',
+            'ability' => AvailabilityDTO::fromEntity($availability)
+        ], 201);
     }
 
     public function deleteAvailability(Availability $availability): JsonResponse
@@ -97,6 +103,17 @@ class AvailabilityRepository extends ServiceEntityRepository implements Availabi
     {
         $this->entityManager->remove($availability);
         $this->entityManager->flush();
+    }
+
+    public function checkDates(string $startDate, string $endDate): bool
+    {
+        $start = \DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
+        if (!$start) return false;
+        if ($endDate) {
+            $end = \DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
+            return $end && $start <= $end;
+        }
+        return true;
     }
 
 }

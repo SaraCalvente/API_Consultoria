@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant\Consultant;
-use App\Project\Domain\Project;
+use App\Project\Domain\Project\Project;
 use App\Project\Domain\Status;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

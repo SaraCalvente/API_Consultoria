@@ -3,7 +3,6 @@
 namespace App\Project\Application\Project;
 
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectDeleteByNameService

@@ -6,34 +6,57 @@ namespace App\Consultant\Application\Availability;
 use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Domain\Ability\AbilityDTO;
 use App\Consultant\Domain\Ability\Level;
+use App\Consultant\Domain\Availability\Availability;
+use App\Consultant\Domain\Availability\AvailabilityDTO;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
+use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
+use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityCreateService
 {
-    private AbilityRepositoryInterface $abilityRepository;
+    private AvailabilityRepositoryInterface $availabilityRepository;
+    private ConsultantRepositoryInterface $consultantRepository;
+    private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
-        AbilityRepositoryInterface $abilityRepository
+        AvailabilityRepositoryInterface $availabilityRepository,
+        ConsultantRepositoryInterface $consultantRepository,
+        UserRepositoryInterface $userRepository
     )
     {
-        $this->abilityRepository = $abilityRepository;
+        $this->availabilityRepository = $availabilityRepository;
+        $this->consultantRepository = $consultantRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function __invoke(string $name, string $level): JsonResponse
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function __invoke(string $email, string $startDate, string $endDate, bool $available): JsonResponse
     {
-        if ($this->abilityRepository->checkIfAbilityExists($name, $level)) {
-            return new JsonResponse(['error' => 'An ability with the name ' . $name . ' already exists.' ], 403);
+        $user = $this->userRepository->findUserByEmail($email);
+        $consultant = $this->consultantRepository->findConsultantByUser($user);
+        if ($this->availabilityRepository->checkIfAvailabilityExists($consultant, $startDate)) {
+            return new JsonResponse(['error' => 'An availability of ' . $email . ' with a start date ' . $startDate . ' already exists.' ], 403);
         }
-        $ability = new Ability();
-        $ability->setName($name);
-        $ability->setLevel(Level::from($level));
-        $this->abilityRepository->addAbility($ability);
+        $availability = new Availability();
+        $availability->setAvailable($available);
+        $availability->setConsultant($consultant);
+        if(!$this->availabilityRepository-> checkDates($startDate, $endDate)){
+            return new JsonResponse([
+                'error' => 'Start date (' . $startDate . ') is grater than end date (' . $endDate . ') or have the wrong format (Y-m-d H:i:s)'
+            ], 403);
+        }
+        $availability->setStartDate(new \DateTime ($startDate));
+        $availability->setEndDate(new \DateTime($endDate));
+        $this->availabilityRepository->addAvailability($availability);
 
         return new JsonResponse([
             'message' => 'Consultant successfully registered',
-            'ability' => AbilityDTO::fromEntity($ability)
+            'ability' => AvailabilityDTO::fromEntity($availability)
         ], 201);
     }
 }

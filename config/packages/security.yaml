@@ -48,7 +48,8 @@ security:
         - { path: ^/api/consultant, roles: [ROLE_CONSULTANT] }
         - { path: ^/api/activity, roles: [ROLE_CONSULTANT, ROLE_ADMIN]}
         - { path: ^/api/ability, roles: ROLE_ADMIN}
-        - { path: ^/api/abilities, roles: ROLE_ADMIN, ROLE_CONSULTANT}
+        - { path: ^/api/availability, roles: [ROLE_ADMIN, ROLE_CONSULTANT]}
+        - { path: ^/api/abilities, roles: [ROLE_ADMIN, ROLE_CONSULTANT]}
         - { path: ^/api/user/projects, roles: [ROLE_CLIENT, ROLE_CONSULTANT, ROLE_ADMIN]}
         -
             path: ^/%supported_locales_path%/api/login_nelmio

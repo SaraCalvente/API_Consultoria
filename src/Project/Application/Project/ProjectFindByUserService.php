@@ -5,7 +5,7 @@ namespace App\Project\Application\Project;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\ProjectDTO;
+use App\Project\Domain\Project\ProjectDTO;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

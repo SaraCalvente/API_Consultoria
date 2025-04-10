@@ -6,7 +6,6 @@ namespace App\ActivityHistory\Application;
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\Project\Domain\TaskDTO;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

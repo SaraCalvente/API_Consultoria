@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AvailabilityRepository::class)]
-#[ORM\UniqueConstraint(name: "unique_availability_date", columns: ["start_date", "consultant"])]
+#[ORM\UniqueConstraint(name: "unique_availability_date", columns: ["start_date", "consultant_id"])]
 
 class Availability
 {
@@ -20,10 +20,10 @@ class Availability
     #[ORM\Column]
     private ?bool $available = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $start_date = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $end_date = null;
 
     #[ORM\ManyToOne]

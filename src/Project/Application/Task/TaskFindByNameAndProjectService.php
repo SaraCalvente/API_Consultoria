@@ -5,8 +5,7 @@ namespace App\Project\Application\Task;
 
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\Project;
-use App\Project\Domain\TaskDTO;
+use App\Project\Domain\Task\TaskDTO;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
 use App\Shared\Domain\Exception\TaskNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;

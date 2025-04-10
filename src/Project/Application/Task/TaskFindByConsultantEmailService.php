@@ -5,10 +5,7 @@ namespace App\Project\Application\Task;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\TaskDTO;
-use App\Shared\Domain\Exception\ConsultantNotFoundException;
-use App\Shared\Domain\Exception\ProjectNotFoundException;
-use App\Shared\Domain\Exception\TaskNotFoundException;
+use App\Project\Domain\Task\TaskDTO;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

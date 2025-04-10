@@ -6,8 +6,6 @@ namespace App\ActivityHistory\Application;
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryFindByProjectService

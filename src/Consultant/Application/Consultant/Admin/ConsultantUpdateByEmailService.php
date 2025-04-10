@@ -53,7 +53,7 @@ class ConsultantUpdateByEmailService
     private function updateConsultantAbilities(Consultant $consultant, array $abilities, bool $add): void
     {
         foreach ($abilities as $ability) {
-            $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['name'], $ability['level']);
+            $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
 
             if ($add) {
                 $consultant->addAbility($abilityFind);

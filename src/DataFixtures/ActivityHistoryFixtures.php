@@ -3,7 +3,7 @@
 namespace App\DataFixtures;
 
 use App\ActivityHistory\Domain\ActivityHistory;
-use App\Project\Domain\Project;
+use App\Project\Domain\Project\Project;
 use App\User\Domain\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

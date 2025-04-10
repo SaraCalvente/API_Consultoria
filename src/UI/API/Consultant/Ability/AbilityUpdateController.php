@@ -16,13 +16,6 @@ use Symfony\Component\Security\Core\Security;
 class AbilityUpdateController extends AbstractController
 {
 
-    private AuthChecker $authChecker;
-
-    public function __construct( AuthChecker $authChecker)
-    {
-        $this->authChecker = $authChecker;
-    }
-
     /**
      * @throws \Exception
      */

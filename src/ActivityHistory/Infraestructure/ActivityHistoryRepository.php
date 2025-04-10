@@ -4,7 +4,7 @@ namespace App\ActivityHistory\Infraestructure;
 
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
-use App\Project\Domain\Project;
+use App\Project\Domain\Project\Project;
 use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

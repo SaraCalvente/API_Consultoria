@@ -3,20 +3,11 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Application;
 
-use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
-use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
-use App\Client\Domain\ClientDTO;
-use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\TaskDTO;
 use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
-use App\Shared\Domain\Exception\TaskNotFoundException;
-use App\User\Domain\User;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryFindByNameAndProjectService

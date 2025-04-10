@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Domain;
 
-use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
-use App\Project\Domain\Task;
-
 class ActivityHistoryDTO
 {
     public static function fromEntity(ActivityHistory $activityHistory): array

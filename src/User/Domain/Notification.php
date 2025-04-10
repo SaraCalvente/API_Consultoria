@@ -2,8 +2,7 @@
 
 namespace App\User\Domain;
 
-use App\Repository\NotificationRepository;
-use App\User\Domain\User;
+use App\User\Infraestructure\NotificationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,6 +21,10 @@ class Notification
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $creatorUser = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'notifications')]
     private Collection $user;
@@ -56,6 +59,18 @@ class Notification
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getCreatorUser(): ?User
+    {
+        return $this->creatorUser;
+    }
+
+    public function setCreatorUser(User $user): static
+    {
+        $this->creatorUser = $user;
 
         return $this;
     }

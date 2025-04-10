@@ -5,16 +5,7 @@ namespace App\ActivityHistory\Application;
 
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
-use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
-use App\Client\Domain\Model\ClientRepositoryInterface;
-use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
-use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\Status;
-use App\Project\Domain\Task;
-use App\Project\Domain\TaskDTO;
-use App\User\Domain\Model\UserRepositoryInterface;
-use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryUpdateByNameAndProjectService

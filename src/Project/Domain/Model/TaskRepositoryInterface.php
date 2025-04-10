@@ -3,8 +3,8 @@
 namespace App\Project\Domain\Model;
 
 use App\Consultant\Domain\Consultant\Consultant;
-use App\Project\Domain\Project;
-use App\Project\Domain\Task;
+use App\Project\Domain\Project\Project;
+use App\Project\Domain\Task\Task;
 
 interface TaskRepositoryInterface
 {

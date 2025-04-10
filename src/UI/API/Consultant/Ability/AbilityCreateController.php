@@ -33,10 +33,10 @@ class AbilityCreateController extends AbstractController
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Consultant registered successfully.",
+                description: "Ability created successfully.",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Consultant registered successfully"),
+                        new OA\Property(property: "message", type: "string", example: "Ability created successfully"),
                         new OA\Property(property: "id", type: "integer", example: 1),
                         new OA\Property(property: "name", type: "string", example: "Habilidad 1"),
                         new OA\Property(property: "level", type: "string", example: "Alto"),

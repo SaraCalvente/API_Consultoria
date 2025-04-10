@@ -31,4 +31,6 @@ interface AvailabilityRepositoryInterface
     public function saveAvailability(): void;
 
     public function removeAvailability(Availability $availability): void;
+    public function checkDates(string $startDate, string $endDate): bool;
+
 }

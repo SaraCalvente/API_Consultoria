@@ -5,7 +5,7 @@ namespace App\Project\Application\Task;
 
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
-use App\Project\Domain\TaskDTO;
+use App\Project\Domain\Task\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskFindByProjectService
