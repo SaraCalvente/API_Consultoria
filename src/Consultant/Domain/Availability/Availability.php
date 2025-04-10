@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Consultant\Domain;
+namespace App\Consultant\Domain\Availability;
 
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Infraestructure\AvailabilityRepository;
@@ -8,6 +8,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AvailabilityRepository::class)]
+#[ORM\UniqueConstraint(name: "unique_availability_date", columns: ["start_date", "consultant"])]
+
 class Availability
 {
     #[ORM\Id]

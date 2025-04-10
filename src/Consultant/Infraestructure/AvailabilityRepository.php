@@ -3,10 +3,10 @@
 namespace App\Consultant\Infraestructure;
 
 use App\Consultant\Domain\Ability\Ability;
-use App\Consultant\Domain\Ability\AbilityDTO;
-use App\Consultant\Domain\Ability\Level;
-use App\Consultant\Domain\Availability;
+use App\Consultant\Domain\Availability\Availability;
+use App\Consultant\Domain\Availability\AvailabilityDTO;
 use App\Consultant\Domain\Consultant\Consultant;
+use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,81 +21,82 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Availability[]    findAll()
  * @method Availability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AvailabilityRepository extends ServiceEntityRepository
+class AvailabilityRepository extends ServiceEntityRepository implements AvailabilityRepositoryInterface
 {
     private EntityManagerInterface $entityManager;
     public function __construct(
         EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
-        parent::__construct($registry, Ability::class);
+        parent::__construct($registry, Availability::class);
         $this->entityManager = $entityManager;
     }
 
 
-    public function findAllAbilities(): array{
-        return $this->entityManager->getRepository(Ability::class)->findAll();
+    public function findAllAvailabilities(): array{
+        return $this->entityManager->getRepository(Availability::class)->findAll();
     }
 
 
-    public function findAbilitiesByConsultant(Consultant $consultant): array
+    public function findAvailabilityByConsultant(Consultant $consultant): array
     {
         if (!$consultant) {
             throw new ConsultantNotFoundException();
         }
-        return $consultant->getAbilities()->toArray();
+        return $this->entityManager->getRepository(Availability::class)->findBy(['consultant' => $consultant]);
     }
 
-    public function checkIfAbilityExists(string $name, string $level): bool
+    public function checkIfAvailabilityExists(Consultant $consultant, string $startDate): bool
     {
-        $ability = $this->entityManager->getRepository(Ability::class)->findAbilityByNameAndLevel($name, $level);
-        if (!$ability) {
+        $availability = $this->findAvailabilityByStartDateAndConsultant($consultant, $startDate);
+        if (!$availability) {
             return false;
         }
         return true;
     }
 
-    public function findAbilityByNameAndLevel(string $name, string $level): ?Ability{
-        return $this->entityManager->getRepository(Ability::class)->findOneBy(['name' => $name, 'level' => $level]);
+    public function findAvailabilityByStartDateAndConsultant(Consultant $consultant, string $startDate): ?Availability
+    {
+        return $this->entityManager->getRepository(Availability::class)->findOneBy(['consultant' => $consultant, 'start_date' => $startDate]);
     }
 
-    public function updateAbility(Ability $ability, ?string $name, ?string $level): JsonResponse
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function updateAvailability(Availability $availability, ?string $endDate, ?bool $available): JsonResponse
     {
-        if ($level !== null) {
-            $ability->setLevel(Level::from($level));
+        if ($endDate !== null) {
+            $availability->setEndDate(new \DateTime($endDate));
         }
-        if ($name !== null) {
-            $ability->setName($name);
+        if ($available !== null) {
+            $availability->setAvailable($available);
         }
-        $this->saveAbility();
+        $this->saveAvailability();
 
-        return new JsonResponse(AbilityDTO::fromEntity($ability));
+        return new JsonResponse(AvailabilityDTO::fromEntity($availability));
     }
 
-    public function deleteAbility(Ability $ability): JsonResponse
+    public function deleteAvailability(Availability $availability): JsonResponse
     {
-        $consultants = $ability->getConsultant()->toArray();
-        foreach ($consultants as $consultant) {
-            $consultant->removeAbility($ability);
-        }
-        $this->removeAbility($ability);
-        return new JsonResponse(['message' => 'Consultant and associated user deleted successfully'], 200);
+        $this->removeAvailability($availability);
+        return new JsonResponse(['message' => 'Availability deleted successfully'], 200);
     }
 
-    public function addAbility(Ability $ability): void
+    public function addAvailability(Availability $availability): void
     {
-        $this->entityManager->persist($ability);
+        $this->entityManager->persist($availability);
         $this->entityManager->flush();
     }
 
-    public function saveAbility(): void
+    public function saveAvailability(): void
     {
         $this->entityManager->flush();
     }
 
-    public function removeAbility(Ability $ability): void
+    public function removeAvailability(Availability $availability): void
     {
-        $this->entityManager->remove($ability);
+        $this->entityManager->remove($availability);
         $this->entityManager->flush();
     }
+
 }
