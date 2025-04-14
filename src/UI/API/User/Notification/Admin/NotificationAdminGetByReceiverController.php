@@ -17,12 +17,6 @@ use OpenApi\Attributes as OA;
 
 class NotificationAdminGetByReceiverController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
-    {
-        $this->authChecker = $authChecker;
-    }
 
     #[Route('/admin/notifications/user/received', name: 'get_received_notifications_admin', methods: ['GET'])]
     #[OA\Get(
