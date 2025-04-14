@@ -14,13 +14,13 @@ interface NotificationRepositoryInterface
 
     public function findNotificationsByCreatorUser(User $user): array;
     public function findNotificationsByUser(User $user): array;
-    public function checkIfNotificationExists(string $email, string $date): bool;
+    public function checkIfNotificationExists(User $user, string $date): bool;
 
-    public function findNotificationByUserAndDate(string $email, string $date): ?Notification;
-    public function deleteNotification(Notification $notification): JsonResponse;
-
+    public function findNotificationByUserAndDate(User $user, \DateTime $date): ?Notification;
+    public function findReceivedNotificationsByUserAndDate(User $user, \DateTime $date): array;
+    public function findCreatedNotificationsByUserAndDate(User $user, \DateTime $date): array;
     public function addNotification(Notification $notification): void;
 
-    public function saveNotification(): void;
+    public function findNotificationById(int $id): Notification;
     public function removeNotification(Notification $notification): void;
 }

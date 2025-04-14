@@ -19,7 +19,7 @@ class Notification
     #[ORM\Column(length: 255)]
     private ?string $message = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

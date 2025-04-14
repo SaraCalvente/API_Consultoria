@@ -7,33 +7,49 @@ use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Domain\Ability\AbilityDTO;
 use App\Consultant\Domain\Ability\Level;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
+use App\User\Domain\Model\NotificationRepositoryInterface;
+use App\User\Domain\Model\UserRepositoryInterface;
+use App\User\Domain\Notification;
+use App\User\Domain\NotificationDTO;
+use App\User\Domain\User;
+use App\User\Infraestructure\NotificationRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use function Symfony\Component\Clock\now;
 
 class NotificationCreateService
 {
-    private AbilityRepositoryInterface $abilityRepository;
+    private NotificationRepositoryInterface $notificationRepository;
+    private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
-        AbilityRepositoryInterface $abilityRepository
+        NotificationRepositoryInterface $notificationRepository,
+        UserRepositoryInterface $userRepository
     )
     {
-        $this->abilityRepository = $abilityRepository;
+        $this->notificationRepository = $notificationRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function __invoke(string $name, string $level): JsonResponse
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function __invoke(User $creator, string $message, array $usersEmails): JsonResponse
     {
-        if ($this->abilityRepository->checkIfAbilityExists($name, $level)) {
-            return new JsonResponse(['error' => 'An ability with the name ' . $name . ' already exists.' ], 403);
+        $notification = new Notification();
+        $notification->setCreatorUser($creator);
+        $notification->setDate(new \DateTime);
+        $notification->setMessage($message);
+
+        foreach ($usersEmails as $email) {
+            $user = $this->userRepository->findUserByEmail($email);
+            $notification->addUser($user);
         }
-        $ability = new Ability();
-        $ability->setName($name);
-        $ability->setLevel(Level::from($level));
-        $this->abilityRepository->addAbility($ability);
+        $this->notificationRepository->addNotification($notification);
 
         return new JsonResponse([
-            'message' => 'Consultant successfully registered',
-            'ability' => AbilityDTO::fromEntity($ability)
+            'message' => 'Notification successfully created',
+            'notification' => NotificationDTO::fromEntity($notification)
         ], 201);
     }
 }
