@@ -26,10 +26,10 @@ class ActivityHistoryDeleteByNameService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name, string $projectName): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
-        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($name, $project);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
+        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($data['name'], $project);
         $this->activityHistoryRepository->removeActivityHistory($activity);
         return new JsonResponse(['message' => 'Activity deleted successfully'], 201);
     }

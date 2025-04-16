@@ -54,6 +54,6 @@ class ActivityHistoryGetByProjectController extends AbstractController
     public function getAllProjectTasks(Request $request, ActivityHistoryFindByProjectService $taskFindByProjectService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        return $taskFindByProjectService($data['projectName']);
+        return $taskFindByProjectService($data);
     }
 }

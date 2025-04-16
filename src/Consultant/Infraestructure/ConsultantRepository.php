@@ -6,6 +6,7 @@ use App\Client\Domain\Client;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,6 +53,17 @@ class ConsultantRepository extends ServiceEntityRepository implements Consultant
             return false;
         }
         return true;
+    }
+
+    public function getConsultantByUser(User $user): Consultant
+    {
+        $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
+
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        return $consultant;
     }
 
    /* public function updateConsultant(User $user, ?string $profile, ?Ability $ability): JsonResponse

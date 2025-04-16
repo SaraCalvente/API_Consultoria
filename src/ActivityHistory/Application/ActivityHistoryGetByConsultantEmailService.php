@@ -4,28 +4,32 @@ declare(strict_types=1);
 namespace App\ActivityHistory\Application;
 
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
-use App\ActivityHistory\Infraestructure\ActivityHistoryRepository;
+use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
-use App\User\Domain\User;
+use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryFindByConsultantService
+class ActivityHistoryGetByConsultantEmailService
 {
-
+    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
     private ConsultantRepositoryInterface $consultantRepository;
-    private ActivityHistoryRepository $activityHistoryRepository;
+    private UserRepositoryInterface $userRepository;
+
 
     public function __construct(
+        ActivityHistoryRepositoryInterface $activityHistoryRepository,
         ConsultantRepositoryInterface $consultantRepository,
-        ActivityHistoryRepository $activityHistoryRepository
+        UserRepositoryInterface $userRepository
     )
     {
-        $this->consultantRepository = $consultantRepository;
         $this->activityHistoryRepository = $activityHistoryRepository;
+        $this->consultantRepository = $consultantRepository;
+        $this->userRepository = $userRepository;
     }
 
-    public function __invoke(User $user): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
+        $user = $this->userRepository->findUserByEmail($data['email']);
         if (!$this->consultantRepository->checkIfConsultantExists($user)) {
             return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 400);
         }

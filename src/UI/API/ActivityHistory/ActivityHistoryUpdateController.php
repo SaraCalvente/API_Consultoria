@@ -54,12 +54,7 @@ class ActivityHistoryUpdateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $activityHistoryUpdateController(
-                $data['name'],
-                $data['projectName'],
-                $data['description'] ?? null
-
-            );
+            return $activityHistoryUpdateController($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

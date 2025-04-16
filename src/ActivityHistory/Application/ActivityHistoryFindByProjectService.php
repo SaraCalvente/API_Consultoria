@@ -23,9 +23,9 @@ class ActivityHistoryFindByProjectService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $projectName): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
         $activities = $this->activityHistoryRepository->findActivitiesHistoriesByProject($project);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',

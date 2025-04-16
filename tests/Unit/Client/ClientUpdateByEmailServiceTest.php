@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Client\Service;
+namespace App\Tests\Unit\Client;
 
 use App\Client\Application\Admin\ClientUpdateByEmailService;
 use App\Client\Domain\Model\ClientRepositoryInterface;
@@ -20,9 +20,17 @@ class ClientUpdateByEmailServiceTest extends TestCase
      */
     public function testClientIsUpdatedSuccessfully(): void
     {
+
         $email = 'client@example.com';
         $address = 'Calle Actualizada 123';
         $phone = '666123456';
+
+        $data = [
+            'email' => $email,
+            'address' => $address,
+            'phoneNumber' => $phone
+        ];
+
         $user = $this->createMock(User::class);
 
         $userRepository = $this->createMock(UserRepositoryInterface::class);
@@ -46,12 +54,7 @@ class ClientUpdateByEmailServiceTest extends TestCase
 
         $service = new ClientUpdateByEmailService($clientRepository, $userRepository);
 
-        $result = $service([
-            'email' => $email,
-            'address' => $address,
-            'phoneNumber' => $phone,
-        ]);
-
+        $result = $service->__invoke($data);
         $this->assertInstanceOf(JsonResponse::class, $result);
         $this->assertEquals(200, $result->getStatusCode());
         $this->assertEquals(json_decode($expectedResponse->getContent(), true), json_decode($result->getContent(), true));

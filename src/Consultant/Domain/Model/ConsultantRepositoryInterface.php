@@ -15,5 +15,7 @@ interface ConsultantRepositoryInterface
     public function addConsultant(Consultant $consultant): void;
     public function saveConsultant(): void;
     public function removeConsultant(Consultant $consultant): void;
+    public function getConsultantByUser(User $user): Consultant;
+
 
 }

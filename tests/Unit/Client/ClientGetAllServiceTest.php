@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Client\Application\Admin;
+namespace App\Tests\Unit\Client;
 
-use App\Client\Application\Admin\ClientFindAllService;
-use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\Client\Application\Admin\ClientGetAllService;
 use App\Client\Domain\Client;
+use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
@@ -13,7 +13,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientFindAllServiceTest extends TestCase
+class ClientGetAllServiceTest extends TestCase
 {
     /**
      * @throws Exception
@@ -31,7 +31,7 @@ class ClientFindAllServiceTest extends TestCase
         $clientRepository = $this->createMock(ClientRepositoryInterface::class);
         $clientRepository->method('findAllClients')->willReturn([$client1, $client2]);
 
-        $service = new ClientFindAllService($clientRepository);
+        $service = new ClientGetAllService($clientRepository);
         $response = $service();
 
         $this->assertInstanceOf(JsonResponse::class, $response);

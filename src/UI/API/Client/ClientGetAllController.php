@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\Admin\ClientFindAllService;
+use App\Client\Application\Admin\ClientGetAllService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
 class ClientGetAllController extends AbstractController
 {
     /**
-     * @param ClientFindAllService $clientFindAllService
+     * @param ClientGetAllService $clientFindAllService
      * @return JsonResponse
      */
     #[Route('/admin/clients', name: 'get_all_clients', methods: ['GET'])]
@@ -49,7 +49,7 @@ class ClientGetAllController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllClients(ClientFindAllService $clientFindAllService): JsonResponse
+    public function getAllClients(ClientGetAllService $clientFindAllService): JsonResponse
     {
         return $clientFindAllService();
     }

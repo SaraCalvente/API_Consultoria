@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryFindByNameAndProjectService;
+use App\ActivityHistory\Application\ActivityHistoryGetByNameAndProjectService;
 use App\Project\Application\Task\TaskFindByNameAndProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -49,11 +49,11 @@ class ActivityHistoryGetController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getActivityByNameAndProject(Request $request, ActivityHistoryFindByNameAndProjectService $findByNameAndProjectService): JsonResponse
+    public function getActivityByNameAndProject(Request $request, ActivityHistoryGetByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $findByNameAndProjectService($data['name'], $data['projectName']);
+            return $findByNameAndProjectService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }

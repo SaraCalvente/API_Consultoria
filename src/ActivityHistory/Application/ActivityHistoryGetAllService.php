@@ -7,7 +7,7 @@ use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryFindAllService
+class ActivityHistoryGetAllService
 {
     private ActivityHistoryRepositoryInterface $activityHistoryRepository;
 

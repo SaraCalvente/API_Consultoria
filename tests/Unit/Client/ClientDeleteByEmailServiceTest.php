@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Client\Service;
+namespace App\Tests\Unit\Client;
 
 use App\Client\Application\Admin\ClientDeleteByEmailService;
 use App\Client\Domain\Client;
@@ -10,7 +10,6 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
-use App\User\Domain\ValueObject\EmailValueObject;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;

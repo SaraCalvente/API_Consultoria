@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Client\Service;
+namespace App\Tests\Unit\Client;
 
 use App\Client\Application\ClientUpdateByUserService;
 use App\Client\Domain\Model\ClientRepositoryInterface;

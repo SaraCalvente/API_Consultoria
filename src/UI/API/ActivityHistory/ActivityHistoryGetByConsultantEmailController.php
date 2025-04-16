@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryFindByConsultantEmailService;
+use App\ActivityHistory\Application\ActivityHistoryGetByConsultantEmailService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,11 +53,11 @@ class ActivityHistoryGetByConsultantEmailController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getTasksByUser(Request $request, ActivityHistoryFindByConsultantEmailService $taskFindByUserService): JsonResponse
+    public function getTasksByUser(Request $request, ActivityHistoryGetByConsultantEmailService $taskFindByUserService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $taskFindByUserService($data['email']);
+            return $taskFindByUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }

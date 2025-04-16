@@ -26,14 +26,14 @@ class ActivityHistoryUpdateByNameAndProjectService
      * @throws \DateMalformedStringException
      */
     public function __invoke(
-        string $name, string $projectName, string $description = null
+        array $data
     ): JsonResponse {
 
-        $project = $this->projectRepository->findProjectByName($projectName);
-        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($name, $project);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
+        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($data['name'], $project);
 
-        if ($description !== null) {
-            $activity->setDescription($description);
+        if ($data['description'] !== null) {
+            $activity->setDescription($data['description']);
         }
         $this->activityHistoryRepository->saveActivityHistory();
 

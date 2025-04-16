@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryFindAllService;
+use App\ActivityHistory\Application\ActivityHistoryGetAllService;
 use App\Project\Application\Task\TaskFindAllService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -42,7 +42,7 @@ class ActivityHistoryGetAllController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllTasks(ActivityHistoryFindAllService $activityHistoryFindAllService): JsonResponse
+    public function getAllTasks(ActivityHistoryGetAllService $activityHistoryFindAllService): JsonResponse
     {
         return $activityHistoryFindAllService();
     }

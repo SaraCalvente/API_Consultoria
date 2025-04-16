@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryFindByConsultantService;
+use App\ActivityHistory\Application\ActivityHistoryGetByConsultantService;
 use App\Project\Application\Task\TaskFindByConsultantService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +51,7 @@ class ActivityHistoryGetByConsultantController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getTasksByUser(Security $security, ActivityHistoryFindByConsultantService $taskFindByUserService): JsonResponse
+    public function getTasksByUser(Security $security, ActivityHistoryGetByConsultantService $taskFindByUserService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

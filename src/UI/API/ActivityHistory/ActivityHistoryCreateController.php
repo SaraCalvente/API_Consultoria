@@ -70,9 +70,7 @@ class ActivityHistoryCreateController extends AbstractController
                 }
             }
 
-            return $activityHistoryCreateService(
-                $data['name'], $data['description'], $data['date'],
-                $data['projectName'], $data['consultantEmail']);
+            return $activityHistoryCreateService($data);
 
         } catch (\Exception $e){
             return new JsonResponse([

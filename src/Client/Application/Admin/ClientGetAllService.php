@@ -8,7 +8,7 @@ use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientFindAllService
+class ClientGetAllService
 {
     private ClientRepositoryInterface $clientRepository;
 

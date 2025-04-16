@@ -49,7 +49,7 @@ class ActivityHistoryDeleteController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $activityHistoryDeleteByNameService($data['name'], $data['projectName']);
+            return $activityHistoryDeleteByNameService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

@@ -36,31 +36,29 @@ class ActivityHistoryCreateService
      * @throws \DateMalformedStringException
      */
     public function __invoke(
-        string $name,
-        string $description, string $date,
-        string $projectName, string $consultantEmail
+        array $data
     ): JsonResponse
     {
 
-        if(!$this->projectRepository->checkIfProjectExists($projectName)){
-            return new JsonResponse(['error' => 'Project with name ' . $projectName . ' was not found'], 404);
+        if(!$this->projectRepository->checkIfProjectExists($data['projectName'])){
+            return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
         }
-        $project = $this->projectRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
 
-        if($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($name, $project)){
-            return new JsonResponse(['error' => 'A task with this name (' . $name . ') in project ' . $projectName . ' already exists'], 403);
+        if($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)){
+            return new JsonResponse(['error' => 'A task with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
         }
-        $user = $this->userRepository->findUserByEmail($consultantEmail);
+        $user = $this->userRepository->findUserByEmail($data['consultantEmail']);
         if (!$this->consultantRepository->checkIfConsultantExists($user)){
-            return new JsonResponse(['error' => 'Consultant with name ' . $consultantEmail . ' was not found'], 404);
+            return new JsonResponse(['error' => 'Consultant with name ' . $data['consultantEmail'] . ' was not found'], 404);
         }
 
         $activityHistory = new ActivityHistory();
-        $activityHistory->setName($name);
+        $activityHistory->setName($data['name']);
         $activityHistory->setProject($project);
         $activityHistory->setUser($user);
-        $activityHistory->setDescription($description);
-        $activityHistory->setDate(new \DateTime($date));
+        $activityHistory->setDescription($data['description']);
+        $activityHistory->setDate(new \DateTime($data['date']));
         $project->addActivityHistory($activityHistory);
         $user->addActivityHistory($activityHistory);
 
