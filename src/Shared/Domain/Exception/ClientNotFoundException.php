@@ -6,8 +6,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClientNotFoundException extends NotFoundHttpException
 {
-    public function __construct()
+    public function __construct(string $message)
     {
-        parent::__construct('Client not found');
+        parent::__construct($message);
     }
 }

@@ -13,5 +13,9 @@ interface UserRepositoryInterface
     public function findUserById(int $id): ?User;
     public function remove(User $admin): void;
     public function checkIfUserExists(string $email): bool;
+    public function checkIfUserExists1(string $email): void;
+    public function getUserByEmail(string $email): User;
+    public function checkPasswordLength(string $password): void;
+
 
 }

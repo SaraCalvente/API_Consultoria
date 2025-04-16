@@ -26,10 +26,10 @@ class ClientDeleteByEmailService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $email): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($email);
-        $client = $this->clientRepository->findClientByUser($user);
+        $user = $this->userRepository->findUserByEmail($data['email']);
+        $client = $this->clientRepository->getClientByUser($user);
         $projects = $this->projectRepository->checkIfClientHasProjects($client);
         if (!$projects) {
             return $this->clientRepository->deleteClient($client);

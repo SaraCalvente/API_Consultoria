@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\Client;
 
 use App\Client\Application\Admin\ClientDeleteByEmailService;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,6 +44,10 @@ class ClientAdminDeleteController extends AbstractController
             new OA\Response(
                 response: 402,
                 description: "Cannot delete client because there are associated projects"
+            ),
+            new OA\Response(
+                response: 404,
+                description: "User not found"
             )
         ]
     )]
@@ -50,9 +55,9 @@ class ClientAdminDeleteController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         try {
-            return $clientDeleteByEmail($data['email']);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            return $clientDeleteByEmail($data);
+        } catch (UserNotFoundException $e){
+            return new JsonResponse(["message" => $e->getMessage()], 404);
         }
     }
 

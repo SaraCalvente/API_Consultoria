@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ActivityHistoryFindByUserService;
-use App\Client\Application\ActivityHistoryRegisterService;
 use App\Client\Application\ClientRegisterService;
-use App\Shared\Domain\Auth\AuthChecker;
+use App\Shared\Domain\Exception\NotValidEmailException;
+use App\Shared\Domain\Exception\NotValidPasswordLengthException;
+use App\Shared\Domain\Exception\RequiredFieldException;
+use App\Shared\Domain\Exception\UserAlreadyExistsException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,9 +28,9 @@ class ClientRegisterController extends AbstractController
                     new OA\Property(property: "email", type: "string", example: "user@example.com"),
                     new OA\Property(property: "password", type: "string", example: "SecurePassword123"),
                     new OA\Property(property: "name", type: "string", example: "Ana"),
-                    new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
+                    new OA\Property(property: "surnames", type: "string", example: "Garcia Ruiz"),
                     new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
-                    new OA\Property(property: "phone_number", type: "string", example: "666 666 666"),
+                    new OA\Property(property: "phoneNumber", type: "string", example: "666 666 666"),
                 ],
                 type: "object"
             )
@@ -45,9 +46,9 @@ class ClientRegisterController extends AbstractController
                         new OA\Property(property: "user_id", type: "integer", example: 1),
                         new OA\Property(property: "email", type: "string", example: "user@example.com"),
                         new OA\Property(property: "name", type: "string", example: "Ana"),
-                        new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
+                        new OA\Property(property: "surnames", type: "string", example: "Garcia Ruiz"),
                         new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
-                        new OA\Property(property: "phone_number", type: "string", example: "666 666 666"),
+                        new OA\Property(property: "phoneNumber", type: "string", example: "666 666 666"),
                         new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
                     ]
                 )
@@ -57,37 +58,31 @@ class ClientRegisterController extends AbstractController
                 description: "Email and password are required and cannot be empty.",
             ),
             new OA\Response(
-                response: 402,
+                response: 409,
                 description: "User already exists"
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid email."
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid password."
             )
         ]
     )]
-    public function register(Request $request, ClientRegisterService $clientRegister ): JsonResponse {
+    public function clienteRegister(Request $request, ClientRegisterService $clientRegister ): JsonResponse {
 
-        $data = json_decode($request->getContent(), true);
-
-        $validationErrors = $this->validateEmailAndPassword($request);
-
-        if ($validationErrors !== null) {
-            return new JsonResponse(['error' => $validationErrors], 400);
+        try {
+            $data = json_decode($request->getContent(), true);
+            return $clientRegister($data);
+        } catch (UserAlreadyExistsException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 409);
+        } catch (NotValidEmailException|NotValidPasswordLengthException|RequiredFieldException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return $clientRegister(
-            $data['email'],
-            $data['password'],
-            $data['name'],
-            $data['surnames'],
-            $data['address'],
-            $data['phoneNumber']);
     }
 
-    private function validateEmailAndPassword(Request $request): ?string
-    {
-        $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['email']) || empty($data['email']) || !isset($data['password']) || empty($data['password'])) {
-            return 'Email and password are required and cannot be empty';
-        }
-        return null;
-    }
 }

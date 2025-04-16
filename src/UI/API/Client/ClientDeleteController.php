@@ -5,6 +5,8 @@ namespace App\UI\API\Client;
 
 use App\Client\Application\ClientDeleteByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
+use App\Shared\Domain\Exception\NoDataToUpdateException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,8 +45,13 @@ class ClientDeleteController extends AbstractController
     )]
     public function deleteClient (Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
     {
-        $user = $this->authChecker->getAuthenticated($security);
-        return $clientDeleteById($user);
+        try{
+            $user = $this->authChecker->getAuthenticated($security);
+            return $clientDeleteById($user);
+        } catch (UserNotFoundException $e){
+            return new JsonResponse(["message" => $e->getMessage()], 404);
+        }
+
     }
 
 }

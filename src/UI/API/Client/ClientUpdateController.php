@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ActivityHistoryUpdateByUserService;
 use App\Client\Application\ClientUpdateByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
+use App\Shared\Domain\Exception\NoDataToUpdateException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,10 +75,9 @@ class ClientUpdateController extends AbstractController
             $data = json_decode($request->getContent(), true);
             return $clientUpdateById(
                 $user,
-                $data['address'] ?? null,
-                $data['phone_number'] ?? null
+                $data
             );
-        } catch (\Exception $e) {
+        } catch (NoDataToUpdateException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }
     }

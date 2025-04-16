@@ -6,9 +6,14 @@ namespace App\Client\Application;
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\Shared\Domain\Exception\NotValidEmailException;
+use App\Shared\Domain\Exception\NotValidPasswordLengthException;
+use App\Shared\Domain\Exception\RequiredFieldException;
+use App\Shared\Domain\Exception\UserAlreadyExistsException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use MiniOrange\Helper\Exception\RequiredFieldsException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -30,32 +35,30 @@ class ClientRegisterService
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @throws NotValidEmailException
+     * @throws RequiredFieldException
+     */
     public function __invoke(
-        string $email, string $password,
-        string $name, string $surnames,
-        string $address, string $phoneNumber): JsonResponse
+        array $data): JsonResponse
     {
-        if ($this->userRepository->checkIfUserExists($email)){
-            $user = $this->userRepository->findUserByEmail($email);
-            return new JsonResponse([
-                'error' => 'User ' . $user->getEmail() . ' already exists as ' . implode(', ', $user->getRoles()),
-
-            ], 403);
-        }
+        $this->validateRequiredFields($data);
+        $this->userRepository->checkIfUserExists1($data['email']);
 
         $user = new User();
-        $user->setEmail(new EmailValueObject($email));
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+        $user->setEmail(new EmailValueObject($data['email']));
+        $this->userRepository->checkPasswordLength($data['password']);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['email']);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_CLIENT']);
 
         $client = new Client();
         $client
             ->setUser($user)
-            ->setName($name)
-            ->setSurnames($surnames)
-            ->setPhoneNumber($phoneNumber)
-            ->setAddress($address);
+            ->setName($data['name'])
+            ->setSurnames($data['surnames'])
+            ->setPhoneNumber($data['phoneNumber'])
+            ->setAddress($data['address']);
 
         $this->userRepository->add($user);
         $this->clientRepository->addClient($client);
@@ -64,7 +67,18 @@ class ClientRegisterService
             'message' => 'Client successfully registered',
             'client' => ClientDTO::fromEntity($client)
         ], 201);
-
     }
+
+    private function validateRequiredFields(array $data): void
+    {
+        $requiredFields = ['email', 'password', 'name', 'surnames', 'address', 'phoneNumber'];
+
+        foreach ($requiredFields as $field) {
+            if (!isset($data[$field]) || empty($data[$field])) {
+                throw new RequiredFieldException($field);
+            }
+        }
+    }
+
 
 }

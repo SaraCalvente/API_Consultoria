@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ActivityHistoryFindByUserService;
-use App\Client\Application\ClientFindByUserService;
+use App\Client\Application\ClientGetByUserService;
 use App\Client\Domain\Client;
 use App\Shared\Domain\Auth\AuthChecker;
+use App\Shared\Domain\Exception\ClientNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -52,12 +52,12 @@ class ClientGetController extends AbstractController
             )]
     )]
 
-    public function getClient(Security $security, ClientFindByUserService $clientFindService): JsonResponse
+    public function getClient(Security $security, ClientGetByUserService $clientFindService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);
             return $clientFindService($user);
-        } catch (\Exception $e) {
+        } catch (ClientNotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }
     }

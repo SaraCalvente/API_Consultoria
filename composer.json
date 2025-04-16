@@ -23,7 +23,7 @@
         "doctrine/doctrine-bundle": "2.8.2",
         "doctrine/doctrine-fixtures-bundle": "3.4.2",
         "doctrine/doctrine-migrations-bundle": "3.2.2",
-        "doctrine/orm": "2.14.1",
+        "doctrine/orm": "2.15.5",
         "friendsofsymfony/user-bundle": "3.1.0",
         "gedmo/doctrine-extensions": "3.9.0",
         "gesdinet/jwt-refresh-token-bundle": "1.1.1",
@@ -73,8 +73,7 @@
         "symfony/var-dumper": "6.4.*",
         "symfony/var-exporter": "6.4.*",
         "symfony/yaml": "6.4.*",
-        "thecodingmachine/safe": "2.1",
-      "ext-http": "*"
+        "thecodingmachine/safe": "2.1"
     },
     "config": {
         "preferred-install": {
@@ -125,6 +124,10 @@
         }
     },
     "require-dev": {
+        "codeception/codeception": "^5.2",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-phpbrowser": "^3.0",
+        "codeception/module-symfony": "^3.5",
         "fakerphp/faker": "1.19",
         "phpunit/phpunit": "10.1.2",
         "symfony/browser-kit": "6.4.*",

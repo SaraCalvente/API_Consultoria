@@ -8,7 +8,7 @@ use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientFindByUserService
+class ClientGetByUserService
 {
     private ClientRepositoryInterface $clientRepository;
 
@@ -22,7 +22,7 @@ class ClientFindByUserService
 
     public function __invoke(User $user): JsonResponse
     {
-        $client = $this->clientRepository->findClientByUser($user);
+        $client = $this->clientRepository->getClientByUser($user);
         return new JsonResponse(ClientDTO::fromEntity($client));
     }
 }

@@ -65,11 +65,7 @@ class ClientAdminUpdateController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        return $clientUpdateByEmail(
-            $data['email'] ?? null,
-            $data['address'] ?? null,
-            $data['phoneNumber'] ?? null
-        );
+        return $clientUpdateByEmail($data);
     }
 
 

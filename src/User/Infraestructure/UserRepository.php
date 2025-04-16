@@ -2,12 +2,15 @@
 
 namespace App\User\Infraestructure;
 
+use App\Shared\Domain\Exception\NotValidPasswordLengthException;
+use App\Shared\Domain\Exception\UserAlreadyExistsException;
 use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use PHPUnit\Logging\Exception;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 
@@ -84,4 +87,29 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         }
         return true;
     }
+
+    public function checkIfUserExists1(string $email): void{
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        if ($user) {
+            throw new UserAlreadyExistsException($email);
+        }
+    }
+
+    public function getUserByEmail(string $email): User
+    {
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            throw new UserNotFoundException("No user found with email: $email");
+        }
+
+        return $user;
+    }
+
+    public function checkPasswordLength(string $password): void{
+        if(strlen($password) < 5) {
+            throw new NotValidPasswordLengthException();
+        }
+    }
+
 }

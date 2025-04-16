@@ -14,7 +14,7 @@ class ClientFindAllService
 
 
     public function __construct(
-        ClientRepositoryInterface $clientRepository
+        ClientRepositoryInterface $clientRepository,
     )
     {
         $this->clientRepository = $clientRepository;
