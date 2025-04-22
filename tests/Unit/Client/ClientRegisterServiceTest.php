@@ -54,7 +54,7 @@ class ClientRegisterServiceTest extends TestCase
         ];
 
         $this->userRepo->expects($this->once())
-            ->method('checkIfUserExists1')
+            ->method('checkIfUserExists')
             ->with($data['email']);
 
         $this->userRepo->expects($this->once())

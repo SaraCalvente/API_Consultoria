@@ -91,9 +91,7 @@ class ProjectCreateController extends AbstractController
             $endDate = $data['endDate'] ?? null;
 
             return $projectCreateService(
-                $data['clientEmail'], $data['name'],
-                $data['description'], $data['startDate'], $endDate,
-                $data['status'], $data['consultantsEmails']);
+                $data);
 
         } catch (\Exception $e){
             return new JsonResponse([

@@ -66,7 +66,7 @@ class TasksGetByConsultantEmailController extends AbstractController
     public function getAllConsultantTasks(Request $request, TaskFindByConsultantEmailService $taskFindByConsultant): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        return $taskFindByConsultant($data['email']);
+        return $taskFindByConsultant($data);
     }
 
 }

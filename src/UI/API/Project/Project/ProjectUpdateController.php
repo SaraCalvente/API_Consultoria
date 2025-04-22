@@ -92,12 +92,7 @@ class ProjectUpdateController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             return $projectUpdateByNameService(
-                $data['name'],
-                $data['description'] ?? null,
-                $data['status'] ?? null,
-                $data['endDate'] ?? null,
-                $data['addConsultantsEmails'] ?? null,
-                $data['erraseConsultantEmails'] ?? null
+                $data
             );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

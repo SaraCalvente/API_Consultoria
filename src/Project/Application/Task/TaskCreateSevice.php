@@ -36,36 +36,32 @@ class TaskCreateSevice
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(
-        string $projectName, string $name,
-        string $description, string $startDate,
-        string $endDate, string $status,
-        array $consultantsEmails
+    public function __invoke( array $data
     ): JsonResponse
     {
 
-        if(!$this->projectRepository->checkIfProjectExists($projectName)){
-            return new JsonResponse(['error' => 'Project with name ' . $projectName . ' was not found'], 404);
+        if(!$this->projectRepository->checkIfProjectExists($data['projectName'])){
+            return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
         }
 
-        $project = $this->projectRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
 
-        if($this->taskRepository->checkIfTaskFromProjectExists($name, $project)){
-            return new JsonResponse(['error' => 'A task with this name (' . $name . ') in project ' . $projectName . ' already exists'], 403);
+        if($this->taskRepository->checkIfTaskFromProjectExists($data['name'], $project)){
+            return new JsonResponse(['error' => 'A task with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
         }
 
-        if (!$this->taskRepository->checkDates($startDate, $endDate)) {
+        if (!$this->taskRepository->checkDates($data['startDate'], $data['endDate'])) {
             return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
         $task = new Task();
         $task->setProject($project);
-        $task->setName($name);
-        $task->setDescription($description);
-        $task->setStartDate(new \DateTime($startDate));
-        $task->setEndDate(new \DateTime($endDate));
-        $task->setStatus(Status::from($status));
-        foreach ($consultantsEmails as $consultantEmail) {
+        $task->setName($data['name']);
+        $task->setDescription($data['description']);
+        $task->setStartDate(new \DateTime($data['startDate']));
+        $task->setEndDate(new \DateTime($data['endDate']));
+        $task->setStatus(Status::from($data['status']));
+        foreach ($data['consultantsEmails'] as $consultantEmail) {
             $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
             $task->addConsultant($consultant);

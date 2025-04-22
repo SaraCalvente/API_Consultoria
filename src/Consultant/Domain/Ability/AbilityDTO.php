@@ -9,7 +9,7 @@ class AbilityDTO
         return [
             'ability_id' => $ability->getId(),
             'name' => $ability->getName(),
-            'level' => $ability->getLevel(),
+            'level' => $ability->getLevel()->value,
         ];
     }
 }

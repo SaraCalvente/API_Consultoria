@@ -31,37 +31,37 @@ class ProjectUpdateByNameService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(
-        string $name, string $description = null, string $status = null, string $endDate = null,
-        array  $addConsultantsEmails = null, array $erraseConsultantsEmails = null
+    public function __invoke( array $data
     ): JsonResponse {
-        $project = $this->projectRepository->findProjectByName($name);
-        if (!$this->projectRepository->checkIfProjectExists($project)) {
+        $project = $this->projectRepository->findProjectByName($data['name']);
+        if (!$this->projectRepository->checkIfProjectExists($project->getName())) {
             return new JsonResponse(['error' => 'The project ' . $project->getName() . ' does not exist'], 400);
         }
 
-        if ($description !== null) {
-            $project->setDescription($description);
+        if ($data['description'] !== null) {
+            $project->setDescription($data['description']);
         }
-        if ($status !== null) {
-            $project->setStatus(Status::from($status));
+        if ($data['status'] !== null) {
+            $project->setStatus(Status::from($data['status']));
         }
         $startDate = $project->getStartDate()->format('Y-m-d');
 
-        $this->projectRepository->checkDates($startDate, $endDate);
+        $this->projectRepository->checkDates($startDate, $data['endDate']);
 
-        if ($endDate !== null) {
-            if (!$this->projectRepository->checkDates($startDate, $endDate)) {
-                return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
-            }
-            $project->setEndDate(new \DateTime($endDate));
-        }
-        if ($addConsultantsEmails !== null) {
-            $this->updateProjectConsultants($project, $addConsultantsEmails, true);
+        if ($data['endDate'] !== null && !$this->projectRepository->checkDates($startDate, $data['endDate'])) {
+            return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
-        if ($erraseConsultantsEmails !== null) {
-            $this->updateProjectConsultants($project, $erraseConsultantsEmails, false);
+        if ($data['endDate'] !== null) {
+            $project->setEndDate(new \DateTime($data['endDate']));
+        }
+
+        if ($data['addConsultantsEmails'] !== null) {
+            $this->updateProjectConsultants($project, $data['addConsultantsEmails'], true);
+        }
+
+        if ($data['erraseConsultantsEmails'] !== null) {
+            $this->updateProjectConsultants($project, $data['erraseConsultantsEmails'], false);
         }
 
         $this->projectRepository->saveProject();

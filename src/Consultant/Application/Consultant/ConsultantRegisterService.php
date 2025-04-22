@@ -9,6 +9,7 @@ use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
@@ -37,10 +38,13 @@ class ConsultantRegisterService
         $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke(string $email, string $password, string $name, string $surnames, string $profile, ?array $abilities): JsonResponse
+    /**
+     * @throws NotValidEmailException
+     */
+    public function __invoke(array $data): JsonResponse
     {
-        if ($this->userRepository->checkIfUserExists($email)){
-            $user = $this->userRepository->findUserByEmail($email);
+        if ($this->userRepository->checkIfUserExists($data['email'])) {
+            $user = $this->userRepository->findUserByEmail($data['email']);
             return new JsonResponse([
                 'error' => 'User ' . $user->getEmail() . ' already exists as ' . implode(', ', $user->getRoles()),
 
@@ -48,20 +52,20 @@ class ConsultantRegisterService
         }
 
         $user = new User();
-        $user->setEmail(new EmailValueObject($email));
-
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+        $user->setEmail(new EmailValueObject($data['email']));
+        $this->userRepository->checkPasswordLength($data['password']);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_CONSULTANT']);
         $this->userRepository->add($user);
 
         $consultant = new Consultant();
-        $consultant->setName($name);
-        $consultant->setSurnames($surnames);
-        $consultant->setProfile(Profile::from($profile));
+        $consultant->setName($data['name']);
+        $consultant->setSurnames($data['surnames']);
+        $consultant->setProfile(Profile::from($data['profile']));
         $consultant->setUser($user);
-        if ($abilities !== null) {
-            foreach ($abilities as $ability) {
+        if ($data['abilities'] !== null) {
+            foreach ($data['abilities'] as $ability) {
                 if($this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level'])){
                     $ability = new Ability();
                     $ability->setName($ability['abilityName']);

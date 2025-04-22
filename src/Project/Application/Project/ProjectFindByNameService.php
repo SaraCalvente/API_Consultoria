@@ -18,9 +18,9 @@ class ProjectFindByNameService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($name);
+        $project = $this->projectRepository->findProjectByName($data['name']);
         return new JsonResponse([
             'message' => 'Project retrieved successfully',
             'project' => ProjectDTO::fromEntity($project),

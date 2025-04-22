@@ -59,12 +59,7 @@ class ConsultantAdminUpdateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $consultantUpdateByEmail(
-                $data['email'] ?? null,
-                $data['profile'] ?? null,
-                $data['addAbilities'] ?? null,
-                $data['removeAbilities'] ?? null,
-            );
+            return $consultantUpdateByEmail($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

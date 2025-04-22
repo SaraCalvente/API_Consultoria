@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\Consultant\Consultant;
 
 use App\Consultant\Application\Consultant\ConsultantRegisterService;
+use App\Shared\Domain\Exception\NotValidEmailException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,6 +14,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConsultantRegisterController extends AbstractController
 {
 
+    /**
+     * @throws NotValidEmailException
+     */
     #[Route('/register/consultant', name: 'consultant_register', methods: ['POST'])]
     #[OA\Post(
         path: "/register/consultant",
@@ -74,13 +78,7 @@ class ConsultantRegisterController extends AbstractController
             return new JsonResponse(['error' => $validationErrors], 400);
         }
 
-        return $consultantRegisterService(
-            $data['email'],
-            $data['password'],
-            $data['name'],
-            $data['surnames'],
-            $data['profile'],
-            $data['addAbilities']);
+        return $consultantRegisterService($data);
     }
 
     private function validateEmailAndPassword(Request $request): ?string

@@ -17,12 +17,12 @@ class ProjectDeleteByNameService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        if (!$this->projectRepository->checkIfProjectExists($name)) {
-            return new JsonResponse(['error' => 'The project (' . $name . ') does not exist'], 400);
+        if (!$this->projectRepository->checkIfProjectExists($data['name'])) {
+            return new JsonResponse(['error' => 'The project (' . $data['name'] . ') does not exist'], 400);
         }
-        $project = $this->projectRepository->findProjectByName($name);
+        $project = $this->projectRepository->findProjectByName($data['name']);
         foreach ($project->getConsultant() as $consultant) {
             $project->removeConsultant($consultant);
         }

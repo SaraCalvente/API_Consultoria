@@ -43,12 +43,17 @@ class ClientRegisterService
         array $data): JsonResponse
     {
         $this->validateRequiredFields($data);
-        $this->userRepository->checkIfUserExists1($data['email']);
+        if ($this->userRepository->checkIfUserExists($data['email'])){
+            return new JsonResponse([
+                'error' => 'User ' . $data['email'] . ' already exists.',
+
+            ], 403);
+        }
 
         $user = new User();
         $user->setEmail(new EmailValueObject($data['email']));
         $this->userRepository->checkPasswordLength($data['password']);
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['email']);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_CLIENT']);
 

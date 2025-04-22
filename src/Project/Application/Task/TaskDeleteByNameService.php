@@ -22,10 +22,10 @@ class TaskDeleteByNameService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name, string $projectName): JsonResponse
+    public function __invoke(string $name, string $projectName, array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
-        $task = $this->taskRepository->findTaskFromProject($name, $project);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
+        $task = $this->taskRepository->findTaskFromProject($data['name'], $project);
         foreach ($task->getConsultants() as $consultant) {
             $task->removeConsultant($consultant);
         }

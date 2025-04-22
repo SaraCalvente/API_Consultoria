@@ -88,12 +88,12 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return true;
     }
 
-    public function checkIfUserExists1(string $email): void{
+/*    public function checkIfUserExists1(string $email): void{
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         if ($user) {
             throw new UserAlreadyExistsException($email);
         }
-    }
+    }*/
 
     public function getUserByEmail(string $email): User
     {

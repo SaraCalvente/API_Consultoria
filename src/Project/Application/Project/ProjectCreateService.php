@@ -36,37 +36,32 @@ class ProjectCreateService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(
-        string $clientEmail, string $name,
-        string $description, string $startDate,
-        ?string $endDate, string $status,
-        array $consultantsEmails
-    ): JsonResponse
+    public function __invoke( array $data ): JsonResponse
     {
-        if($this->projectRepository->checkIfProjectExists($name)){
-            return new JsonResponse(['error' => 'A project with this name: (' . $name .') already exists'], 403);
+        if($this->projectRepository->checkIfProjectExists($data['name'])){
+            return new JsonResponse(['error' => 'A project with this name: (' . $data['name'] .') already exists'], 403);
         }
 
 
-        if (!$this->projectRepository->checkDates($startDate, $endDate)) {
+        if (!$this->projectRepository->checkDates($data['startDate'], $data['endDate'])) {
             return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
-        $clientUser = $this->userRepository->findUserByEmail($clientEmail);
+        $clientUser = $this->userRepository->findUserByEmail($data['clientEmail']);
         $client = $this->clientRepository->findClientByUser($clientUser);
 
         $project = new Project();
         $project
             ->setClient($client)
-            ->setName($name)
-            ->setDescription($description)
-            ->setStartDate(new \DateTime($startDate));
-        if ($endDate) {
-            $project->setEndDate(new \DateTime($endDate));
+            ->setName($data['name'])
+            ->setDescription($data['description'])
+            ->setStartDate(new \DateTime($data['startDate']));
+        if ($data['endDate']) {
+            $project->setEndDate(new \DateTime($data['endDate']));
         }
-        $project->setStatus(Status::from($status));
+        $project->setStatus(Status::from($data['status']));
 
-        foreach ($consultantsEmails as $consultantEmail) {
+        foreach ($data['consultantsEmails'] as $consultantEmail) {
             $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
             $project->addConsultant($consultant);

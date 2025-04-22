@@ -88,9 +88,7 @@ class TaskCreateController extends AbstractController
             }
 
             return $taskCreateService(
-                $data['projectName'], $data['name'],
-                $data['description'], $data['startDate'], $data['endDate'],
-                $data['status'], $data['consultantsEmails']);
+                $data);
 
         } catch (\Exception $e){
             return new JsonResponse([
