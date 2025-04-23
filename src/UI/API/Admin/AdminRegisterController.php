@@ -67,7 +67,7 @@ class AdminRegisterController extends AbstractController
             return new JsonResponse(['error' => $validationErrors], 400);
         }
 
-        return $adminRegisterService($data['email'], $data['password']);
+        return $adminRegisterService($data);
     }
 
     private function validateEmailAndPassword(Request $request): ?string

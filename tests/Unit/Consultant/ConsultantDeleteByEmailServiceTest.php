@@ -10,10 +10,11 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantDeleteByEmailServiceTest extends TestCase
+class ConsultantDeleteByEmailServiceTest extends Unit
 {
     private ConsultantRepositoryInterface $consultantRepository;
     private ProjectRepositoryInterface $projectRepository;

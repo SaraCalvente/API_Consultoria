@@ -86,11 +86,7 @@ class NotificationCreateController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
 
-        return $notificationCreateService(
-            $user,
-            $data['message'],
-            $data['users']
-        );
+        return $notificationCreateService($user, $data);
     }
 
 

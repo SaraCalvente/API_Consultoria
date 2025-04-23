@@ -9,11 +9,12 @@ use App\Client\Domain\Client;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientDeleteByUserServiceTest extends TestCase
+class ClientDeleteByUserServiceTest extends Unit
 {
     /**
      * @throws Exception

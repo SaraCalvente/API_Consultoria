@@ -16,7 +16,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityUpdateServiceTest extends TestCase
+class AvailabilityUpdateServiceTest extends Unit
 {
     private AvailabilityRepositoryInterface $availabilityRepository;
     private ConsultantRepositoryInterface $consultantRepository;

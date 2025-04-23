@@ -15,12 +15,13 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\Shared\Domain\Exception\TaskNotFoundException;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskUpdateByNameAndProjectServiceTest extends TestCase
+class TaskUpdateByNameAndProjectServiceTest extends Unit
 {
     private $taskRepository;
     private $projectRepository;

@@ -9,11 +9,12 @@ use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantDeleteByIdServiceTest extends TestCase
+class ConsultantDeleteByIdServiceTest extends Unit
 {
     private ConsultantRepositoryInterface $consultantRepository;
     private ProjectRepositoryInterface $projectRepository;

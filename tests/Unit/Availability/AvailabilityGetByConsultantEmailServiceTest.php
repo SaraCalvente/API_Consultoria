@@ -18,7 +18,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityGetByConsultantEmailServiceTest extends TestCase
+class AvailabilityGetByConsultantEmailServiceTest extends Unit
 {
     private AvailabilityRepositoryInterface $availabilityRepository;
     private ConsultantRepositoryInterface $consultantRepository;

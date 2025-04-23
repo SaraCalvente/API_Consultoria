@@ -10,11 +10,12 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientDeleteByEmailServiceTest extends TestCase
+class ClientDeleteByEmailServiceTest extends Unit
 {
     /**
      * @throws Exception

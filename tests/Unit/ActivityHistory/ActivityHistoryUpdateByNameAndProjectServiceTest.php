@@ -8,10 +8,11 @@ use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
-class ActivityHistoryUpdateByNameAndProjectServiceTest extends TestCase
+class ActivityHistoryUpdateByNameAndProjectServiceTest extends Unit
 {
     /**
      * @throws \DateMalformedStringException

@@ -13,13 +13,14 @@ use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ConsultantRegisterServiceTest extends TestCase
+class ConsultantRegisterServiceTest extends Unit
 {
     private ConsultantRegisterService $service;
     private $hasher;

@@ -12,10 +12,11 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
-class ActivityHistoryGetByNameAndProjectServiceTest extends TestCase
+class ActivityHistoryGetByNameAndProjectServiceTest extends Unit
 {
     /**
      * @throws Exception

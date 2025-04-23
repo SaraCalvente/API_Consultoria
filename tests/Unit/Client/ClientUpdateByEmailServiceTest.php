@@ -8,11 +8,12 @@ use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NoDataToUpdateException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientUpdateByEmailServiceTest extends TestCase
+class ClientUpdateByEmailServiceTest extends Unit
 {
     /**
      * @throws NoDataToUpdateException

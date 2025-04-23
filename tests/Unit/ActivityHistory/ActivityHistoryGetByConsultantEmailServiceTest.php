@@ -14,10 +14,11 @@ use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\User;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
-class ActivityHistoryGetByConsultantEmailServiceTest extends TestCase
+class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
 {
     /**
      * @throws Exception

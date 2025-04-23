@@ -34,14 +34,14 @@ class NotificationCreateService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(User $creator, string $message, array $usersEmails): JsonResponse
+    public function __invoke(User $creator, array $data): JsonResponse
     {
         $notification = new Notification();
-        $notification->setCreatorUser($creator);
+        $notification->setCreatorUser($data['creator']);
         $notification->setDate(new \DateTime);
-        $notification->setMessage($message);
+        $notification->setMessage($data['message']);
 
-        foreach ($usersEmails as $email) {
+        foreach ($data['usersEmails'] as $email) {
             $user = $this->userRepository->findUserByEmail($email);
             $notification->addUser($user);
         }

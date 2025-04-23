@@ -11,11 +11,12 @@ use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientGetByUserServiceTest extends TestCase
+class ClientGetByUserServiceTest extends Unit
 {
     /**
      * @throws Exception

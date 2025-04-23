@@ -12,7 +12,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbilityCreateServiceTest extends TestCase
+class AbilityCreateServiceTest extends Unit
 {
     private $abilityRepository;
     private AbilityCreateService $service;

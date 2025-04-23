@@ -55,7 +55,7 @@ class NotificationAdminGetByReceiverController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $findByReceiverUserService($data['email']);
+            return $findByReceiverUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }

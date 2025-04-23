@@ -52,7 +52,7 @@ class NotificationDeleteController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             $user = $this->authChecker->getAuthenticated($security);
-            return $notificaionDeleteService($data['id'], $user);
+            return $notificaionDeleteService($user, $data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

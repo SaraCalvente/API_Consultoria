@@ -8,12 +8,13 @@ use App\Consultant\Application\Consultant\Admin\ConsultantFindAllService;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use Codeception\Test\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantFindAllServiceTest extends TestCase
+class ConsultantFindAllServiceTest extends Unit
 {
     private ConsultantRepositoryInterface $consultantRepository;
     private ConsultantFindAllService $service;

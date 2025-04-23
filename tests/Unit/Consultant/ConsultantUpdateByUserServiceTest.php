@@ -12,12 +12,13 @@ use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantUpdateByUserServiceTest extends TestCase
+class ConsultantUpdateByUserServiceTest extends Unit
 {
     private ConsultantRepositoryInterface $consultantRepository;
     private AbilityRepositoryInterface $abilityRepository;

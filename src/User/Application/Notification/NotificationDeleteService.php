@@ -18,9 +18,9 @@ class NotificationDeleteService
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function __invoke(int $id, User $user): JsonResponse
+    public function __invoke(User $user, array $data): JsonResponse
     {
-        $notification = $this->notificationRepository->findNotificationById($id);
+        $notification = $this->notificationRepository->findNotificationById($data['id']);
         if($notification->getCreatorUser() === $user || in_array("ROLE_ADMIN", $user->getRoles(), true)) {
             $this->notificationRepository->removeNotification($notification);
             return new JsonResponse(['message' => 'Notification deleted successfully'], 200);

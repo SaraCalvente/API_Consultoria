@@ -13,11 +13,12 @@ use App\Project\Domain\Project\Project;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetByConsultantServiceTest extends TestCase
+class ActivityHistoryGetByConsultantServiceTest extends Unit
 {
     /**
      * @throws Exception

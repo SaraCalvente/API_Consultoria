@@ -9,11 +9,12 @@ use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Project\Project;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetAllServiceTest extends TestCase
+class ActivityHistoryGetAllServiceTest extends Unit
 {
     /**
      * @throws Exception

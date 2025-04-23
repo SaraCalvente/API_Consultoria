@@ -12,7 +12,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbilityDeleteServiceTest extends TestCase
+class AbilityDeleteServiceTest extends Unit
 {
     private $abilityRepository;
     private AbilityDeleteService $service;

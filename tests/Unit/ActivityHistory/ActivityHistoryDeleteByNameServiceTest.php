@@ -7,10 +7,11 @@ use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
-class ActivityHistoryDeleteByNameServiceTest extends TestCase
+class ActivityHistoryDeleteByNameServiceTest extends Unit
 {
     /**
      * @throws Exception

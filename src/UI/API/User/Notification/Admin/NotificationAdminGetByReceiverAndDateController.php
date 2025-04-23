@@ -52,7 +52,7 @@ class NotificationAdminGetByReceiverAndDateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $findByReceiverUserService($data['email'], $data['date']);
+            return $findByReceiverUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }

@@ -27,10 +27,10 @@ class UserLoginService
         $this->repository = $repository;
     }
 
-    public function __invoke(string $email, string $password): JsonResponse{
-        $user = $this->repository->findUserByEmail($email);
+    public function __invoke(array $data): JsonResponse{
+        $user = $this->repository->findUserByEmail($data['email']);
 
-        if(!$this->passwordHasher->isPasswordValid($user, $password)){
+        if(!$this->passwordHasher->isPasswordValid($user, $data['password'])){
             throw new BadCredentialsException('Invalid email or password');
         }
 

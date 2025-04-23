@@ -16,7 +16,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityDeleteServiceTest extends TestCase
+class AvailabilityDeleteServiceTest extends Unit
 {
     private AvailabilityRepositoryInterface $availabilityRepository;
     private UserRepositoryInterface $userRepository;

@@ -27,9 +27,9 @@ class NotificationFindByCreatorUserAndDateService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(User $user, string $date): JsonResponse
+    public function __invoke(User $user, array $data): JsonResponse
     {
-        $date = new \DateTime($date);
+        $date = new \DateTime($data['date']);
         $notifications = $this->notificationRepository->findCreatedNotificationsByUserAndDate($user, $date);
         return new JsonResponse([
             'message' => 'Notifications retrieved successfully',

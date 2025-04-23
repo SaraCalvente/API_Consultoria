@@ -23,18 +23,18 @@ class AdminRegisterService
         $this->repository = $repository;
     }
 
-    public function __invoke(string $email, string $password): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        if($this->repository->checkIfUserExists($email)){
+        if($this->repository->checkIfUserExists($data['email'])){
             return new JsonResponse([
-                'error' => 'User ' . $email . ' already exists',
+                'error' => 'User ' . $data['email'] . ' already exists',
 
             ], 402);
         }
         $user = new User();
-        $user->setEmail(new EmailValueObject($email));
+        $user->setEmail(new EmailValueObject($data['email']));
 
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_ADMIN']);
         $this->repository->add($user);

@@ -61,7 +61,7 @@ class UserLoginController extends AbstractController
             return new JsonResponse(['error' => $validationErrors], 400);
         }
         try{
-            $response = $loginService($data['email'], $data['password']);
+            $response = $loginService($data);
             return $response;
 
         } catch (\Exception $exception) {

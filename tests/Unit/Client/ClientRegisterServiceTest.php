@@ -10,12 +10,13 @@ use App\Shared\Domain\Exception\NotValidEmailException;
 use App\Shared\Domain\Exception\RequiredFieldException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
+use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientRegisterServiceTest extends TestCase
+class ClientRegisterServiceTest extends Unit
 {
     private ClientRegisterService $service;
     private $hasher;

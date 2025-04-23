@@ -54,7 +54,7 @@ class NotificationAdminGetByCreatorController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $findByCreatorUserService($data['email']);
+            return $findByCreatorUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
