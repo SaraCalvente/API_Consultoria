@@ -8,7 +8,7 @@ use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryFindByProjectService
+class ActivityHistoryGetByProjectService
 {
     private ActivityHistoryRepositoryInterface $activityHistoryRepository;
     private ProjectRepositoryInterface $projectRepository;

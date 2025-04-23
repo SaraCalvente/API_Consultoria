@@ -47,7 +47,7 @@ class TaskDeleteController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $taskDeleteByNameService($data['name'], $data['projectName']);
+            return $taskDeleteByNameService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

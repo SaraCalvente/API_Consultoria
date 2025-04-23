@@ -22,7 +22,7 @@ class TaskDeleteByNameService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name, string $projectName, array $data): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
         $project = $this->projectRepository->findProjectByName($data['projectName']);
         $task = $this->taskRepository->findTaskFromProject($data['name'], $project);

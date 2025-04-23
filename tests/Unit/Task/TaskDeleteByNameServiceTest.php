@@ -60,7 +60,7 @@ class TaskDeleteByNameServiceTest extends Unit
             ->with('TaskToDelete', $project)
             ->willReturn($task);
 
-        $response = ($this->service)('TaskToDelete', 'DemoProject', [
+        $response = ($this->service)([
             'name' => 'TaskToDelete',
             'projectName' => 'DemoProject'
         ]);

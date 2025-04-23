@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryFindByProjectService;
+use App\ActivityHistory\Application\ActivityHistoryGetByProjectService;
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
@@ -49,7 +49,7 @@ class ActivityHistoryFindByProjectServiceTest extends Unit
         $activityRepo = $this->createMock(ActivityHistoryRepositoryInterface::class);
         $activityRepo->method('findActivitiesHistoriesByProject')->with($project)->willReturn([$activity1, $activity2]);
 
-        $service = new ActivityHistoryFindByProjectService($activityRepo, $projectRepo);
+        $service = new ActivityHistoryGetByProjectService($activityRepo, $projectRepo);
         $response = $service($data);
 
         $this->assertEquals(201, $response->getStatusCode());
