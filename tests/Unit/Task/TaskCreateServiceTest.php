@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit\Project;
+namespace App\Tests\Unit\Task;
 
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Consultant\Domain\Consultant\Consultant;

@@ -23,9 +23,9 @@ class TaskFindByProjectService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $projectName): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
         $tasks = $this->taskRepository->findTasksByProject($project);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',

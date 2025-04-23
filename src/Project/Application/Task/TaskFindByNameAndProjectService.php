@@ -25,16 +25,16 @@ class TaskFindByNameAndProjectService
         $this->projectRepository = $projectRepository;
     }
 
-    public function __invoke(string $name, string $projectName): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $project = $this->projectRepository->findProjectByName($projectName);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
         if (!$project) {
             throw new ProjectNotFoundException();
         }
-        if (!$this->taskRepository->checkIfTaskFromProjectExists($name, $project)) {
+        if (!$this->taskRepository->checkIfTaskFromProjectExists($data['name'], $project)) {
             throw new TaskNotFoundException();
         }
-        $task = $this->taskRepository->findTaskFromProject($name, $project);
+        $task = $this->taskRepository->findTaskFromProject($data['name'], $project);
         return new JsonResponse([
             'message' => 'Tasks retrieved successfully',
             'task' => TaskDTO::fromEntity($task),

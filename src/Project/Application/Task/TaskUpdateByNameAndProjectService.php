@@ -36,39 +36,37 @@ class TaskUpdateByNameAndProjectService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(
-        string $name, string $projectName, string $description = null, string $status = null, string $endDate = null,
-        array  $addConsultantsEmails = null, array $erraseConsultantsEmails = null
+    public function __invoke( array $data
     ): JsonResponse {
 
-        $project = $this->projectRepository->findProjectByName($projectName);
-        $task = $this->taskRepository->findTaskFromProject($name, $project);
+        $project = $this->projectRepository->findProjectByName($data['projectName']);
+        $task = $this->taskRepository->findTaskFromProject($data['name'], $project);
 
-        if ($description !== null) {
-            $task->setDescription($description);
+        if ($data['description'] !== null) {
+            $task->setDescription($data['description']);
         }
-        if ($status !== null) {
-            $task->setStatus(Status::from($status));
+        if ($data['status'] !== null) {
+            $task->setStatus(Status::from($data['status']));
         }
         $startDate = $task->getStartDate()->format('Y-m-d');
         try {
-            $this->taskRepository->checkDates($startDate, $endDate);
+            $this->taskRepository->checkDates($startDate, $data['endDate']);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        if ($endDate !== null) {
-            if (!$this->taskRepository->checkDates($startDate, $endDate)) {
+        if ($data['endDate'] !== null) {
+            if (!$this->taskRepository->checkDates($startDate, $data['endDate'])) {
                 return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 404);
             }
-            $project->setEndDate(new \DateTime($endDate));
+            $project->setEndDate(new \DateTime($data['endDate']));
         }
-        if ($addConsultantsEmails !== null) {
-            $this->updateTaskConsultants($task, $addConsultantsEmails, true);
+        if ($data['addConsultantsEmails'] !== null) {
+            $this->updateTaskConsultants($task, $data['addConsultantsEmails'], true);
         }
 
-        if ($erraseConsultantsEmails !== null) {
-            $this->updateTaskConsultants($task, $erraseConsultantsEmails, false);
+        if ($data['erraseConsultantsEmails'] !== null) {
+            $this->updateTaskConsultants($task, $data['erraseConsultantsEmails'], false);
         }
 
         $this->taskRepository->saveTask();

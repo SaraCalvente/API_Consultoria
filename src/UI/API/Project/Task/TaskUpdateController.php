@@ -90,16 +90,7 @@ class TaskUpdateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $tareaUpdateByNameService(
-                $data['name'],
-                $data['projectName'],
-                $data['description'] ?? null,
-                $data['status'] ?? null,
-                $data['endDate'] ?? null,
-                $data['addConsultantsEmails'] ?? null,
-                $data['erraseConsultantsEmails'] ?? null,
-
-            );
+            return $tareaUpdateByNameService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
