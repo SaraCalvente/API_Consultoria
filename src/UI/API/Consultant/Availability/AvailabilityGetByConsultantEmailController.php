@@ -56,7 +56,7 @@ class AvailabilityGetByConsultantEmailController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $availabilityGetByConsultantEmailService($data['email']);
+            return $availabilityGetByConsultantEmailService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }

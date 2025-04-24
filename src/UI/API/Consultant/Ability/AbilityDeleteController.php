@@ -40,10 +40,7 @@ class AbilityDeleteController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $abilityDeleteService(
-                $data['name'],
-                $data['level']
-            );
+            return $abilityDeleteService( $data );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

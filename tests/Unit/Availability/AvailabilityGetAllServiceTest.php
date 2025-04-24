@@ -34,7 +34,6 @@ class AvailabilityGetAllServiceTest extends Unit
      */
     public function testReturnsAllAvailabilities(): void
     {
-        // Consultant mocks
         $consultant1 = $this->createConfiguredMock(Consultant::class, [
             'getId' => 123
         ]);
@@ -59,15 +58,12 @@ class AvailabilityGetAllServiceTest extends Unit
             'getConsultant' => $consultant2
         ]);
 
-        // Set up repository mock
         $this->availabilityRepository
             ->method('findAllAvailabilities')
             ->willReturn([$availability1, $availability2]);
 
-        // Call the service
         $response = ($this->service)();
 
-        // Assert response
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 

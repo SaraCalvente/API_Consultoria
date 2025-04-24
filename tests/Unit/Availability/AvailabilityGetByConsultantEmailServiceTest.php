@@ -49,29 +49,24 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
     {
         $email = 'test@example.com';
 
-        // Crear un mock para EmailValueObject
         $emailValueObject = $this->createMock(EmailValueObject::class);
         $emailValueObject->method('__toString')->willReturn($email);
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
 
-        // Crear mocks de Availability y simular las fechas
         $availability1 = $this->createMock(Availability::class);
         $availability2 = $this->createMock(Availability::class);
 
-        // Simular getConsultant() en Availability para devolver un mock de Consultant
         $availability1->method('getConsultant')->willReturn($consultant);
         $availability2->method('getConsultant')->willReturn($consultant);
 
-        // Simular fechas válidas en Availability
         $availability1->method('getStartDate')->willReturn(new \DateTime('2025-04-20 09:00:00'));
         $availability1->method('getEndDate')->willReturn(new \DateTime('2025-04-20 17:00:00'));
 
         $availability2->method('getStartDate')->willReturn(new \DateTime('2025-04-21 10:00:00'));
         $availability2->method('getEndDate')->willReturn(new \DateTime('2025-04-21 18:00:00'));
 
-        // Simular getId() y getName() para el mock de Consultant
         $consultant->method('getId')->willReturn(123);
         $consultant->method('getName')->willReturn('John Doe');
 
@@ -97,14 +92,14 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
             ->with($consultant)
             ->willReturn([$availability1, $availability2]);
 
-        // Mock AvailabilityDTO y asegurar que AvailabilityDTO::fromEntity usa los valores correctos
         $availabilityDTO1 = $this->createMock(AvailabilityDTO::class);
         $availabilityDTO2 = $this->createMock(AvailabilityDTO::class);
         $this->availabilityRepository
             ->method('findAvailabilityByConsultant')
             ->willReturn([$availabilityDTO1, $availabilityDTO2]);
 
-        $response = ($this->service)($email);
+        $data = ['email' => $email];
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -122,6 +117,7 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
     public function testReturnsErrorWhenConsultantDoesNotExist(): void
     {
         $email = 'test@example.com';
+        $data = ['email' => $email];
 
         $user = $this->createMock(User::class);
 
@@ -134,7 +130,7 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
             ->with($user)
             ->willReturn(false);
 
-        $response = ($this->service)($email);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(404, $response->getStatusCode());

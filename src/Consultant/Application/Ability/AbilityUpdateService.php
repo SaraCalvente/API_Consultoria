@@ -19,13 +19,13 @@ class AbilityUpdateService
         $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke(string $name, string $level, ?string $newName, ?string $newLevel): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        if (!$this->abilityRepository->checkIfAbilityExists($name, $level)) {
-            return new JsonResponse(['error' => 'An ability with the name ' . $name . ' and level ' . $level . ' does not exists.' ], 403);
+        if (!$this->abilityRepository->checkIfAbilityExists($data['name'], $data['level'])) {
+            return new JsonResponse(['error' => 'An ability with the name ' . $data['name'] . ' and level ' . $data['level'] . ' does not exists.' ], 403);
         }
-        $ability = $this->abilityRepository->findAbilityByNameAndLevel($name, $level);
-        $this->abilityRepository->updateAbility($ability, $newName, $newLevel);
+        $ability = $this->abilityRepository->findAbilityByNameAndLevel($data['name'], $data['level']);
+        $this->abilityRepository->updateAbility($ability, $data['newName'], $data['newLevel']);
 
         return new JsonResponse([
             'message' => 'Ability successfully updated.',

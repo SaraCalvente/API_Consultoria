@@ -52,6 +52,8 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $email = 'test@example.com';
         $profile = 'Desarrollador';
 
+        $data = ['email' => $email, 'profile' => $profile, 'addAbilities' => null, 'removeAbilities' => null];
+
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
 
@@ -93,7 +95,7 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $consultant
             ->method('getUser')->willReturn($user);
 
-        $response = ($this->service)($email, $profile);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -111,6 +113,8 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $removeAbilities = [
             ['abilityName' => 'Java', 'level' => 'SENIOR']
         ];
+
+        $data = ['email' => $email, 'profile' => null, 'addAbilities' => $addAbilities, 'removeAbilities' => $removeAbilities];
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
@@ -141,7 +145,7 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $user->method('getEmail')->willReturn(null);
         $user->method('getRoles')->willReturn(['ROLE_CONSULTANT']);
 
-        $response = ($this->service)($email, null, $addAbilities, $removeAbilities);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

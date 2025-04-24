@@ -25,20 +25,20 @@ class ConsultantUpdateByUserService
         $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke( User $user, ?string $profile = null, ?array $addAbilities, ?array $removeAbilities
+    public function __invoke( User $user, array $data
     ): JsonResponse {
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
-        if ($addAbilities !== null) {
-            $this->updateConsultantAbilities($consultant, $addAbilities, true);
+        if ($data['addAbilities'] !== null) {
+            $this->updateConsultantAbilities($consultant, $data['addAbilities'], true);
         }
 
-        if ($removeAbilities !== null) {
-            $this->updateConsultantAbilities($consultant, $removeAbilities, false);
+        if ($data['removeAbilities'] !== null) {
+            $this->updateConsultantAbilities($consultant, $data['removeAbilities'], false);
         }
 
-        if ($profile !== null) {
-            $consultant->setProfile(Profile::from($profile));
+        if ($data['profile'] !== null) {
+            $consultant->setProfile(Profile::from($data['profile']));
         }
 
         $this->consultantRepository->saveConsultant();

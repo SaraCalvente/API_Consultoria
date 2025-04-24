@@ -21,14 +21,14 @@ class AbilityCreateService
         $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke(string $name, string $level): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        if ($this->abilityRepository->checkIfAbilityExists($name, $level)) {
-            return new JsonResponse(['error' => 'An ability with the name ' . $name . ' already exists.' ], 403);
+        if ($this->abilityRepository->checkIfAbilityExists($data['name'], $data['level'])) {
+            return new JsonResponse(['error' => 'An ability with the name ' . $data['name'] . ' already exists.' ], 403);
         }
         $ability = new Ability();
-        $ability->setName($name);
-        $ability->setLevel(Level::from($level));
+        $ability->setName($data['name']);
+        $ability->setLevel(Level::from($data['level']));
         $this->abilityRepository->addAbility($ability);
 
         return new JsonResponse([

@@ -28,13 +28,12 @@ class AbilityCreateServiceTest extends Unit
 
     public function testCreatesAbilitySuccessfully(): void
     {
-        $name = 'Symfony';
-        $level = 'Experto';
+        $data = ['name' => 'Symfony', 'level' => 'Experto'];
 
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
-            ->with($name, $level)
+            ->with($data['name'], $data['level'])
             ->willReturn(false);
 
         $this->abilityRepository
@@ -42,7 +41,7 @@ class AbilityCreateServiceTest extends Unit
             ->method('addAbility')
             ->with($this->isInstanceOf(Ability::class));
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -54,20 +53,19 @@ class AbilityCreateServiceTest extends Unit
 
     public function testReturnsErrorIfAbilityExists(): void
     {
-        $name = 'Symfony';
-        $level = 'Experto';
+        $data = ['name' => 'Symfony', 'level' => 'Experto'];
 
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
-            ->with($name, $level)
+            ->with($data['name'], $data['level'])
             ->willReturn(true);
 
         $this->abilityRepository
             ->expects($this->never())
             ->method('addAbility');
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());

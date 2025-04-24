@@ -47,6 +47,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
     public function testReturnsAbilitiesByConsultantEmail(): void
     {
         $email = 'consultant@example.com';
+        $data = ['email' => $email];
 
         $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
             '__toString' => $email,
@@ -89,7 +90,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
             ->with($consultant)
             ->willReturn([$ability]);
 
-        $response = ($this->service)($email);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -109,6 +110,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
     public function testReturns404IfNotConsultant(): void
     {
         $email = 'notconsultant@example.com';
+        $data = ['email' => $email];
         $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
             '__toString' => $email,
         ]);
@@ -129,7 +131,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
             ->with($user)
             ->willReturn(false);
 
-        $response = ($this->service)($email);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(404, $response->getStatusCode());

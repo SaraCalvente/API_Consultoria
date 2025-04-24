@@ -55,10 +55,7 @@ class AvailabilityGetByConsultantAndStartDateController extends AbstractControll
         $data = json_decode($request->getContent(), true);
 
 
-        return $getByConsultantAndStartDateService(
-            $data['email'],
-            $data['startDate']
-        );
+        return $getByConsultantAndStartDateService($data);
     }
 
 

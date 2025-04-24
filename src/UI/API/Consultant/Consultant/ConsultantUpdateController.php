@@ -78,10 +78,7 @@ class ConsultantUpdateController extends AbstractController
             $data = json_decode($request->getContent(), true);
             return $consultantUpdateById(
                 $user,
-                $data['profile'] ?? null,
-                $data['addAbilities'] ?? null,
-                $data['removeAbilities'] ?? null,
-            );
+                $data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

@@ -62,12 +62,7 @@ class AvailabilityCreateController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
 
-        return $availabilityCreateService(
-            $data['consultantEmail'],
-            $data['startDate'],
-            $data['endDate'],
-            $data['available']
-        );
+        return $availabilityCreateService($data);
     }
 
 

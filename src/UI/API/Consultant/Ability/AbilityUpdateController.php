@@ -59,12 +59,7 @@ class AbilityUpdateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $abilityUpdateService(
-                $data['name'],
-                $data['level'],
-                $data['newName'] ?? null,
-                $data['newLevel'] ?? null
-            );
+            return $abilityUpdateService( $data );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

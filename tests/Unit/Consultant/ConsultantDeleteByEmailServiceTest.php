@@ -11,6 +11,7 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -36,62 +37,58 @@ class ConsultantDeleteByEmailServiceTest extends Unit
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteConsultantSuccessfully(): void
     {
         $email = 'consultant@example.com';
 
-        // Mock de EmailValueObject
+        $data = ['email' => $email];
+
         $emailValueObject = $this->createMock(EmailValueObject::class);
         $emailValueObject->method('__toString')->willReturn($email);
 
-        // Mock de User
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn($emailValueObject);
 
-        // Mock de Consultant
         $consultant = $this->createMock(Consultant::class);
         $consultant->method('getId')->willReturn(123);
 
-        // Configurar mocks para el repository
         $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
-        // Simular que no tiene proyectos (devolver null)
         $this->projectRepository->method('checkIfConsultantHasProjects')->with($consultant)->willReturn(null);
 
-        // Simular la eliminación del consultor
         $this->consultantRepository->method('deleteConsultant')->with($consultant)->willReturn(new JsonResponse(['message' => 'Consultant deleted successfully'], 200));
 
-        // Ejecutar el servicio
-        $response = ($this->service)($email);
+        $response = ($this->service)($data);
 
-        // Verificar la respuesta
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['message' => 'Consultant deleted successfully'], json_decode($response->getContent(), true));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCannotDeleteConsultantWithProjects(): void
     {
         $email = 'consultant@example.com';
+        $data = ['email' => $email];
 
-        // Mock de EmailValueObject
         $emailValueObject = $this->createMock(EmailValueObject::class);
         $emailValueObject->method('__toString')->willReturn($email);
 
-        // Mock de User
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn($emailValueObject);
 
-        // Mock de Consultant
         $consultant = $this->createMock(Consultant::class);
         $consultant->method('getId')->willReturn(123);
 
-        // Configurar mocks para el repository
         $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
-        // Simular que tiene proyectos asignados (devolver JsonResponse con los detalles)
         $this->projectRepository->method('checkIfConsultantHasProjects')->with($consultant)->willReturn(
             new JsonResponse([
                 'error' => 'Cannot delete consultant because there are associated projects.',
@@ -99,10 +96,8 @@ class ConsultantDeleteByEmailServiceTest extends Unit
             ], 402)
         );
 
-        // Ejecutar el servicio
-        $response = ($this->service)($email);
+        $response = ($this->service)($data);
 
-        // Verificar la respuesta
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(402, $response->getStatusCode());
         $this->assertEquals([

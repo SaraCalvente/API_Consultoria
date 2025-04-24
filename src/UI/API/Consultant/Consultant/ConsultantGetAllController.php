@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant\Consultant;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantFindAllService;
+use App\Consultant\Application\Consultant\Admin\ConsultantGetAllService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,7 +43,7 @@ class ConsultantGetAllController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllConsultants(ConsultantFindAllService $consultantFindAllService): JsonResponse
+    public function getAllConsultants(ConsultantGetAllService $consultantFindAllService): JsonResponse
     {
         return $consultantFindAllService();
     }

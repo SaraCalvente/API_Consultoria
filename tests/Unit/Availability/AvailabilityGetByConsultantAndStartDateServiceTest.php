@@ -51,6 +51,8 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
         $email = 'test@example.com';
         $startDate = '2025-04-20 09:00:00';
 
+        $data = ['email' => $email, 'startDate' => $startDate];
+
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
         $availability = $this->createConfiguredMock(Availability::class, [
@@ -82,7 +84,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
             ->with($consultant, $startDate)
             ->willReturn($availability);
 
-        $response = ($this->service)($email, $startDate);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -106,6 +108,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
     {
         $email = 'test@example.com';
         $startDate = '2025-04-20 09:00:00';
+        $data = ['email' => $email, 'startDate' => $startDate];
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
@@ -123,7 +126,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
             ->with($consultant, $startDate)
             ->willReturn(false);
 
-        $response = ($this->service)($email, $startDate);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());

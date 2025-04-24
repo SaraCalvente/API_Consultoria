@@ -29,14 +29,14 @@ class AvailabilityUpdateService
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function __invoke(string $email, string $startDate, ?string $endDate, ?bool $available): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($email);
+        $user = $this->userRepository->findUserByEmail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
-        if (!$this->availabilityRepository->checkIfAvailabilityExists($consultant, $startDate)) {
-            return new JsonResponse(['error' => 'An availability for ' . $email . ' with start date ' . $startDate . ' does not exists.'], 403);
+        if (!$this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
+            return new JsonResponse(['error' => 'An availability for ' . $data['email'] . ' with start date ' . $data['startDate'] . ' does not exists.'], 403);
         }
-        $availability = $this->availabilityRepository->findAvailabilityByStartDateAndConsultant($consultant, $startDate);
-        return $this->availabilityRepository->updateAvailability($availability, $endDate, $available);
+        $availability = $this->availabilityRepository->findAvailabilityByStartDateAndConsultant($consultant, $data['startDate']);
+        return $this->availabilityRepository->updateAvailability($availability, $data['endDate'], $data['available']);
     }
 }

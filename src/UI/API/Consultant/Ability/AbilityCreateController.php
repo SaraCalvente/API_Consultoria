@@ -54,11 +54,7 @@ class AbilityCreateController extends AbstractController
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-
-        return $abilityCreateService(
-            $data['name'],
-            $data['level']
-        );
+        return $abilityCreateService( $data );
     }
 
 

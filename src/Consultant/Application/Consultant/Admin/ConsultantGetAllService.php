@@ -6,7 +6,7 @@ use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantFindAllService
+class ConsultantGetAllService
 {
     private ConsultantRepositoryInterface $consultantRepository;
 

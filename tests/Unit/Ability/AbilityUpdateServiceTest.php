@@ -37,13 +37,15 @@ class AbilityUpdateServiceTest extends Unit
         $newName = 'Laravel';
         $newLevel = Level::MEDIUM->value;
 
+        $data = ['name' => $name, 'level' => $level, 'newName' => $newName, 'newLevel' => $newLevel];
+
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
             ->with($name, $level)
             ->willReturn(false);
 
-        $response = ($this->service)($name, $level, $newName, $newLevel);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -61,6 +63,8 @@ class AbilityUpdateServiceTest extends Unit
         $level = Level::EXPERT->value;
         $newName = 'Laravel';
         $newLevel = Level::MEDIUM->value;
+
+        $data = ['name' => $name, 'level' => $level, 'newName' => $newName, 'newLevel' => $newLevel];
 
         $ability = $this->createConfiguredMock(Ability::class, [
             'getId' => 1,
@@ -85,7 +89,7 @@ class AbilityUpdateServiceTest extends Unit
             ->method('updateAbility')
             ->with($ability, $newName, $newLevel);
 
-        $response = ($this->service)($name, $level, $newName, $newLevel);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

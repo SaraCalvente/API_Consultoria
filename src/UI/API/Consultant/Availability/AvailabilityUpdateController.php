@@ -62,12 +62,7 @@ class AvailabilityUpdateController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $availabilityUpdateService(
-                $data['email'],
-                $data['startDate'],
-                $data['endDate'] ?? null,
-                $data['available'] ?? null
-            );
+            return $availabilityUpdateService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

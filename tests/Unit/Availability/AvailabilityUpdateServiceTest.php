@@ -51,6 +51,8 @@ class AvailabilityUpdateServiceTest extends Unit
         $endDate = '2025-04-20 17:00:00';
         $available = true;
 
+        $data = ['email' => $email, 'startDate' => $startDate, 'endDate' => $endDate, 'available' => $available];
+
         $emailValueObject = $this->createMock(EmailValueObject::class);
         $emailValueObject->method('__toString')->willReturn($email);
 
@@ -72,7 +74,7 @@ class AvailabilityUpdateServiceTest extends Unit
 
         $this->availabilityRepository->method('updateAvailability')->willReturn(new JsonResponse(['message' => 'Availability updated successfully'], 200));
 
-        $response = ($this->service)($email, $startDate, $endDate, $available);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -89,6 +91,8 @@ class AvailabilityUpdateServiceTest extends Unit
         $endDate = '2025-04-20 17:00:00';
         $available = true;
 
+        $data = ['email' => $email, 'startDate' => $startDate, 'endDate' => $endDate, 'available' => $available];
+
         $emailValueObject = $this->createMock(EmailValueObject::class);
         $emailValueObject->method('__toString')->willReturn($email);
 
@@ -103,7 +107,7 @@ class AvailabilityUpdateServiceTest extends Unit
 
         $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(false);
 
-        $response = ($this->service)($email, $startDate, $endDate, $available);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());

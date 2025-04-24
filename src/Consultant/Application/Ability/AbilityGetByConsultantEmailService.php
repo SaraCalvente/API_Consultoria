@@ -25,9 +25,9 @@ class AbilityGetByConsultantEmailService
         $this->userRepository = $userRepository;
     }
 
-    public function __invoke(string $email): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($email);
+        $user = $this->userRepository->findUserByEmail($data['email']);
 
         if(!$this->consultantRepository->checkIfConsultantExists($user)) {
             return new JsonResponse(['error' => 'User ' . $user->getEmail() . ' is not a Consultant'], 404);

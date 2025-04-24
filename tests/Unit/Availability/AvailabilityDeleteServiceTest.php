@@ -51,6 +51,8 @@ class AvailabilityDeleteServiceTest extends Unit
         $email = 'test@example.com';
         $startDate = '2025-04-22 10:00:00';
 
+        $data = ['email' => $email, 'startDate' => $startDate];
+
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
 
@@ -58,7 +60,7 @@ class AvailabilityDeleteServiceTest extends Unit
         $this->consultantRepository->method('findConsultantByUser')->willReturn($consultant);
         $this->availabilityRepository->method('checkIfAvailabilityExists')->willReturn(false);
 
-        $response = ($this->service)($email, $startDate);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -74,6 +76,7 @@ class AvailabilityDeleteServiceTest extends Unit
     {
         $email = 'test@example.com';
         $startDate = '2025-04-22 10:00:00';
+        $data = ['email' => $email, 'startDate' => $startDate];
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
@@ -88,7 +91,7 @@ class AvailabilityDeleteServiceTest extends Unit
             ->method('deleteAvailability')
             ->with($availability);
 
-        $response = ($this->service)($email, $startDate);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

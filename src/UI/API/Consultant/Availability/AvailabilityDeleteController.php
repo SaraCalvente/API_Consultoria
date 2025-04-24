@@ -47,10 +47,7 @@ class AvailabilityDeleteController extends AbstractController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            return $availabilityDeleteService(
-                $data['email'],
-                $data['startDate']
-            );
+            return $availabilityDeleteService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

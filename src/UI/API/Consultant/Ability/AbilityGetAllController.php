@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\Consultant\Ability;
 
 use App\Consultant\Application\Ability\AbilityGetAllService;
-use App\Consultant\Application\Consultant\Admin\ConsultantFindAllService;
+use App\Consultant\Application\Consultant\Admin\ConsultantGetAllService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

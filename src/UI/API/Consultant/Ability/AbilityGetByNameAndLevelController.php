@@ -52,10 +52,7 @@ class AbilityGetByNameAndLevelController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
 
-        return $abilityGetService(
-            $data['name'],
-            $data['level']
-        );
+        return $abilityGetService( $data );
     }
 
 

@@ -48,6 +48,8 @@ class ConsultantUpdateByUserServiceTest extends Unit
         $user = $this->createMock(User::class);
         $profile = 'Desarrollador';
 
+        $data = ['profile' => $profile, 'addAbilities' => null, 'removeAbilities' => null];
+
         $consultant = $this->createMock(Consultant::class);
 
         $this->consultantRepository
@@ -74,7 +76,7 @@ class ConsultantUpdateByUserServiceTest extends Unit
         $user->method('getEmail')->willReturn(new EmailValueObject('user@example.com'));
         $user->method('getRoles')->willReturn(['ROLE_CONSULTANT']);
 
-        $response = ($this->service)($user, $profile, null, null);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -92,6 +94,8 @@ class ConsultantUpdateByUserServiceTest extends Unit
         $removeAbilities = [
             ['abilityName' => 'Java', 'level' => 'SENIOR']
         ];
+
+        $data = ['profile' => null, 'addAbilities' => $addAbilities, 'removeAbilities' => $removeAbilities];
 
         $consultant = $this->createMock(Consultant::class);
         $abilityToAdd = $this->createMock(Ability::class);
@@ -120,7 +124,7 @@ class ConsultantUpdateByUserServiceTest extends Unit
         $user->method('getEmail')->willReturn(new EmailValueObject('user@example.com'));
         $user->method('getRoles')->willReturn(['ROLE_CONSULTANT']);
 
-        $response = ($this->service)($user, null, $addAbilities, $removeAbilities);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());

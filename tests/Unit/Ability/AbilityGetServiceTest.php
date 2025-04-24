@@ -37,13 +37,15 @@ class AbilityGetServiceTest extends Unit
         $name = 'Symfony';
         $level = Level::EXPERT->value;
 
+        $data = ['name' => $name, 'level' => $level];
+
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
             ->with($name, $level)
             ->willReturn(false);
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -60,6 +62,7 @@ class AbilityGetServiceTest extends Unit
     {
         $name = 'Symfony';
         $level = Level::EXPERT->value;
+        $data = ['name' => $name, 'level' => $level];
 
         $ability = $this->createConfiguredMock(Ability::class, [
             'getId' => 1,
@@ -79,7 +82,7 @@ class AbilityGetServiceTest extends Unit
             ->with($name, $level)
             ->willReturn($ability);
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

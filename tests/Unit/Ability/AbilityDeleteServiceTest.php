@@ -31,20 +31,19 @@ class AbilityDeleteServiceTest extends Unit
      */
     public function testDeletesExistingAbility(): void
     {
-        $name = 'Symfony';
-        $level = 'Bajo';
+        $data = ['name' => 'Symfony', 'level' => 'Bajo'];
         $ability = $this->createMock(Ability::class);
 
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
-            ->with($name, $level)
+            ->with($data['name'], $data['level'])
             ->willReturn(true);
 
         $this->abilityRepository
             ->expects($this->once())
             ->method('findAbilityByNameAndLevel')
-            ->with($name, $level)
+            ->with($data['name'], $data['level'])
             ->willReturn($ability);
 
         $this->abilityRepository
@@ -52,7 +51,7 @@ class AbilityDeleteServiceTest extends Unit
             ->method('deleteAbility')
             ->with($ability);
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -63,13 +62,11 @@ class AbilityDeleteServiceTest extends Unit
 
     public function testFailsWhenAbilityDoesNotExist(): void
     {
-        $name = 'Nonexistent';
-        $level = 'Alto';
-
+        $data = ['name' => 'Nonexistent', 'level' => 'Alto'];
         $this->abilityRepository
             ->expects($this->once())
             ->method('checkIfAbilityExists')
-            ->with($name, $level)
+            ->with($data['name'], $data['level'])
             ->willReturn(false);
 
         $this->abilityRepository
@@ -80,7 +77,7 @@ class AbilityDeleteServiceTest extends Unit
             ->expects($this->never())
             ->method('deleteAbility');
 
-        $response = ($this->service)($name, $level);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());

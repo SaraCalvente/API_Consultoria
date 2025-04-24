@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Consultant\Admin;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantFindAllService;
+use App\Consultant\Application\Consultant\Admin\ConsultantGetAllService;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
@@ -14,10 +14,10 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantFindAllServiceTest extends Unit
+class ConsultantGetAllServiceTest extends Unit
 {
     private ConsultantRepositoryInterface $consultantRepository;
-    private ConsultantFindAllService $service;
+    private ConsultantGetAllService $service;
 
     /**
      * @throws Exception
@@ -27,7 +27,7 @@ class ConsultantFindAllServiceTest extends Unit
         parent::setUp();
 
         $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
-        $this->service = new ConsultantFindAllService($this->consultantRepository);
+        $this->service = new ConsultantGetAllService($this->consultantRepository);
     }
 
     /**

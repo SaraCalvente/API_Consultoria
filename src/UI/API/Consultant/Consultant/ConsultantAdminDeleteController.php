@@ -46,7 +46,7 @@ class ConsultantAdminDeleteController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
         try {
-            return $consultantDeleteByEmailService($data['email']);
+            return $consultantDeleteByEmailService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

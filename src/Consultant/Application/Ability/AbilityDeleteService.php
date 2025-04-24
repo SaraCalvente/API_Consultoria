@@ -18,12 +18,12 @@ class AbilityDeleteService
         $this->abilityRepository = $abilityRepository;
     }
 
-    public function __invoke(string $name, string $level): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        if (!$this->abilityRepository->checkIfAbilityExists($name, $level)) {
-            return new JsonResponse(['error' => 'An ability with the name ' . $name . ' does not exists.' ], 403);
+        if (!$this->abilityRepository->checkIfAbilityExists($data['name'], $data['level'])) {
+            return new JsonResponse(['error' => 'An ability with the name ' . $data['name'] . ' does not exists.' ], 403);
         }
-        $ability = $this->abilityRepository->findAbilityByNameAndLevel($name, $level);
+        $ability = $this->abilityRepository->findAbilityByNameAndLevel($data['name'], $data['level']);
         $this->abilityRepository->deleteAbility($ability);
 
 

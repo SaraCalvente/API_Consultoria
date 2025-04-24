@@ -51,6 +51,8 @@ class AvailabilityCreateServiceTest extends Unit
         $start = '2025-04-20 09:00:00';
         $end = '2025-04-21 09:00:00';
 
+        $data = ['email' => $email, 'startDate' => $start, 'endDate' => $end, 'available' => true];
+
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
 
@@ -58,7 +60,7 @@ class AvailabilityCreateServiceTest extends Unit
         $this->consultantRepository->method('findConsultantByUser')->willReturn($consultant);
         $this->availabilityRepository->method('checkIfAvailabilityExists')->willReturn(true);
 
-        $response = ($this->service)($email, $start, $end, true);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -75,7 +77,10 @@ class AvailabilityCreateServiceTest extends Unit
     {
         $email = 'test@example.com';
         $start = '2025-04-22 10:00:00';
-        $end = '2025-04-21 09:00:00'; // start > end
+        $end = '2025-04-21 09:00:00';
+
+        $data = ['email' => $email, 'startDate' => $start, 'endDate' => $end, 'available' => true];
+
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
@@ -85,7 +90,7 @@ class AvailabilityCreateServiceTest extends Unit
         $this->availabilityRepository->method('checkIfAvailabilityExists')->willReturn(false);
         $this->availabilityRepository->method('checkDates')->willReturn(false);
 
-        $response = ($this->service)($email, $start, $end, true);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -104,6 +109,9 @@ class AvailabilityCreateServiceTest extends Unit
         $start = '2025-04-20 09:00:00';
         $end = '2025-04-21 09:00:00';
 
+        $data = ['email' => $email, 'startDate' => $start, 'endDate' => $end, 'available' => true];
+
+
         $user = $this->createMock(User::class);
 
         $consultant = $this->createConfiguredMock(Consultant::class, [
@@ -119,7 +127,7 @@ class AvailabilityCreateServiceTest extends Unit
             ->expects($this->once())
             ->method('addAvailability');
 
-        $response = ($this->service)($email, $start, $end, true);
+        $response = ($this->service)($data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

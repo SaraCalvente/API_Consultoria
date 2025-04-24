@@ -35,23 +35,24 @@ class AvailabilityCreateService
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(string $email, string $startDate, string $endDate, bool $available): JsonResponse
+    public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($email);
+        $user = $this->userRepository->findUserByEmail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
-        if ($this->availabilityRepository->checkIfAvailabilityExists($consultant, $startDate)) {
-            return new JsonResponse(['error' => 'An availability of ' . $email . ' with a start date ' . $startDate . ' already exists.' ], 403);
+        if ($this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
+            return new JsonResponse(['error' => 'An availability of ' . $data['email'] .
+                ' with a start date ' . $data['startDate'] . ' already exists.' ], 403);
         }
         $availability = new Availability();
-        $availability->setAvailable($available);
+        $availability->setAvailable($data['available']);
         $availability->setConsultant($consultant);
-        if(!$this->availabilityRepository-> checkDates($startDate, $endDate)){
+        if(!$this->availabilityRepository-> checkDates($data['startDate'], $data['endDate'])){
             return new JsonResponse([
-                'error' => 'Start date (' . $startDate . ') is grater than end date (' . $endDate . ') or have the wrong format (Y-m-d H:i:s)'
+                'error' => 'Start date (' . $data['startDate'] . ') is grater than end date (' . $data['endDate'] . ') or have the wrong format (Y-m-d H:i:s)'
             ], 403);
         }
-        $availability->setStartDate(new \DateTime ($startDate));
-        $availability->setEndDate(new \DateTime($endDate));
+        $availability->setStartDate(new \DateTime ($data['startDate']));
+        $availability->setEndDate(new \DateTime($data['endDate']));
         $this->availabilityRepository->addAvailability($availability);
 
         return new JsonResponse([
