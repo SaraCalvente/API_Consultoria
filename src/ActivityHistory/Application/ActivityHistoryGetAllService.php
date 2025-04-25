@@ -23,7 +23,7 @@ class ActivityHistoryGetAllService
     {
         $activities = $this->activityHistoryRepository->findAllActivityHistories();
 
-        if (!$activities) {
+        if (empty($activities)) {
             return new JsonResponse(['error' => 'There are no activities'], 404);
         }
 

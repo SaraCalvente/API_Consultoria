@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ActivityHistory;
 
+use App\ActivityHistory\Application\ActivityHistoryCreateService;
 use App\ActivityHistory\Application\ActivityHistoryGetByNameAndProjectService;
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
+use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Project\Project;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
+use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
@@ -18,39 +21,47 @@ use PHPUnit\Framework\TestCase;
 
 class ActivityHistoryGetByNameAndProjectServiceTest extends Unit
 {
+    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
+    private ProjectRepositoryInterface $projectRepository;
+
+    private ActivityHistoryGetByNameAndProjectService $service;
+    private array $data;
+
     /**
      * @throws Exception
      */
-    public function testReturns201WhenActivityIsFound(): void
+    protected function setUp(): void
     {
-        $data = [
+        $this->activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
+        $this->projectRepository = $this->createMock(ProjectRepositoryInterface::class);
+
+        $this->service = new ActivityHistoryGetByNameAndProjectService($this->activityHistoryRepository, $this->projectRepository);
+        $this->data = [
             'name' => 'Activity 1',
             'projectName' => 'Project A'
         ];
+    }
 
+    /**
+     * @throws Exception
+     * @throws \DateMalformedStringException
+     */
+    public function testReturns201WhenActivityIsFound(): void
+    {
         $project = $this->createMock(Project::class);
         $project->method('getId')->willReturn(300);
 
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(200);
 
-        $activity = $this->createMock(ActivityHistory::class);
-        $activity->method('getId')->willReturn(1);
-        $activity->method('getName')->willReturn('Activity 1');
-        $activity->method('getDescription')->willReturn('Description');
-        $activity->method('getDate')->willReturn(new \DateTime('2025-04-16'));
-        $activity->method('getProject')->willReturn($project);
-        $activity->method('getUser')->willReturn($user);
+        $activity = $this->createActivityMock(1, 'Activity 1', 'Description', '2025-04-16', $project, $user);
 
-        $projectRepo = $this->createMock(ProjectRepositoryInterface::class);
-        $projectRepo->method('findProjectByName')->with('Project A')->willReturn($project);
+        $this->projectRepository->method('findProjectByName')->with('Project A')->willReturn($project);
 
-        $activityRepo = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $activityRepo->method('checkIfActivityHistoryFromProjectExists')->with('Activity 1', $project)->willReturn(true);
-        $activityRepo->method('findActivityHistoryFromProject')->with('Activity 1', $project)->willReturn($activity);
+        $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->with('Activity 1', $project)->willReturn(true);
+        $this->activityHistoryRepository->method('findActivityHistoryFromProject')->with('Activity 1', $project)->willReturn($activity);
 
-        $service = new ActivityHistoryGetByNameAndProjectService($activityRepo, $projectRepo);
-        $response = $service($data);
+        $response = ($this->service)($this->data);
 
         $this->assertEquals(201, $response->getStatusCode());
 
@@ -77,18 +88,9 @@ class ActivityHistoryGetByNameAndProjectServiceTest extends Unit
     {
         $this->expectException(ProjectNotFoundException::class);
 
-        $data = [
-            'name' => 'Activity 1',
-            'projectName' => 'NonExistent Project'
-        ];
+        $this->projectRepository->method('findProjectByName')->willReturn(null);
 
-        $projectRepo = $this->createMock(ProjectRepositoryInterface::class);
-        $projectRepo->method('findProjectByName')->with('NonExistent Project')->willReturn(null);
-
-        $activityRepo = $this->createMock(ActivityHistoryRepositoryInterface::class);
-
-        $service = new ActivityHistoryGetByNameAndProjectService($activityRepo, $projectRepo);
-        $service($data);
+        ($this->service)($this->data);
     }
 
     /**
@@ -98,20 +100,35 @@ class ActivityHistoryGetByNameAndProjectServiceTest extends Unit
     {
         $this->expectException(ActivityHistoryNotFoundException::class);
 
-        $data = [
-            'name' => 'Unknown Activity',
-            'projectName' => 'Project A'
-        ];
-
         $project = $this->createMock(Project::class);
 
-        $projectRepo = $this->createMock(ProjectRepositoryInterface::class);
-        $projectRepo->method('findProjectByName')->with('Project A')->willReturn($project);
+        $this->projectRepository->method('findProjectByName')->with('Project A')->willReturn($project);
 
-        $activityRepo = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $activityRepo->method('checkIfActivityHistoryFromProjectExists')->with('Unknown Activity', $project)->willReturn(false);
+        $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
 
-        $service = new ActivityHistoryGetByNameAndProjectService($activityRepo, $projectRepo);
-        $service($data);
+        ($this->service)($this->data);
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     * @throws Exception
+     */
+    private function createActivityMock(
+        int $id,
+        string $name,
+        string $description,
+        string $date,
+        ?Project $project,
+        ?User $user
+    ): ActivityHistory {
+        $activity = $this->createMock(ActivityHistory::class);
+        $activity->method('getId')->willReturn($id);
+        $activity->method('getName')->willReturn($name);
+        $activity->method('getDescription')->willReturn($description);
+        $activity->method('getDate')->willReturn(new \DateTime($date));
+        $activity->method('getProject')->willReturn($project);
+        $activity->method('getUser')->willReturn($user);
+
+        return $activity;
     }
 }

@@ -39,14 +39,10 @@ class AbilityUpdateServiceTest extends Unit
 
         $data = ['name' => $name, 'level' => $level, 'newName' => $newName, 'newLevel' => $newLevel];
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($name, $level)
             ->willReturn(false);
 
         $response = ($this->service)($data);
-
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
 
@@ -57,7 +53,7 @@ class AbilityUpdateServiceTest extends Unit
     /**
      * @throws Exception
      */
-    public function testReturnsUpdatedAbilityIfExists(): void
+    public function testReturnsUpdatedAbility(): void
     {
         $name = 'Symfony';
         $level = Level::EXPERT->value;
@@ -66,28 +62,16 @@ class AbilityUpdateServiceTest extends Unit
 
         $data = ['name' => $name, 'level' => $level, 'newName' => $newName, 'newLevel' => $newLevel];
 
-        $ability = $this->createConfiguredMock(Ability::class, [
-            'getId' => 1,
-            'getName' => $newName,
-            'getLevel' => Level::MEDIUM,
-        ]);
+        $ability = $this->createConfiguredMock(Ability::class, ['getId' => 1, 'getName' => $newName,
+            'getLevel' => Level::MEDIUM]);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($name, $level)
             ->willReturn(true);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAbilityByNameAndLevel')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('findAbilityByNameAndLevel')->with($name, $level)
             ->willReturn($ability);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('updateAbility')
-            ->with($ability, $newName, $newLevel);
+        $this->abilityRepository->expects($this->once())->method('updateAbility')->with($ability, $newName, $newLevel);
 
         $response = ($this->service)($data);
 
@@ -97,10 +81,69 @@ class AbilityUpdateServiceTest extends Unit
         $data = json_decode($response->getContent(), true);
         $this->assertEquals('Ability successfully updated.', $data['message']);
 
-        $this->assertEquals([
-            'ability_id' => 1,
-            'name' => $newName,
-            'level' => Level::MEDIUM->value,
-        ], $data['ability']);
+        $this->assertEquals(['ability_id' => 1, 'name' => $newName, 'level' => Level::MEDIUM->value,], $data['ability']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testReturnsUpdatedNameAbility(): void
+    {
+        $name = 'Symfony';
+        $level = Level::EXPERT->value;
+        $newName = 'Laravel';
+
+        $data = ['name' => $name, 'level' => $level, 'newName' => $newName, 'newLevel' => null];
+
+        $ability = $this->createConfiguredMock(Ability::class, ['getId' => 1, 'getName' => $newName,
+            'getLevel' => Level::EXPERT]);
+
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($name, $level)
+            ->willReturn(true);
+
+        $this->abilityRepository->expects($this->once())->method('findAbilityByNameAndLevel')->with($name, $level)
+            ->willReturn($ability);
+
+        $this->abilityRepository->expects($this->once())->method('updateAbility')->with($ability, $newName);
+
+        $response = ($this->service)($data);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Ability successfully updated.', $data['message']);
+
+        $this->assertEquals(['ability_id' => 1, 'name' => $newName, 'level' => Level::EXPERT->value,], $data['ability']);
+    }
+
+    public function testReturnsUpdatedLevelAbility(): void
+    {
+        $name = 'Symfony';
+        $level = Level::EXPERT->value;
+        $newLevel = Level::MEDIUM->value;
+
+        $data = ['name' => $name, 'level' => $level, 'newName' => null, 'newLevel' => $newLevel];
+
+        $ability = $this->createConfiguredMock(Ability::class, ['getId' => 1, 'getName' => $name,
+        'getLevel' => Level::MEDIUM]);
+
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($name, $level)
+            ->willReturn(true);
+
+        $this->abilityRepository->expects($this->once())->method('findAbilityByNameAndLevel')->with($name, $level)
+            ->willReturn($ability);
+
+        $this->abilityRepository->expects($this->once())->method('updateAbility')->with($ability, null, $newLevel);
+
+        $response = ($this->service)($data);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(201, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Ability successfully updated.', $data['message']);
+
+        $this->assertEquals(['ability_id' => 1, 'name' => $name, 'level' => $newLevel,], $data['ability']);
     }
 }

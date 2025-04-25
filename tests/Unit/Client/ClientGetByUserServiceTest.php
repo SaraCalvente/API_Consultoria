@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Client;
 
+use App\Client\Application\ClientGetAllService;
 use App\Client\Application\ClientGetByUserService;
 use App\Client\Domain\Client;
 use App\Client\Domain\ClientDTO;
@@ -18,32 +19,36 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientGetByUserServiceTest extends Unit
 {
+    private ClientRepositoryInterface $clientRepository;
+    private ClientGetByUserService $service;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        $this->clientRepository = $this->createMock(ClientRepositoryInterface::class);
+
+        $this->service = new ClientGetByUserService($this->clientRepository);
+    }
     /**
      * @throws Exception
      * @throws NotValidEmailException
      */
     public function testInvokeReturnsClientDataAsJsonResponse(): void
     {
-
-
         $user = $this->createUserMock(1, 'user@example.com', ['ROLE_CLIENT']);
 
         $client = $this->createClientMock(1, $user, 'Ana', 'García Ruiz', 'Calle Ejemplo, 9', '666666666');
 
-        $clientRepository = $this->createMock(ClientRepositoryInterface::class);
-        $clientRepository
-            ->expects($this->once())
-            ->method('getClientByUser')
-            ->with($user)
+        $this->clientRepository->expects($this->once())->method('findClientByUser')->with($user)
             ->willReturn($client);
 
-        $service = new ClientGetByUserService($clientRepository);
-
         $expectedJson = new JsonResponse(ClientDTO::fromEntity($client));
-        $actualJson = $service($user);
+        $response = ($this->service)($user);
 
-        $this->assertEquals($expectedJson->getContent(), $actualJson->getContent());
-        $this->assertEquals($expectedJson->getStatusCode(), $actualJson->getStatusCode());
+        $this->assertEquals($expectedJson->getContent(), $response->getContent());
+        $this->assertEquals($expectedJson->getStatusCode(), $response->getStatusCode());
     }
 
     /**

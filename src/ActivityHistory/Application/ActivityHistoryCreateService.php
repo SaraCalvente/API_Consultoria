@@ -46,7 +46,7 @@ class ActivityHistoryCreateService
         $project = $this->projectRepository->findProjectByName($data['projectName']);
 
         if($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)){
-            return new JsonResponse(['error' => 'A task with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
+            return new JsonResponse(['error' => 'An activity with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
         }
         $user = $this->userRepository->findUserByEmail($data['consultantEmail']);
         if (!$this->consultantRepository->checkIfConsultantExists($user)){

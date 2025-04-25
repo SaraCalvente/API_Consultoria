@@ -82,6 +82,86 @@ class AvailabilityUpdateServiceTest extends Unit
     }
 
     /**
+     * @throws \DateMalformedStringException
+     * @throws Exception
+     */
+    public function testUpdateAvailabilityEndDateSuccessfully(): void
+    {
+        $email = 'test@example.com';
+        $startDate = '2025-04-20 09:00:00';
+        $endDate = '2025-04-20 17:00:00';
+
+        $data = ['email' => $email, 'startDate' => $startDate, 'endDate' => $endDate, 'available' => null];
+
+        $emailValueObject = $this->createMock(EmailValueObject::class);
+        $emailValueObject->method('__toString')->willReturn($email);
+
+        $user = $this->createMock(User::class);
+        $user->method('getEmail')->willReturn($emailValueObject);
+
+        $consultant = $this->createMock(Consultant::class);
+        $consultant->method('getId')->willReturn(123);
+
+        $availability = $this->createMock(Availability::class);
+        $availability->method('getStartDate')->willReturn(new \DateTime($startDate));
+
+        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
+
+        $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(true);
+
+        $this->availabilityRepository->method('findAvailabilityByStartDateAndConsultant')->with($consultant, $startDate)->willReturn($availability);
+
+        $this->availabilityRepository->method('updateAvailability')->willReturn(new JsonResponse(['message' => 'Availability updated successfully'], 200));
+
+        $response = ($this->service)($data);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['message' => 'Availability updated successfully'], json_decode($response->getContent(), true));
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     * @throws Exception
+     */
+    public function testUpdateAvailabilityAvailableSuccessfully(): void
+    {
+        $email = 'test@example.com';
+        $startDate = '2025-04-20 09:00:00';
+        $available = true;
+
+        $data = ['email' => $email, 'startDate' => $startDate, 'endDate' => null, 'available' => $available];
+
+        $emailValueObject = $this->createMock(EmailValueObject::class);
+        $emailValueObject->method('__toString')->willReturn($email);
+
+        $user = $this->createMock(User::class);
+        $user->method('getEmail')->willReturn($emailValueObject);
+
+        $consultant = $this->createMock(Consultant::class);
+        $consultant->method('getId')->willReturn(123);
+
+        $availability = $this->createMock(Availability::class);
+        $availability->method('getStartDate')->willReturn(new \DateTime($startDate));
+
+        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
+
+        $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(true);
+
+        $this->availabilityRepository->method('findAvailabilityByStartDateAndConsultant')->with($consultant, $startDate)->willReturn($availability);
+
+        $this->availabilityRepository->method('updateAvailability')->willReturn(new JsonResponse(['message' => 'Availability updated successfully'], 200));
+
+        $response = ($this->service)($data);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['message' => 'Availability updated successfully'], json_decode($response->getContent(), true));
+    }
+
+    /**
      * @throws Exception
      */
     public function testReturnsErrorWhenAvailabilityDoesNotExist(): void

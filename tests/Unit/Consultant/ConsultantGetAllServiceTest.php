@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Consultant\Admin;
+namespace App\Tests\Unit\Consultant;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantGetAllService;
+use App\Consultant\Application\Consultant\ConsultantGetAllService;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use Codeception\Test\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantGetAllServiceTest extends Unit

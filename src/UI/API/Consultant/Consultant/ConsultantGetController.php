@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant\Consultant;
 
-use App\Consultant\Application\Consultant\ConsultantFindByUserService;
+use App\Consultant\Application\Consultant\ConsultantGetByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,7 +49,7 @@ class ConsultantGetController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getConsultant(Security $security, ConsultantFindByUserService $consultantFindByIdService): JsonResponse
+    public function getConsultant(Security $security, ConsultantGetByUserService $consultantFindByIdService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

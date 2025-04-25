@@ -6,6 +6,8 @@ namespace App\ActivityHistory\Application;
 use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
+use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
+use App\Shared\Domain\Exception\ProjectNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryUpdateByNameAndProjectService
@@ -30,6 +32,14 @@ class ActivityHistoryUpdateByNameAndProjectService
     ): JsonResponse {
 
         $project = $this->projectRepository->findProjectByName($data['projectName']);
+        if (!$project) {
+            throw new ProjectNotFoundException();
+        }
+
+        if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)) {
+            throw new ActivityHistoryNotFoundException();
+        }
+
         $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($data['name'], $project);
 
         if ($data['description'] !== null) {

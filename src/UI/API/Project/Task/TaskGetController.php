@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Task\TaskFindByNameAndProjectService;
+use App\Project\Application\Task\TaskGetByNameAndProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +60,7 @@ class TaskGetController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getTasksById(Request $request, TaskFindByNameAndProjectService $findByNameAndProjectService): JsonResponse
+    public function getTasksById(Request $request, TaskGetByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);

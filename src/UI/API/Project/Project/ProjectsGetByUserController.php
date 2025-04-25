@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Project;
 
-use App\Project\Application\Project\ProjectFindByUserService;
+use App\Project\Application\Project\ProjectGetByUserService;
 use App\Shared\Domain\Auth\AuthChecker;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,7 +62,7 @@ class ProjectsGetByUserController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getProjectsByUser(Security $security, ProjectFindByUserService $projectFindByUserService): JsonResponse
+    public function getProjectsByUser(Security $security, ProjectGetByUserService $projectFindByUserService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

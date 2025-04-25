@@ -3,15 +3,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\User;
 
-use App\User\Application\UserLoginService;
+use App\User\Application\User\UserLoginService;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use PHPUnit\Framework\MockObject\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;

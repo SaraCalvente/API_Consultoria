@@ -25,7 +25,7 @@ class ClientDeleteByUserService
 
     public function __invoke(User $user): JsonResponse
     {
-        $client = $this->clientRepository->getClientByUser($user);
+        $client = $this->clientRepository->findClientByUser($user);
         $projects = $this->projectRepository->checkIfClientHasProjects($client);
         if (!$projects) {
             return $this->clientRepository->deleteClient($client);

@@ -32,21 +32,13 @@ class AbilityGetAllServiceTest extends Unit
      */
     public function testReturnsAllAbilities(): void
     {
-        $ability1 = $this->createConfiguredMock(Ability::class, [
-            'getId' => 1,
-            'getName' => 'Symfony',
-            'getLevel' => Level::MEDIUM
-        ]);
+        $ability1 = $this->createConfiguredMock(Ability::class,
+            ['getId' => 1, 'getName' => 'Symfony', 'getLevel' => Level::MEDIUM ]);
 
-        $ability2 = $this->createConfiguredMock(Ability::class, [
-            'getId' => 2,
-            'getName' => 'PHP',
-            'getLevel' => Level::LOW
-        ]);
+        $ability2 = $this->createConfiguredMock(Ability::class,
+            ['getId' => 2, 'getName' => 'PHP', 'getLevel' => Level::LOW ]);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAllAbilities')
+        $this->abilityRepository->expects($this->once())->method('findAllAbilities')
             ->willReturn([$ability1, $ability2]);
 
         $response = ($this->service)();
@@ -57,16 +49,21 @@ class AbilityGetAllServiceTest extends Unit
         $data = json_decode($response->getContent(), true);
 
         $this->assertCount(2, $data);
-        $this->assertEquals([
-            'ability_id' => 1,
-            'name' => 'Symfony',
-            'level' => 'Medio',
-        ], $data[0]);
+        $this->assertEquals([ 'ability_id' => 1, 'name' => 'Symfony', 'level' => 'Medio',], $data[0]);
+        $this->assertEquals(['ability_id' => 2, 'name' => 'PHP', 'level' => 'Bajo',], $data[1]);
+    }
 
-        $this->assertEquals([
-            'ability_id' => 2,
-            'name' => 'PHP',
-            'level' => 'Bajo',
-        ], $data[1]);
+    /**
+     * @throws Exception
+     */
+    public function testInvokeReturns404IfNoActivities(): void
+    {
+        $this->abilityRepository->method('findAllAbilities')->willReturn([]);
+
+        $response = ($this->service)();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(['error' => 'There are no activities'], json_decode($response->getContent(), true));
     }
 }

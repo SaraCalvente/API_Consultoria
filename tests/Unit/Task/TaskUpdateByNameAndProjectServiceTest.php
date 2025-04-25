@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Project\Application\Task;
+namespace App\Tests\Unit\Task;
 
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;

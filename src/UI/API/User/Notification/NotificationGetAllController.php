@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\UI\API\User\Notification;
 
-use App\Project\Application\Task\TaskFindAllService;
-use App\User\Application\Notification\NotificationFindAllService;
+use App\Project\Application\Task\TaskGetAllService;
+use App\User\Application\Notification\NotificationGetAllService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,7 +45,7 @@ class NotificationGetAllController extends AbstractController
             )
         ]
     )]
-    public function getAllNotifications(NotificationFindAllService $findAllService): JsonResponse
+    public function getAllNotifications(NotificationGetAllService $findAllService): JsonResponse
     {
         return $findAllService();
     }

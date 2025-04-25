@@ -16,6 +16,7 @@ class AbilityDeleteServiceTest extends Unit
 {
     private $abilityRepository;
     private AbilityDeleteService $service;
+    private array $date;
 
     /**
      * @throws Exception
@@ -24,6 +25,8 @@ class AbilityDeleteServiceTest extends Unit
     {
         $this->abilityRepository = $this->createMock(AbilityRepositoryInterface::class);
         $this->service = new AbilityDeleteService($this->abilityRepository);
+        $this->data = ['name' => 'Symfony', 'level' => 'Bajo'];
+
     }
 
     /**
@@ -31,27 +34,17 @@ class AbilityDeleteServiceTest extends Unit
      */
     public function testDeletesExistingAbility(): void
     {
-        $data = ['name' => 'Symfony', 'level' => 'Bajo'];
         $ability = $this->createMock(Ability::class);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($data['name'], $data['level'])
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($this->data['name'], $this->data['level'])
             ->willReturn(true);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAbilityByNameAndLevel')
-            ->with($data['name'], $data['level'])
+        $this->abilityRepository->expects($this->once())->method('findAbilityByNameAndLevel')->with($this->data['name'], $this->data['level'])
             ->willReturn($ability);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('deleteAbility')
-            ->with($ability);
+        $this->abilityRepository->expects($this->once())->method('deleteAbility')->with($ability);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -62,27 +55,19 @@ class AbilityDeleteServiceTest extends Unit
 
     public function testFailsWhenAbilityDoesNotExist(): void
     {
-        $data = ['name' => 'Nonexistent', 'level' => 'Alto'];
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($data['name'], $data['level'])
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($this->data['name'], $this->data['level'])
             ->willReturn(false);
 
-        $this->abilityRepository
-            ->expects($this->never())
-            ->method('findAbilityByNameAndLevel');
+        $this->abilityRepository->expects($this->never())->method('findAbilityByNameAndLevel');
 
-        $this->abilityRepository
-            ->expects($this->never())
-            ->method('deleteAbility');
+        $this->abilityRepository->expects($this->never())->method('deleteAbility');
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('An ability with the name Nonexistent does not exists.', $data['error']);
+        $this->assertEquals('An ability with the name Symfony does not exists.', $data['error']);
     }
 }

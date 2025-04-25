@@ -26,6 +26,9 @@ class AbilityGetAllService
         foreach ($abilities as $ability) {
             $abilitiesData[] = AbilityDTO::fromEntity($ability);
         }
+        if (empty($abilitiesData)) {
+            return new JsonResponse(['error' => 'There are no activities'], 404);
+        }
 
         return new JsonResponse($abilitiesData, 200);
     }

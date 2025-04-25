@@ -38,14 +38,9 @@ class ClientUpdateByUserServiceTest extends Unit
 
         $expectedResponse = new JsonResponse(['message' => 'Client updated successfully']);
 
-        $this->clientRepository
-            ->expects($this->once())
-            ->method('updateClient')
-            ->with($user, 'C/ Example 10', '123456789')
+        $this->clientRepository->expects($this->once())->method('updateClient')->with($user, 'C/ Example 10', '123456789')
             ->willReturn($expectedResponse);
-
         $response = ($this->service)($user, $data);
-
         $this->assertSame($expectedResponse, $response);
     }
 
@@ -60,12 +55,8 @@ class ClientUpdateByUserServiceTest extends Unit
 
         $expectedResponse = new JsonResponse(['message' => 'Client updated successfully']);
 
-        $this->clientRepository
-            ->expects($this->once())
-            ->method('updateClient')
-            ->with($user, null, '123456789')
+        $this->clientRepository->expects($this->once())->method('updateClient')->with($user, null, '123456789')
             ->willReturn($expectedResponse);
-
         $response = ($this->service)($user, $data);
 
         $this->assertSame($expectedResponse, $response);
@@ -82,12 +73,8 @@ class ClientUpdateByUserServiceTest extends Unit
 
         $expectedResponse = new JsonResponse(['message' => 'Client updated successfully']);
 
-        $this->clientRepository
-            ->expects($this->once())
-            ->method('updateClient')
-            ->with($user, 'C/ SoloDireccion', null)
+        $this->clientRepository->expects($this->once())->method('updateClient')->with($user, 'C/ SoloDireccion', null)
             ->willReturn($expectedResponse);
-
         $response = ($this->service)($user, $data);
 
         $this->assertSame($expectedResponse, $response);
@@ -99,7 +86,6 @@ class ClientUpdateByUserServiceTest extends Unit
     public function testClientUpdateThrowsExceptionIfNoData(): void
     {
         $this->expectException(NoDataToUpdateException::class);
-
         $user = $this->createMock(User::class);
         $data = [];
 

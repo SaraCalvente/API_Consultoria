@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\Admin\ClientGetAllService;
-use App\Shared\Domain\Auth\AuthChecker;
+use App\Client\Application\ClientGetAllService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 class ClientGetAllController extends AbstractController
 {

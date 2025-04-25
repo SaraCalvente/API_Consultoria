@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\Admin\ClientDeleteByEmailService;
+use App\Client\Application\ClientDeleteByEmailService;
 use App\Shared\Domain\Exception\UserNotFoundException;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
+
 class ClientAdminDeleteController extends AbstractController
 {
     #[Route('/admin/client/delete', name: 'admin_delete_client', methods: ['DELETE'])]

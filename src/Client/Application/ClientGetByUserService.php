@@ -22,7 +22,7 @@ class ClientGetByUserService
 
     public function __invoke(User $user): JsonResponse
     {
-        $client = $this->clientRepository->getClientByUser($user);
+        $client = $this->clientRepository->findClientByUser($user);
         return new JsonResponse(ClientDTO::fromEntity($client));
     }
 }

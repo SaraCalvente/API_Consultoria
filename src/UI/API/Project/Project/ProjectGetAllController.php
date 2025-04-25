@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Project;
 
-use App\Project\Application\Project\ProjectFindAllService;
+use App\Project\Application\Project\ProjectGetAllService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -53,7 +53,7 @@ class ProjectGetAllController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllProjects(ProjectFindAllService $projectFindAllService): JsonResponse
+    public function getAllProjects(ProjectGetAllService $projectFindAllService): JsonResponse
     {
         return $projectFindAllService();
     }

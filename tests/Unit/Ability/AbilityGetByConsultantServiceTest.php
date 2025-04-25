@@ -42,42 +42,19 @@ class AbilityGetByConsultantServiceTest extends Unit
      */
     public function testReturnsAbilitiesForConsultant(): void
     {
-        $emailString = 'consultant@example.com';
+        $user = $this->createConfiguredMock(User::class, ['getEmail' => new EmailValueObject('consultant@example.com')]);
 
-        $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
-            '__toString' => $emailString
-        ]);
+        $consultant = $this->createConfiguredMock(Consultant::class, ['getName' => 'Jane Doe', 'getId' => 42]);
 
-        $user = $this->createConfiguredMock(User::class, [
-            'getEmail' => $emailVO
-        ]);
+        $ability = $this->createConfiguredMock(Ability::class, ['getName' => 'PHP', 'getLevel' => Level::HIGH]);
 
-        $consultant = $this->createConfiguredMock(Consultant::class, [
-            'getName' => 'Jane Doe',
-            'getId' => 42
-        ]);
-
-        $ability = $this->createConfiguredMock(Ability::class, [
-            'getName' => 'PHP',
-            'getLevel' => Level::HIGH
-        ]);
-
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('checkIfConsultantExists')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)
             ->willReturn(true);
 
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('findConsultantByUser')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('findConsultantByUser')->with($user)
             ->willReturn($consultant);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAbilitiesByConsultant')
-            ->with($consultant)
+        $this->abilityRepository->expects($this->once())->method('findAbilitiesByConsultant')->with($consultant)
             ->willReturn([$ability]);
 
         $response = ($this->service)($user);
@@ -98,18 +75,10 @@ class AbilityGetByConsultantServiceTest extends Unit
      */
     public function testReturns404IfNotAConsultant(): void
     {
-        $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
-            '__toString' => 'notconsultant@example.com'
-        ]);
 
-        $user = $this->createConfiguredMock(User::class, [
-            'getEmail' => $emailVO
-        ]);
+        $user = $this->createConfiguredMock(User::class, ['getEmail' => new EmailValueObject('noconsultant@example.com')]);
 
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('checkIfConsultantExists')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)
             ->willReturn(false);
 
         $response = ($this->service)($user);
@@ -117,6 +86,6 @@ class AbilityGetByConsultantServiceTest extends Unit
         $this->assertEquals(404, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('User notconsultant@example.com is not a Consultant', $data['error']);
+        $this->assertEquals('User noconsultant@example.com is not a Consultant', $data['error']);
     }
 }

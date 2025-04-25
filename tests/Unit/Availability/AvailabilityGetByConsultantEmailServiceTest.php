@@ -50,7 +50,6 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
         $email = 'test@example.com';
 
         $emailValueObject = $this->createMock(EmailValueObject::class);
-        $emailValueObject->method('__toString')->willReturn($email);
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);

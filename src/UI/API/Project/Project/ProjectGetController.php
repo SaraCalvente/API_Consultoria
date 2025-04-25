@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Project;
 
-use App\Project\Application\Project\ProjectFindByNameService;
+use App\Project\Application\Project\ProjectGetByNameService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,7 +61,7 @@ class ProjectGetController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getProjectsByName(Request $request, ProjectFindByNameService $projectFindByNameService): JsonResponse
+    public function getProjectsByName(Request $request, ProjectGetByNameService $projectFindByNameService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);

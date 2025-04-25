@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit\User;
+namespace App\Tests\Unit\Notification;
 
 use App\User\Application\Notification\NotificationDeleteService;
 use App\User\Domain\Model\NotificationRepositoryInterface;

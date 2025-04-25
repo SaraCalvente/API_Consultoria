@@ -8,6 +8,9 @@ use App\User\Domain\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @method expects(\PHPUnit\Framework\MockObject\Rule\InvokedCount $once)
+ */
 #[ORM\Entity(repositoryClass: ActivityHistoryRepository::class)]
 #[ORM\UniqueConstraint(name: "unique_project_name", columns: ["name", "project_id"])]
 class ActivityHistory

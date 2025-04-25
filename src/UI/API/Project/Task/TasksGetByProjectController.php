@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Task\TaskFindByProjectService;
+use App\Project\Application\Task\TaskGetByProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,7 +63,7 @@ class TasksGetByProjectController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllProjectTasks(Request $request, TaskFindByProjectService $taskFindByProjectService): JsonResponse
+    public function getAllProjectTasks(Request $request, TaskGetByProjectService $taskFindByProjectService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         return $taskFindByProjectService($data);

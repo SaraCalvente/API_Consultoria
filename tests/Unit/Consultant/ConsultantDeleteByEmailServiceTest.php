@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Consultant\Admin;
+namespace App\Tests\Unit\Consultant;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantDeleteByEmailService;
+use App\Consultant\Application\Consultant\ConsultantDeleteByEmailService;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
@@ -12,7 +12,6 @@ use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantDeleteByEmailServiceTest extends Unit
@@ -22,6 +21,9 @@ class ConsultantDeleteByEmailServiceTest extends Unit
     private UserRepositoryInterface $userRepository;
     private ConsultantDeleteByEmailService $service;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         parent::setUp();

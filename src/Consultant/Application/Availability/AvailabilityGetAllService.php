@@ -30,6 +30,10 @@ class AvailabilityGetAllService
         foreach ($availabilities as $availability) {
             $availabilitiesData[] = AvailabilityDTO::fromEntity($availability);
         }
+        if (empty($availabilitiesData)) {
+            return new JsonResponse(['error' => 'There are no activities'], 404);
+        }
+
 
         return new JsonResponse($availabilitiesData, 200);
     }

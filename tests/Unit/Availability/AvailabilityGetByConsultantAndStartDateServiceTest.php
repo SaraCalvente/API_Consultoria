@@ -40,8 +40,6 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
         );
     }
 
-
-
     /**
      * @throws \DateMalformedStringException
      * @throws Exception

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryGetByConsultantService;
-use App\Project\Application\Task\TaskFindByConsultantService;
+use App\Project\Application\Task\TaskGetByConsultantService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

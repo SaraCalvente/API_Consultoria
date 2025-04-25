@@ -10,6 +10,7 @@ use App\Consultant\Domain\Ability\Level;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
@@ -24,6 +25,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
     private ConsultantRepositoryInterface $consultantRepository;
     private UserRepositoryInterface $userRepository;
     private AbilityGetByConsultantEmailService $service;
+    private array $data;
 
     /**
      * @throws Exception
@@ -34,63 +36,38 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
         $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
         $this->userRepository = $this->createMock(UserRepositoryInterface::class);
 
-        $this->service = new AbilityGetByConsultantEmailService(
-            $this->abilityRepository,
-            $this->consultantRepository,
-            $this->userRepository
-        );
+        $this->service = new AbilityGetByConsultantEmailService($this->abilityRepository, $this->consultantRepository,
+            $this->userRepository);
+        $this->data = ['email' => 'consultant@example.com'];
     }
 
     /**
      * @throws Exception
+     * @throws NotValidEmailException
      */
     public function testReturnsAbilitiesByConsultantEmail(): void
     {
-        $email = 'consultant@example.com';
-        $data = ['email' => $email];
-
-        $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
-            '__toString' => $email,
-        ]);
-
         $user = $this->createConfiguredMock(User::class, [
-            'getEmail' => $emailVO,
-        ]);
-        $consultant = $this->createConfiguredMock(Consultant::class, [
-            'getName' => 'Jane Doe',
-            'getId' => 123,
+            'getEmail' => new EmailValueObject($this->data['email']),
         ]);
 
-        $ability = $this->createConfiguredMock(Ability::class, [
-            'getName' => 'PHP',
-            'getLevel' => Level::EXPERT,
-        ]);
+        $consultant = $this->createConfiguredMock(Consultant::class, ['getName' => 'Jane Doe', 'getId' => 123,]);
 
-        $this->userRepository
-            ->expects($this->once())
-            ->method('findUserByEmail')
-            ->with($email)
+        $ability = $this->createConfiguredMock(Ability::class, ['getName' => 'PHP', 'getLevel' => Level::EXPERT,]);
+
+        $this->userRepository->expects($this->once())->method('findUserByEmail')->with($this->data['email'])
             ->willReturn($user);
 
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('checkIfConsultantExists')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)
             ->willReturn(true);
 
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('findConsultantByUser')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('findConsultantByUser')->with($user)
             ->willReturn($consultant);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAbilitiesByConsultant')
-            ->with($consultant)
+        $this->abilityRepository->expects($this->once())->method('findAbilitiesByConsultant')->with($consultant)
             ->willReturn([$ability]);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -106,37 +83,26 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
 
     /**
      * @throws Exception
+     * @throws NotValidEmailException
      */
     public function testReturns404IfNotConsultant(): void
     {
-        $email = 'notconsultant@example.com';
-        $data = ['email' => $email];
-        $emailVO = $this->createConfiguredMock(EmailValueObject::class, [
-            '__toString' => $email,
-        ]);
-
         $user = $this->createConfiguredMock(User::class, [
-            'getEmail' => $emailVO,
+            'getEmail' => new EmailValueObject($this->data['email']),
         ]);
 
-        $this->userRepository
-            ->expects($this->once())
-            ->method('findUserByEmail')
-            ->with($email)
+        $this->userRepository->expects($this->once())->method('findUserByEmail')->with($this->data['email'])
             ->willReturn($user);
 
-        $this->consultantRepository
-            ->expects($this->once())
-            ->method('checkIfConsultantExists')
-            ->with($user)
+        $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)
             ->willReturn(false);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(404, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals("User $email is not a Consultant", $data['error']);
+        $this->assertEquals("User " .  $this->data['email'] . " is not a Consultant", $data['error']);
     }
 }

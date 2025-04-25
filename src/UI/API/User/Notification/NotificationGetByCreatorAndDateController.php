@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\UI\API\User\Notification;
 
-use App\Project\Application\Task\TaskFindByConsultantService;
+use App\Project\Application\Task\TaskGetByConsultantService;
 use App\Shared\Domain\Auth\AuthChecker;
-use App\User\Application\Notification\NotificationFindByCreatorUserAndDateService;
-use App\User\Application\Notification\NotificationFindByCreatorUserService;
+use App\User\Application\Notification\NotificationGetByCreatorUserAndDateService;
+use App\User\Application\Notification\NotificationGetByCreatorUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +56,7 @@ class NotificationGetByCreatorAndDateController extends AbstractController
             )
         ]
     )]
-    public function getNotificationsByCreator(Security $security, Request $request, NotificationFindByCreatorUserAndDateService $findByCreatorUserService): JsonResponse
+    public function getNotificationsByCreator(Security $security, Request $request, NotificationGetByCreatorUserAndDateService $findByCreatorUserService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);

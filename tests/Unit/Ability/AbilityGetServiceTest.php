@@ -18,6 +18,7 @@ class AbilityGetServiceTest extends Unit
 {
     private AbilityRepositoryInterface $abilityRepository;
     private AbilityGetService $service;
+    private array $data;
 
     /**
      * @throws Exception
@@ -26,6 +27,7 @@ class AbilityGetServiceTest extends Unit
     {
         $this->abilityRepository = $this->createMock(AbilityRepositoryInterface::class);
         $this->service = new AbilityGetService($this->abilityRepository);
+        $this->data = ['name' => 'Symfony', 'level' => Level::EXPERT->value];
     }
 
     /**
@@ -34,24 +36,18 @@ class AbilityGetServiceTest extends Unit
      */
     public function testReturns404IfAbilityDoesNotExist(): void
     {
-        $name = 'Symfony';
-        $level = Level::EXPERT->value;
-
-        $data = ['name' => $name, 'level' => $level];
-
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($this->data['name'], $this->data['level'])
             ->willReturn(false);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals("An ability with the name $name and level $level does not exist.", $data['error']);
+        $this->assertEquals(
+            "An ability with the name " . $this->data['name'] . " and level " . $this->data['level'] . " does not exist.", $data['error']
+        );
     }
 
     /**
@@ -60,29 +56,16 @@ class AbilityGetServiceTest extends Unit
      */
     public function testReturnsAbilityIfExists(): void
     {
-        $name = 'Symfony';
-        $level = Level::EXPERT->value;
-        $data = ['name' => $name, 'level' => $level];
+        $ability = $this->createConfiguredMock(Ability::class,
+            ['getId' => 1, 'getName' => $this->data['name'], 'getLevel' => Level::EXPERT]);
 
-        $ability = $this->createConfiguredMock(Ability::class, [
-            'getId' => 1,
-            'getName' => $name,
-            'getLevel' => Level::EXPERT,
-        ]);
-
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('checkIfAbilityExists')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('checkIfAbilityExists')->with($this->data['name'], $this->data['level'])
             ->willReturn(true);
 
-        $this->abilityRepository
-            ->expects($this->once())
-            ->method('findAbilityByNameAndLevel')
-            ->with($name, $level)
+        $this->abilityRepository->expects($this->once())->method('findAbilityByNameAndLevel')->with($this->data['name'], $this->data['level'])
             ->willReturn($ability);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

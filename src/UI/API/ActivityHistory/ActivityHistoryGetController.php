@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryGetByNameAndProjectService;
-use App\Project\Application\Task\TaskFindByNameAndProjectService;
+use App\Project\Application\Task\TaskGetByNameAndProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

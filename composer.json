@@ -127,6 +127,7 @@
         "codeception/codeception": "^5.2",
         "codeception/module-asserts": "^3.0",
         "codeception/module-phpbrowser": "^3.0",
+        "codeception/module-rest": "^3.4",
         "codeception/module-symfony": "^3.5",
         "fakerphp/faker": "1.19",
         "phpunit/phpunit": "10.1.2",

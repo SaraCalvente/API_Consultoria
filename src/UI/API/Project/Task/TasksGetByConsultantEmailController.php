@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Task\TaskFindByConsultantEmailService;
+use App\Project\Application\Task\TaskGetByConsultantEmailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,7 +63,7 @@ class TasksGetByConsultantEmailController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getAllConsultantTasks(Request $request, TaskFindByConsultantEmailService $taskFindByConsultant): JsonResponse
+    public function getAllConsultantTasks(Request $request, TaskGetByConsultantEmailService $taskFindByConsultant): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         return $taskFindByConsultant($data);

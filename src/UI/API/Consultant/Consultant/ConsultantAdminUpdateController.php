@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant\Consultant;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantUpdateByEmailService;
+use App\Consultant\Application\Consultant\ConsultantUpdateByEmailService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

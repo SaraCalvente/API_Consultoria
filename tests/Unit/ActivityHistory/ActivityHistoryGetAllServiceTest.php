@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ActivityHistory;
 
+use App\ActivityHistory\Application\ActivityHistoryCreateService;
 use App\ActivityHistory\Application\ActivityHistoryGetAllService;
 use App\ActivityHistory\Domain\ActivityHistory;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
+use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
+use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
@@ -16,6 +20,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryGetAllServiceTest extends Unit
 {
+    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
+
+    private ActivityHistoryGetAllService $service;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        $this->activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
+
+        $this->service = new ActivityHistoryGetAllService($this->activityHistoryRepository);
+    }
     /**
      * @throws Exception
      * @throws \Exception
@@ -31,11 +48,9 @@ class ActivityHistoryGetAllServiceTest extends Unit
         $activity1 = $this->createActivityMock(1, 'Actividad 1', 'Descripción 1', '2025-04-16', $project, $user);
         $activity2 = $this->createActivityMock(2, 'Actividad 2', 'Descripción 2', '2025-04-17', $project, $user);
 
-        $repository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $repository->method('findAllActivityHistories')->willReturn([$activity1, $activity2]);
+        $this->activityHistoryRepository->method('findAllActivityHistories')->willReturn([$activity1, $activity2]);
 
-        $service = new ActivityHistoryGetAllService($repository);
-        $response = $service();
+        $response = ($this->service)();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
@@ -69,11 +84,9 @@ class ActivityHistoryGetAllServiceTest extends Unit
      */
     public function testInvokeReturns404IfNoActivities(): void
     {
-        $repository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $repository->method('findAllActivityHistories')->willReturn([]);
+        $this->activityHistoryRepository->method('findAllActivityHistories')->willReturn([]);
 
-        $service = new ActivityHistoryGetAllService($repository);
-        $response = $service();
+        $response = ($this->service)();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(404, $response->getStatusCode());

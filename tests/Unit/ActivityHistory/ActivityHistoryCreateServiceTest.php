@@ -9,6 +9,7 @@ use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
+use App\User\Application\User\UserFindAllService;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
@@ -18,13 +19,33 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ActivityHistoryCreateServiceTest extends Unit
 {
-    private array $validData = [
-        'name' => 'Implement login',
-        'description' => 'Add login functionality',
-        'date' => '2025-04-16',
-        'projectName' => 'Awesome Project',
-        'consultantEmail' => 'consultant@example.com',
-    ];
+    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
+    private ProjectRepositoryInterface $projectRepository;
+    private UserRepositoryInterface $userRepository;
+    private ConsultantRepositoryInterface $consultantRepository;
+
+    private ActivityHistoryCreateService $service;
+    private array $data;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        $this->activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
+        $this->projectRepository = $this->createMock(ProjectRepositoryInterface::class);
+        $this->userRepository = $this->createMock(UserRepositoryInterface::class);
+        $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
+
+        $this->service = new ActivityHistoryCreateService($this->activityHistoryRepository, $this->projectRepository, $this->consultantRepository, $this->userRepository);
+        $this->data = [
+            'name' => 'Implement login',
+            'description' => 'Add login functionality',
+            'date' => '2025-04-16',
+            'projectName' => 'Awesome Project',
+            'consultantEmail' => 'consultant@example.com',
+        ];
+    }
 
     /**
      * @throws \DateMalformedStringException
@@ -35,27 +56,16 @@ class ActivityHistoryCreateServiceTest extends Unit
         $project = $this->createMock(Project::class);
         $user = $this->createMock(User::class);
 
-        $activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $projectRepository = $this->createMock(ProjectRepositoryInterface::class);
-        $consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
-        $userRepository = $this->createMock(UserRepositoryInterface::class);
-
-        $projectRepository->method('checkIfProjectExists')->willReturn(true);
-        $projectRepository->method('findProjectByName')->willReturn($project);
-        $activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
-        $userRepository->method('findUserByEmail')->willReturn($user);
-        $consultantRepository->method('checkIfConsultantExists')->willReturn(true);
+        $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
+        $this->projectRepository->method('findProjectByName')->willReturn($project);
+        $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
+        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->consultantRepository->method('checkIfConsultantExists')->willReturn(true);
 
         $project->method('getName')->willReturn('Awesome Project');
 
-        $service = new ActivityHistoryCreateService(
-            $activityHistoryRepository,
-            $projectRepository,
-            $consultantRepository,
-            $userRepository
-        );
 
-        $response = $service->__invoke($this->validData);
+        $response = ($this->service)($this->data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -68,21 +78,10 @@ class ActivityHistoryCreateServiceTest extends Unit
      */
     public function testReturns404IfProjectNotFound(): void
     {
-        $activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $projectRepository = $this->createMock(ProjectRepositoryInterface::class);
-        $consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
-        $userRepository = $this->createMock(UserRepositoryInterface::class);
 
-        $projectRepository->method('checkIfProjectExists')->willReturn(false);
+        $this->projectRepository->method('checkIfProjectExists')->willReturn(false);
 
-        $service = new ActivityHistoryCreateService(
-            $activityHistoryRepository,
-            $projectRepository,
-            $consultantRepository,
-            $userRepository
-        );
-
-        $response = $service->__invoke($this->validData);
+        $response = ($this->service)($this->data);
 
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertStringContainsString('Project with name', $response->getContent());
@@ -96,24 +95,11 @@ class ActivityHistoryCreateServiceTest extends Unit
     {
         $project = $this->createMock(Project::class);
 
-        $activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $projectRepository = $this->createMock(ProjectRepositoryInterface::class);
-        $consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
-        $userRepository = $this->createMock(UserRepositoryInterface::class);
+        $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
+        $this->projectRepository->method('findProjectByName')->willReturn($project);
+        $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(true);
 
-        // Mocking the return for project existence
-        $projectRepository->method('checkIfProjectExists')->willReturn(true);
-        $projectRepository->method('findProjectByName')->willReturn($project);
-        $activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(true);
-
-        $service = new ActivityHistoryCreateService(
-            $activityHistoryRepository,
-            $projectRepository,
-            $consultantRepository,
-            $userRepository
-        );
-
-        $response = $service->__invoke($this->validData);
+        $response = ($this->service)($this->data);
 
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertStringContainsString('already exists', $response->getContent());
@@ -128,26 +114,13 @@ class ActivityHistoryCreateServiceTest extends Unit
         $project = $this->createMock(Project::class);
         $user = $this->createMock(User::class);
 
-        $activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
-        $projectRepository = $this->createMock(ProjectRepositoryInterface::class);
-        $consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
-        $userRepository = $this->createMock(UserRepositoryInterface::class);
+        $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
+        $this->projectRepository->method('findProjectByName')->willReturn($project);
+        $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
+        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->consultantRepository->method('checkIfConsultantExists')->willReturn(false);
 
-        // Mocking project and consultant existence
-        $projectRepository->method('checkIfProjectExists')->willReturn(true);
-        $projectRepository->method('findProjectByName')->willReturn($project);
-        $activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
-        $userRepository->method('findUserByEmail')->willReturn($user);
-        $consultantRepository->method('checkIfConsultantExists')->willReturn(false);
-
-        $service = new ActivityHistoryCreateService(
-            $activityHistoryRepository,
-            $projectRepository,
-            $consultantRepository,
-            $userRepository
-        );
-
-        $response = $service->__invoke($this->validData);
+        $response = ($this->service)($this->data);
 
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertStringContainsString('Consultant with name', $response->getContent());

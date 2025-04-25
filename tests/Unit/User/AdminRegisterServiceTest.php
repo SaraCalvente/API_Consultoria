@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\User;
 
-use App\User\Application\AdminRegisterService;
+use App\User\Application\User\AdminRegisterService;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 

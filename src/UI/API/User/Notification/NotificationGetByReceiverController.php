@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\UI\API\User\Notification;
 
-use App\Project\Application\Task\TaskFindByConsultantService;
+use App\Project\Application\Task\TaskGetByConsultantService;
 use App\Shared\Domain\Auth\AuthChecker;
-use App\User\Application\Notification\NotificationFindByCreatorUserService;
-use App\User\Application\Notification\NotificationFindByReceiverUserService;
+use App\User\Application\Notification\NotificationGetByCreatorUserService;
+use App\User\Application\Notification\NotificationGetByReceiverUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,7 +55,7 @@ class NotificationGetByReceiverController extends AbstractController
             )
         ]
     )]
-    public function getNotificationsByCreator(Security $security, NotificationFindByReceiverUserService $findByReceiverUserService): JsonResponse
+    public function getNotificationsByCreator(Security $security, NotificationGetByReceiverUserService $findByReceiverUserService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Consultant\Admin;
+namespace App\Tests\Unit\Consultant;
 
-use App\Consultant\Application\Consultant\Admin\ConsultantUpdateByEmailService;
+use App\Consultant\Application\Consultant\ConsultantUpdateByEmailService;
 use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Consultant\Profile;
@@ -13,10 +13,9 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\MockObject\Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 class ConsultantUpdateByEmailServiceTest extends Unit

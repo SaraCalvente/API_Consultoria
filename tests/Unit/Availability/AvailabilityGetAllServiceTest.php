@@ -87,4 +87,18 @@ class AvailabilityGetAllServiceTest extends Unit
             'consultant_id' => 456
         ], $data[1]);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testInvokeReturns404IfNoActivities(): void
+    {
+        $this->availabilityRepository->method('findAllAvailabilities')->willReturn([]);
+
+        $response = ($this->service)();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(['error' => 'There are no activities'], json_decode($response->getContent(), true));
+    }
 }

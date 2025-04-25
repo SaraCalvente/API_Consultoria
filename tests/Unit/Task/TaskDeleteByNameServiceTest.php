@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Unit\Project;
+namespace App\Tests\Unit\Task;
 
 use App\Project\Application\Task\TaskDeleteByNameService;
 use App\Project\Domain\Model\ProjectRepositoryInterface;

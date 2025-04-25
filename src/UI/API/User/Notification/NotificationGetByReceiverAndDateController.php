@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\User\Notification;
 
 use App\Shared\Domain\Auth\AuthChecker;
-use App\User\Application\Notification\NotificationFindByReceiverUserAndDateService;
+use App\User\Application\Notification\NotificationGetByReceiverUserAndDateService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,7 +54,7 @@ class NotificationGetByReceiverAndDateController extends AbstractController
             )
         ]
     )]
-    public function getNotificationsByCreator(Security $security, Request $request, NotificationFindByReceiverUserAndDateService $findByReceiverUserService): JsonResponse
+    public function getNotificationsByCreator(Security $security, Request $request, NotificationGetByReceiverUserAndDateService $findByReceiverUserService): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);

@@ -50,17 +50,6 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
         return true;
     }
 
-    public function getClientByUser(User $user): Client
-    {
-        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-
-        if (!$client) {
-            throw new ClientNotFoundException("No client found for user with email: " . $user->getEmail());
-        }
-
-        return $client;
-    }
-
     public function findAllClients(): array
     {
         return $this->entityManager->getRepository(Client::class)->findAll();

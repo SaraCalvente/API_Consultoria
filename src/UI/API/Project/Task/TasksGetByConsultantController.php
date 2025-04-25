@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Project\Task;
 
-use App\Project\Application\Task\TaskFindByConsultantService;
+use App\Project\Application\Task\TaskGetByConsultantService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,7 +61,7 @@ class TasksGetByConsultantController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function getTasksByUser(Security $security, TaskFindByConsultantService $taskFindByUserService): JsonResponse
+    public function getTasksByUser(Security $security, TaskGetByConsultantService $taskFindByUserService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);

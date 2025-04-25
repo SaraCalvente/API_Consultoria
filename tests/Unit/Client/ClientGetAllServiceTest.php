@@ -3,19 +3,32 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Client;
 
-use App\Client\Application\Admin\ClientGetAllService;
+use App\Client\Application\ClientDeleteByUserService;
+use App\Client\Application\ClientGetAllService;
 use App\Client\Domain\Client;
 use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientGetAllServiceTest extends Unit
 {
+    private ClientRepositoryInterface $clientRepository;
+    private ClientGetAllService $service;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
+    {
+        $this->clientRepository = $this->createMock(ClientRepositoryInterface::class);
+
+        $this->service = new ClientGetAllService($this->clientRepository);
+    }
     /**
      * @throws Exception
      * @throws NotValidEmailException
@@ -29,11 +42,9 @@ class ClientGetAllServiceTest extends Unit
         $client2 = $this->createClientMock(11, $user2, 'Miguel', 'García Ruiz', 'Calle Ejemplo, 10', '999999999');
 
 
-        $clientRepository = $this->createMock(ClientRepositoryInterface::class);
-        $clientRepository->method('findAllClients')->willReturn([$client1, $client2]);
+        $this->clientRepository->method('findAllClients')->willReturn([$client1, $client2]);
 
-        $service = new ClientGetAllService($clientRepository);
-        $response = $service();
+        $response = ($this->service)();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
@@ -60,6 +71,17 @@ class ClientGetAllServiceTest extends Unit
             ]];
 
         $this->assertEquals($expectedData, json_decode($response->getContent(), true));
+    }
+
+    public function testInvokeReturns404IfNoActivities(): void
+    {
+        $this->clientRepository->method('findAllClients')->willReturn([]);
+
+        $response = ($this->service)();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals(['error' => 'There are no activities'], json_decode($response->getContent(), true));
     }
 
     /**

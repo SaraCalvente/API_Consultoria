@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryGetAllService;
-use App\Project\Application\Task\TaskFindAllService;
+use App\Project\Application\Task\TaskGetAllService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
