@@ -56,7 +56,9 @@ class ActivityHistoryGetByConsultantEmailController extends AbstractController
     public function getTasksByUser(Request $request, ActivityHistoryGetByConsultantEmailService $taskFindByUserService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $email = $request->query->get('email');
+            $data = [
+                'email' => $email];
             return $taskFindByUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

@@ -16,6 +16,12 @@ use Symfony\Component\Security\Core\Security;
 
 class AvailabilityDeleteController extends AbstractController
 {
+    private AuthChecker $authChecker;
+
+    public function __construct(AuthChecker $authChecker)
+    {
+        $this->authChecker = $authChecker;
+    }
     #[Route('/availability/delete', name: 'delete_availability', methods: ['DELETE'])]
     #[OA\Put(
         path: "/availability/delete",
@@ -43,11 +49,18 @@ class AvailabilityDeleteController extends AbstractController
             )
         ]
     )]
-    public function deleteAvailability(Request $request, AvailabilityDeleteService $availabilityDeleteService): JsonResponse
+    public function deleteAvailability(Security $security, Request $request, AvailabilityDeleteService $availabilityDeleteService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-            return $availabilityDeleteService($data);
+            $user = $this->authChecker->getAuthenticated($security);
+            $startDate = $request->query->get('startDate');
+            $consultantEmail = $request->query->get('consultantEmail') ?? null;
+
+            $data = [
+                'startDate' => $startDate,
+                'consultantEmail' => $consultantEmail
+            ];
+            return $availabilityDeleteService($user, $data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);
         }

@@ -63,7 +63,13 @@ class TaskGetController extends AbstractController
     public function getTasksById(Request $request, TaskGetByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $projectName = $request->query->get('projectName');
+            $name = $request->query->get('name');
+
+            $data = [
+                'name' => $name,
+                'projectName' => $projectName
+            ];
             return $findByNameAndProjectService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

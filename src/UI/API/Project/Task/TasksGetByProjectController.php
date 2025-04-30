@@ -65,7 +65,11 @@ class TasksGetByProjectController extends AbstractController
     )]
     public function getAllProjectTasks(Request $request, TaskGetByProjectService $taskFindByProjectService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $projectName = $request->query->get('projectName');
+
+        $data = [
+            'projectName' => $projectName
+        ];
         return $taskFindByProjectService($data);
     }
 

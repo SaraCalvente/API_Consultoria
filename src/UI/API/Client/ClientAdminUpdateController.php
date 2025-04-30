@@ -16,7 +16,7 @@ class ClientAdminUpdateController extends AbstractController
     /**
      * @throws \Exception
      */
-    #[Route('/admin/client/update', name: 'admin_client_update', methods: ['PUT'])]
+    #[Route('/admin/update/client', name: 'admin_client_update', methods: ['PUT'])]
     #[OA\Put(
         path: "/admin/client/update",
         description: "Updates client details by an authenticated admin.",

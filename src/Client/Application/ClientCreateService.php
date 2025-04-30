@@ -17,7 +17,7 @@ use MiniOrange\Helper\Exception\RequiredFieldsException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientRegisterService
+class ClientCreateService
 {
     private UserPasswordHasherInterface $passwordHasher;
     private ClientRepositoryInterface $clientRepository;
@@ -47,7 +47,7 @@ class ClientRegisterService
             return new JsonResponse([
                 'error' => 'User ' . $data['email'] . ' already exists.',
 
-            ], 403);
+            ], 409);
         }
 
         $user = new User();

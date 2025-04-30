@@ -5,16 +5,25 @@ namespace App\UI\API\Consultant\Availability;
 
 use App\Consultant\Application\Ability\AbilityCreateService;
 use App\Consultant\Application\Availability\AvailabilityCreateService;
-use App\Consultant\Application\Consultant\ConsultantRegisterService;
+use App\Consultant\Application\Consultant\ConsultantCreateService;
+use App\Shared\Domain\Auth\AuthChecker;
+use App\Shared\Domain\Exception\ConsultantNotFoundException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class AvailabilityCreateController extends AbstractController
 {
+    private AuthChecker $authChecker;
 
+    public function __construct(AuthChecker $authChecker)
+    {
+        $this->authChecker = $authChecker;
+    }
     /**
      * @throws \DateMalformedStringException
      */
@@ -56,13 +65,16 @@ class AvailabilityCreateController extends AbstractController
             )
         ]
     )]
-    public function createAvailability(
+    public function createAvailability(Security $security,
         Request $request, AvailabilityCreateService $availabilityCreateService
     ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-
-
-        return $availabilityCreateService($data);
+        try{
+            $user = $this->authChecker->getAuthenticated($security);
+            $data = json_decode($request->getContent(), true);
+            return $availabilityCreateService($user, $data);
+        }catch (ConsultantNotFoundException){
+            return new JsonResponse(['error' => 'The authenticated user is not a Consultant.']);
+        }
     }
 
 

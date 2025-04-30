@@ -7,6 +7,9 @@ use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Shared\Domain\Exception\AbilityNotFoundException;
+use App\Shared\Domain\Exception\RequiredFieldException;
+use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -49,10 +52,11 @@ class ConsultantUpdateByUserService
 
     private function updateConsultantAbilities(Consultant $consultant, array $abilities, bool $add): void
     {
-
         foreach ($abilities as $ability) {
             $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
-
+            if (!$abilityFind) {
+                throw new AbilityNotFoundException($ability['abilityName'], $ability['level']);
+            }
             if ($add) {
                 $consultant->addAbility($abilityFind);
 
@@ -62,4 +66,5 @@ class ConsultantUpdateByUserService
             }
         }
     }
+
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Client;
 
-use App\Client\Application\ClientRegisterService;
+use App\Client\Application\ClientCreateService;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use App\Shared\Domain\Exception\NotValidPasswordLengthException;
 use App\Shared\Domain\Exception\RequiredFieldException;
@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
-class ClientRegisterController extends AbstractController
+class ClientCreateController extends AbstractController
 {
-    #[Route('/register/client', name: 'client_register', methods: ['POST'])]
+    #[Route('/create/client', name: 'create_client', methods: ['POST'])]
     #[OA\Post(
-        path: "/register/client",
+        path: "/create/client",
         description: "Register a new client user.",
         summary: "Client register.",
         requestBody: new OA\RequestBody(
@@ -71,7 +71,7 @@ class ClientRegisterController extends AbstractController
             )
         ]
     )]
-    public function clienteRegister(Request $request, ClientRegisterService $clientRegister ): JsonResponse {
+    public function clienteRegister(Request $request, ClientCreateService $clientRegister ): JsonResponse {
 
         try {
             $data = json_decode($request->getContent(), true);

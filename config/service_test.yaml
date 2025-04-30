@@ -1,0 +1,7 @@
+services:
+    App\Tests\api\TestDataFixtures\:
+        resource: '../tests/api/TestDataFixtures'
+        public: true
+        tags: ['doctrine.fixture.orm']
+        autowire: true
+        autoconfigure: true

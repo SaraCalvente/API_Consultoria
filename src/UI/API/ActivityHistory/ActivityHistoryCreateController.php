@@ -15,7 +15,7 @@ class ActivityHistoryCreateController extends AbstractController
 {
     #[Route('/activity/create', name: 'activity_create', methods: ['POST'])]
     #[OA\Post(
-        path: "/activity/create",
+        path: "/create/activity",
         description: "Create a new activity history.",
         summary: "Activity history creation.",
         requestBody: new OA\RequestBody(

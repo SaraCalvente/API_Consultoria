@@ -12,9 +12,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ConsultantAdminDeleteController extends AbstractController
 {
-    #[Route('/admin/consultant/delete', name: 'admin_delete_consultant', methods: ['DELETE'])]
+    #[Route('/admin/delete/consultant', name: 'admin_delete_consultant', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/admin/consultant/delete",
+        path: "/admin/delete/consultant",
         description: "Deletes the consultant by an authenticated admin",
         summary: "Consultant deleted successfully",
         requestBody: new OA\RequestBody(
@@ -44,7 +44,11 @@ class ConsultantAdminDeleteController extends AbstractController
     )]
     public function adminDeleteConsultant(Request $request, ConsultantDeleteByEmailService $consultantDeleteByEmailService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $email = $request->query->get('email');
+
+        $data = [
+            'email' => $email,
+        ];
         try {
             return $consultantDeleteByEmailService($data);
         } catch (\Exception $e) {

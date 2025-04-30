@@ -49,9 +49,13 @@ class AbilityGetByNameAndLevelController extends AbstractController
     )]
     public function getAbility(Request $request, AbilityGetService $abilityGetService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $name = $request->query->get('name');
+        $level = $request->query->get('level');
 
-
+        $data = [
+            'name' => $name,
+            'level' => $level
+        ];
         return $abilityGetService( $data );
     }
 

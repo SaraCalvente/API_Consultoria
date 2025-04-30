@@ -17,6 +17,12 @@ use Symfony\Component\Security\Core\Security;
 
 class AvailabilityGetByConsultantEmailController extends AbstractController
 {
+    private AuthChecker $authChecker;
+
+    public function __construct(AuthChecker $authChecker)
+    {
+        $this->authChecker = $authChecker;
+    }
     #[Route('/admin/availability/consultant', name: 'get_consultant_availability', methods: ['GET'])]
     #[OA\Get(
         path: "/admin/availability/consultant",
@@ -55,7 +61,12 @@ class AvailabilityGetByConsultantEmailController extends AbstractController
     public function getAvailability(Request $request, AvailabilityGetByConsultantEmailService $availabilityGetByConsultantEmailService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+
+            $email = $request->query->get('email') ?? null;
+
+            $data = [
+                'email' => $email
+            ];
             return $availabilityGetByConsultantEmailService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);

@@ -46,7 +46,11 @@ class ProjectDeleteController extends AbstractController
     public function deleteProject(Request $request, ProjectDeleteByNameService $projectDeleteByNameService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $name = $request->query->get('name');
+
+            $data = [
+                'name' => $name,
+            ];
             return $projectDeleteByNameService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);

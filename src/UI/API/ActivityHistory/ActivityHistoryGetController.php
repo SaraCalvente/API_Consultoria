@@ -52,7 +52,11 @@ class ActivityHistoryGetController extends AbstractController
     public function getActivityByNameAndProject(Request $request, ActivityHistoryGetByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $projectName = $request->query->get('projectName');
+            $name = $request->query->get('name');
+            $data = [
+                'projectName' => $projectName,
+                'name' => $name];
             return $findByNameAndProjectService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

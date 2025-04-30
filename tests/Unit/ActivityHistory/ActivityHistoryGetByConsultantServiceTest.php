@@ -46,7 +46,7 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
      * @throws Exception
      * @throws NotValidEmailException
      */
-    public function testReturns400IfUserIsNotConsultant(): void
+    public function testReturns402IfUserIsNotConsultant(): void
     {
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn(new EmailValueObject($this->email));
@@ -55,7 +55,7 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
 
         $response = ($this->service)($user);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(402, $response->getStatusCode());
         $this->assertEquals(['error' => 'The user test@example.com is not a consultant'], json_decode($response->getContent(), true));
     }
 
@@ -63,7 +63,7 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
      * @throws Exception
      * @throws NotValidEmailException
      */
-    public function testReturns402IfConsultantNotFound(): void
+    public function testReturns400IfConsultantNotFound(): void
     {
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn(new EmailValueObject($this->email));
@@ -74,7 +74,7 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
         $response = ($this->service)($user);
 
         $this->assertEquals(402, $response->getStatusCode());
-        $this->assertEquals(['error' => 'Consultant has no associated activities'], json_decode($response->getContent(), true));
+        $this->assertEquals(['error' => 'The user test@example.com is not a consultant'], json_decode($response->getContent(), true));
     }
 
     /**

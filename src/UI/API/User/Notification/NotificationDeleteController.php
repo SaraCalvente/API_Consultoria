@@ -40,17 +40,17 @@ class NotificationDeleteController extends AbstractController
                 response: 201,
                 description: "Notification deleted successfully.",
 
-            ),
-            new OA\Response(
-                response: 402,
-                description: "Notification already exists"
             )
         ]
     )]
     public function deleteNotification(Security $security, Request $request, NotificationDeleteService $notificaionDeleteService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $id = $request->query->get('id');
+
+            $data = [
+                'id' => $id
+            ];
             $user = $this->authChecker->getAuthenticated($security);
             return $notificaionDeleteService($user, $data);
         } catch (\Exception $e) {

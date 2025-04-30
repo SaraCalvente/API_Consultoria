@@ -11,33 +11,31 @@ use App\Consultant\Domain\Availability\AvailabilityDTO;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Shared\Domain\Exception\ConsultantNotFoundException;
 use App\User\Domain\Model\UserRepositoryInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityCreateService
 {
     private AvailabilityRepositoryInterface $availabilityRepository;
     private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
 
 
     public function __construct(
         AvailabilityRepositoryInterface $availabilityRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
+        ConsultantRepositoryInterface $consultantRepository
     )
     {
         $this->availabilityRepository = $availabilityRepository;
         $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
      * @throws \DateMalformedStringException
      */
-    public function __invoke(array $data): JsonResponse
+    public function __invoke(User $user, array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
         if ($this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
             return new JsonResponse(['error' => 'An availability of ' . $data['email'] .

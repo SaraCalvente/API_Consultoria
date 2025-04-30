@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Consultant;
 
-use App\Consultant\Application\Consultant\ConsultantRegisterService;
+use App\Consultant\Application\Consultant\ConsultantCreateService;
 use App\Consultant\Domain\Ability\Ability;
 use App\Consultant\Domain\Consultant\Consultant;
 use App\Consultant\Domain\Consultant\Profile;
@@ -22,7 +22,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ConsultantCreateServiceTest extends Unit
 {
-    private ConsultantRegisterService $service;
+    private ConsultantCreateService $service;
     private $hasher;
     private $consultantRepo;
     private $userRepo;
@@ -38,7 +38,7 @@ class ConsultantCreateServiceTest extends Unit
         $this->userRepo = $this->createMock(UserRepositoryInterface::class);
         $this->abilityRepo = $this->createMock(AbilityRepositoryInterface::class);
 
-        $this->service = new ConsultantRegisterService(
+        $this->service = new ConsultantCreateService(
             $this->hasher,
             $this->consultantRepo,
             $this->userRepo,
@@ -58,8 +58,8 @@ class ConsultantCreateServiceTest extends Unit
         $surnames = 'Calvente';
         $profile = 'Desarrollador';
 
-        $ability1 = ['abilityName' => 'PHP', 'level' => 'ALTO'];
-        $ability2 = ['abilityName' => 'JavaScript', 'level' => 'MEDIO'];
+        $ability1 = ['abilityName' => 'PHP', 'level' => 'Alto'];
+        $ability2 = ['abilityName' => 'JavaScript', 'level' => 'Medio'];
 
 
         $this->abilityRepo->method('findAbilityByNameAndLevel')

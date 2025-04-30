@@ -49,7 +49,11 @@ class NotificationAdminGetByReceiverController extends AbstractController
     public function getNotificationsByCreator(Request $request, NotificationAdminGetByReceiverUserService $findByReceiverUserService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $email = $request->query->get('email');
+
+            $data = [
+                'email' => $email,
+            ];
             return $findByReceiverUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

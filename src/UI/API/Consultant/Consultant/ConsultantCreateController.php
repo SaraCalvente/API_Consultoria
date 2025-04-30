@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\UI\API\Consultant\Consultant;
 
-use App\Consultant\Application\Consultant\ConsultantRegisterService;
+use App\Consultant\Application\Consultant\ConsultantCreateService;
 use App\Shared\Domain\Exception\NotValidEmailException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,15 +11,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConsultantRegisterController extends AbstractController
+class ConsultantCreateController extends AbstractController
 {
 
     /**
      * @throws NotValidEmailException
      */
-    #[Route('/register/consultant', name: 'consultant_register', methods: ['POST'])]
+    #[Route('/create/consultant', name: 'consultant_create', methods: ['POST'])]
     #[OA\Post(
-        path: "/register/consultant",
+        path: "/create/consultant",
         description: "Register a new consultant user.",
         summary: "Consultant register.",
         requestBody: new OA\RequestBody(
@@ -68,7 +68,7 @@ class ConsultantRegisterController extends AbstractController
         ]
     )]
     public function register(
-        Request $request, ConsultantRegisterService $consultantRegisterService
+        Request $request, ConsultantCreateService $consultantRegisterService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 

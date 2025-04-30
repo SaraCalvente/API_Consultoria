@@ -64,7 +64,11 @@ class ProjectGetController extends AbstractController
     public function getProjectsByName(Request $request, ProjectGetByNameService $projectFindByNameService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $name = $request->query->get('name');
+
+            $data = [
+                'name' => $name,
+            ];
             return $projectFindByNameService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

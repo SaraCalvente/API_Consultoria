@@ -42,7 +42,9 @@ class AbilityGetByConsultantEmailController extends AbstractController
     public function getAbility(Request $request, AbilityGetByConsultantEmailService $abilityGetByConsultantEmailService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $email = $request->query->get('email');
+
+            $data = ['email' => $email];
             return $abilityGetByConsultantEmailService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);

@@ -59,7 +59,11 @@ class NotificationGetByCreatorAndDateController extends AbstractController
     public function getNotificationsByCreator(Security $security, Request $request, NotificationGetByCreatorUserAndDateService $findByCreatorUserService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $date = $request->query->get('date');
+
+            $data = [
+                'date' => $date
+            ];
             $user = $this->authChecker->getAuthenticated($security);
             return $findByCreatorUserService($user, $data);
         } catch (\Exception $e) {

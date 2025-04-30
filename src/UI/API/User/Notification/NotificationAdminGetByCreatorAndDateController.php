@@ -48,7 +48,13 @@ class NotificationAdminGetByCreatorAndDateController extends AbstractController
     public function getNotificationsByCreator(Request $request, NotificationAdminGetByCreatorUserAndDateService $findByCreatorUserService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $email = $request->query->get('email');
+            $date = $request->query->get('date');
+
+            $data = [
+                'email' => $email,
+                'date' => $date
+            ];
             return $findByCreatorUserService($data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);

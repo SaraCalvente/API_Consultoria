@@ -8,6 +8,7 @@ use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityGetByConsultantEmailService
@@ -31,10 +32,6 @@ class AvailabilityGetByConsultantEmailService
     public function __invoke(array $data): JsonResponse
     {
         $user = $this->userRepository->findUserByEmail($data['email']);
-
-        if(!$this->consultantRepository->checkIfConsultantExists($user)) {
-            return new JsonResponse(['error' => 'User ' . $user->getEmail() . ' is not a Consultant'], 404);
-        }
         $consultant = $this->consultantRepository->findConsultantByUser($user);
         $availabilities = $this->availabilityRepository->findAvailabilityByConsultant($consultant);
 

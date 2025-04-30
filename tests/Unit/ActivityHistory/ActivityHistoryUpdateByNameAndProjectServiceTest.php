@@ -34,7 +34,7 @@ class ActivityHistoryUpdateByNameAndProjectServiceTest extends Unit
         $this->userRepository = $this->createMock(UserRepositoryInterface::class);
         $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
 
-        $this->service = new ActivityHistoryUpdateByNameAndProjectService($this->activityHistoryRepository, $this->projectRepository);
+        $this->service = new ActivityHistoryUpdateByNameAndProjectService($this->activityHistoryRepository, $this->projectRepository, $this->consultantRepository);
         $this->data = [
             'projectName' => 'Project A',
             'name' => 'Activity 1',
@@ -70,7 +70,7 @@ class ActivityHistoryUpdateByNameAndProjectServiceTest extends Unit
 
         $this->activityHistoryRepository->expects($this->once())->method('saveActivityHistory');
 
-        $response = ($this->service)($this->data);
+        $response = ($this->service)($user, $this->data);
 
         $this->assertEquals(201, $response->getStatusCode());
 

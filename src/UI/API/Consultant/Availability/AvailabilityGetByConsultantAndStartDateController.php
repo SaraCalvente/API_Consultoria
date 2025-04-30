@@ -5,14 +5,23 @@ namespace App\UI\API\Consultant\Availability;
 
 use App\Consultant\Application\Ability\AbilityGetService;
 use App\Consultant\Application\Availability\AvailabilityGetByConsultantAndStartDateService;
+use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Component\HttpFoundation\Request;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
+
 
 class AvailabilityGetByConsultantAndStartDateController extends AbstractController
 {
+    private AuthChecker $authChecker;
+
+    public function __construct(AuthChecker $authChecker)
+    {
+        $this->authChecker = $authChecker;
+    }
     #[Route('/availability', name: 'get_availability', methods: ['GET'])]
     #[OA\Get(
         path: "/availability",
@@ -50,12 +59,18 @@ class AvailabilityGetByConsultantAndStartDateController extends AbstractControll
             )
         ]
     )]
-    public function getAbility(Request $request, AvailabilityGetByConsultantAndStartDateService $getByConsultantAndStartDateService): JsonResponse
+    public function getAbility(Request $request, Security $security,  AvailabilityGetByConsultantAndStartDateService $getByConsultantAndStartDateService): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $user = $this->authChecker->getAuthenticated($security);
+        $email = $request->query->get('email') ?? null;
+        $startDate = $request->query->get('startDate');
 
+        $data = [
+            'email' => $email,
+            'startDate' => $startDate
+        ];
 
-        return $getByConsultantAndStartDateService($data);
+        return $getByConsultantAndStartDateService($user, $data);
     }
 
 

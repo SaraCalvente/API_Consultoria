@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ClientAdminDeleteController extends AbstractController
 {
-    #[Route('/admin/client/delete', name: 'admin_delete_client', methods: ['DELETE'])]
+    #[Route('/admin/delete/client', name: 'admin_delete_client', methods: ['DELETE'])]
 
     #[OA\Delete(
         path: "/admin/client/delete",
@@ -54,7 +54,9 @@ class ClientAdminDeleteController extends AbstractController
     )]
     public function adminDeleteClient (Request $request, ClientDeleteByEmailService $clientDeleteByEmail): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $email = $request->query->get('email');
+
+        $data = ['email' => $email];
         try {
             return $clientDeleteByEmail($data);
         } catch (UserNotFoundException $e){

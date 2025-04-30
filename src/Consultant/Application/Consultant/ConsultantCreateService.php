@@ -16,7 +16,7 @@ use App\User\Domain\ValueObject\EmailValueObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ConsultantRegisterService
+class ConsultantCreateService
 {
     private UserPasswordHasherInterface $passwordHasher;
     private ConsultantRepositoryInterface $consultantRepository;
@@ -66,12 +66,14 @@ class ConsultantRegisterService
         $consultant->setUser($user);
         if ($data['abilities'] !== null) {
             foreach ($data['abilities'] as $ability) {
-                if($this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level'])){
-                    $ability = new Ability();
-                    $ability->setName($ability['abilityName']);
-                    $ability->setLevel(Level::from($ability['level']));
-                    $consultant->addAbility($ability);
+                if(!$this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level'])){
+                    $newAbility = new Ability();
+                    $newAbility->setName($ability['abilityName']);
+                    $newAbility->setLevel(Level::from($ability['level']));
+                } else{
+                    $newAbility = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
                 }
+                $consultant->addAbility($newAbility);
             }
         }
 

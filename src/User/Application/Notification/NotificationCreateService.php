@@ -37,7 +37,7 @@ class NotificationCreateService
     public function __invoke(User $creator, array $data): JsonResponse
     {
         $notification = new Notification();
-        $notification->setCreatorUser($data['creator']);
+        $notification->setCreatorUser($creator);
         $notification->setDate(new \DateTime);
         $notification->setMessage($data['message']);
 

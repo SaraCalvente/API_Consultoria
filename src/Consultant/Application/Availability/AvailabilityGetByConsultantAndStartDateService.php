@@ -9,6 +9,7 @@ use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityGetByConsultantAndStartDateService
@@ -29,10 +30,15 @@ class AvailabilityGetByConsultantAndStartDateService
         $this->userRepository = $userRepository;
     }
 
-    public function __invoke(array $data): JsonResponse
+    public function __invoke(User $user, array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
-        $consultant = $this->consultantRepository->findConsultantByUser($user);
+        if ($data['email']){
+            $user = $this->userRepository->findUserByEmail($data['email']);
+            $consultant = $this->consultantRepository->findConsultantByUser($user);
+        }
+        else{
+            $consultant= $this->consultantRepository->findConsultantByUser($user);
+        }
         if (!$this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
             return new JsonResponse(['error' => 'An availability for ' . $data['email'] . ' with start date ' . $data['startDate'] . ' does not exists.' ], 403);
         }

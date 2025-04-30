@@ -39,7 +39,13 @@ class AbilityDeleteController extends AbstractController
     public function deleteConsultant(Request $request, AbilityDeleteService $abilityDeleteService): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
+            $name = $request->query->get('name');
+            $level = $request->query->get('level');
+
+            $data = [
+                'name' => $name,
+                'level' => $level
+            ];
             return $abilityDeleteService( $data );
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 401);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Client;
 
-use App\Client\Application\ClientRegisterService;
+use App\Client\Application\ClientCreateService;
 use App\Client\Domain\Client;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
@@ -19,7 +19,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ClientCreateServiceTest extends Unit
 {
-    private ClientRegisterService $service;
+    private ClientCreateService $service;
     private $hasher;
     private $clientRepo;
     private $userRepo;
@@ -34,7 +34,7 @@ class ClientCreateServiceTest extends Unit
         $this->clientRepo = $this->createMock(ClientRepositoryInterface::class);
         $this->userRepo = $this->createMock(UserRepositoryInterface::class);
 
-        $this->service = new ClientRegisterService($this->hasher, $this->clientRepo, $this->userRepo);
+        $this->service = new ClientCreateService($this->hasher, $this->clientRepo, $this->userRepo);
         $this->data = [
             'email' => 'test@example.com',
             'password' => 'Secure1234',

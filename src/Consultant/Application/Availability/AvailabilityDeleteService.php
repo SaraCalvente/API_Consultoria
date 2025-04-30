@@ -7,6 +7,7 @@ use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\AvailabilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
+use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityDeleteService
@@ -27,10 +28,15 @@ class AvailabilityDeleteService
         $this->consultantRepository = $consultantRepository;
     }
 
-    public function __invoke(array $data): JsonResponse
+    public function __invoke(User $user, array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
-        $consultant= $this->consultantRepository->findConsultantByUser($user);
+        if ($data['consultantEmail']){
+            $user = $this->userRepository->findUserByEmail($data['consultantEmail']);
+            $consultant = $this->consultantRepository->findConsultantByUser($user);
+        }
+        else{
+            $consultant= $this->consultantRepository->findConsultantByUser($user);
+        }
         if (!$this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
             return new JsonResponse(['error' => 'An availability for ' . $data['email'] . ' with start date ' . $data['startDate'] . ' does not exists.'], 403);
         }

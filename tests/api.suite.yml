@@ -1,0 +1,17 @@
+actor: ApiTester
+suite_namespace: App\Tests\Api
+modules:
+  enabled:
+    - Asserts
+    - Symfony:
+        app_path: 'src'
+        environment: 'test'
+        kernel_class: 'App\Kernel'
+    - Doctrine:
+        depends: Symfony
+        environment: 'test'
+        cleanup: true
+        populate: true
+    - REST:
+        url: 'http://localhost:8001/api/'
+        depends: Symfony

@@ -7,6 +7,7 @@ use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Consultant\Profile;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
+use App\Shared\Domain\Exception\AbilityNotFoundException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -53,7 +54,9 @@ class ConsultantUpdateByEmailService
     {
         foreach ($abilities as $ability) {
             $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
-
+            if (!$abilityFind) {
+                throw new AbilityNotFoundException($ability['abilityName'], $ability['level']);
+            }
             if ($add) {
                 $consultant->addAbility($abilityFind);
 

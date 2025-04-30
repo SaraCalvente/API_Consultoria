@@ -27,13 +27,10 @@ class ActivityHistoryGetByConsultantService
 
     public function __invoke(User $user): JsonResponse
     {
-        if (!$this->consultantRepository->checkIfConsultantExists($user)) {
-            return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 400);
-        }
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
         if (!$consultant) {
-            return new JsonResponse(['error' => 'Consultant has no associated activities'], 402);
+            return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 402);
         }
 
         $activities = $this->activityHistoryRepository->findActivitiesByConsultant($user);

@@ -5,14 +5,23 @@ namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryUpdateByNameAndProjectService;
 use App\Project\Application\Task\TaskUpdateByNameAndProjectService;
+use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Security\Core\Security;
 
 class ActivityHistoryUpdateController extends AbstractController
 {
+    private AuthChecker $authChecker;
+
+    public function __construct(authChecker $authChecker)
+    {
+        $this->authChecker = $authChecker;
+    }
+
     #[Route('/activity/update', name: 'activity_update', methods: ['PUT'])]
     #[OA\Put(
         path: "/activity/update",
@@ -50,11 +59,12 @@ class ActivityHistoryUpdateController extends AbstractController
                 description: "Unauthorized"
             )]
     )]
-    public function updateProject(Request $request, ActivityHistoryUpdateByNameAndProjectService $activityHistoryUpdateController): JsonResponse
+    public function updateProject(Security $security, Request $request, ActivityHistoryUpdateByNameAndProjectService $activityHistoryUpdateController): JsonResponse
     {
         try {
+            $user = $this->authChecker->getAuthenticated($security);
             $data = json_decode($request->getContent(), true);
-            return $activityHistoryUpdateController($data);
+            return $activityHistoryUpdateController($user, $data);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }

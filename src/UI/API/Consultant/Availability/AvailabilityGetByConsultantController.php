@@ -21,7 +21,7 @@ class AvailabilityGetByConsultantController extends AbstractController
     {
         $this->authChecker = $authChecker;
     }
-    #[Route('/consultant/availability', name: 'get_consultant_availability', methods: ['GET'])]
+    #[Route('/consultant/availability', name: 'get_consultant_availability_email', methods: ['GET'])]
     #[OA\Get(
         path: "consultant/availability",
         description: "Retrieve the availability for an authenticated consultant.",

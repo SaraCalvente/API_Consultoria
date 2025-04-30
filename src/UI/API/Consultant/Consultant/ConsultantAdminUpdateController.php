@@ -12,9 +12,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ConsultantAdminUpdateController extends AbstractController
 {
-    #[Route('/admin/consultant/update', name: 'admin_consultant_update', methods: ['PUT'])]
+    #[Route('/admin/update/consultant', name: 'admin_consultant_update', methods: ['PUT'])]
     #[OA\Put(
-        path: "/admin/consultant/update",
+        path: "/admin/update/consultant",
         description: "Updates consultant details by an authenticated admin.",
         summary: "Consultant details updated successfully",
         requestBody: new OA\RequestBody(

@@ -65,7 +65,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 
             return new JsonResponse([
                 'message' => 'Client address updated successfully',
-                ClientDTO::fromEntity($client)
+                'client' => ClientDTO::fromEntity($client)
             ]);
         }
 
@@ -75,7 +75,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 
             return new JsonResponse([
                 'message' => 'Client phone number updated successfully',
-                ClientDTO::fromEntity($client)
+                'client' => ClientDTO::fromEntity($client)
             ]);
         }
 
@@ -87,7 +87,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 
         return new JsonResponse([
             'message' => 'Client address and phone number updated successfully',
-            ClientDTO::fromEntity($client)
+            'client' => ClientDTO::fromEntity($client)
         ]);
     }
 
