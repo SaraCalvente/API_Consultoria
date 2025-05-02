@@ -40,7 +40,7 @@ class AdminDeleteByIdServiceTest extends Unit
 
         $this->repository
             ->expects($this->once())
-            ->method('findUserById')
+            ->method('findUserByIdOrFail')
             ->with($userId)
             ->willReturn($user);
 

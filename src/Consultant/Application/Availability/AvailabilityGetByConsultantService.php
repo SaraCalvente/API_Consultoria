@@ -14,22 +14,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityGetByConsultantService
 {
-    private AvailabilityRepositoryInterface $availabilityRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        AvailabilityRepositoryInterface $availabilityRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-    )
+    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->availabilityRepository = $availabilityRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     public function __invoke(User $user): JsonResponse
     {
-        if(!$this->consultantRepository->checkIfConsultantExists($user)) {
+        if (!$this->consultantRepository->checkIfConsultantExists($user)) {
             return new JsonResponse(['error' => 'User ' . $user->getEmail() . ' is not a Consultant'], 404);
         }
         $consultant = $this->consultantRepository->findConsultantByUser($user);

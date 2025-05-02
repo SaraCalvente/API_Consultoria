@@ -10,25 +10,14 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 class UserLoginService
 {
-    private UserPasswordHasherInterface $passwordHasher;
-    private JWTTokenManagerInterface $jwtManager;
-    private UserRepositoryInterface $repository;
-
-
-    public function __construct(
-        UserPasswordHasherInterface $passwordHasher,
-        JWTTokenManagerInterface $jwtManager,
-        UserRepositoryInterface $repository
-    ) {
-        $this->passwordHasher = $passwordHasher;
-        $this->jwtManager = $jwtManager;
-        $this->repository = $repository;
+    public function __construct(private UserPasswordHasherInterface $passwordHasher, private JWTTokenManagerInterface $jwtManager, private UserRepositoryInterface $repository)
+    {
     }
 
     public function __invoke(array $data): JsonResponse{
-        $user = $this->repository->findUserByEmail($data['email']);
+        $user = $this->repository->findUserByEmailOrFail($data['email']);
 
-        if(!$this->passwordHasher->isPasswordValid($user, $data['password'])){
+        if (!$this->passwordHasher->isPasswordValid($user, $data['password'])){
             throw new BadCredentialsException('Invalid email or password');
         }
 

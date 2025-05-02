@@ -23,13 +23,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class AvailabilityRepository extends ServiceEntityRepository implements AvailabilityRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, Availability::class);
-        $this->entityManager = $entityManager;
     }
 
 
@@ -49,10 +47,7 @@ class AvailabilityRepository extends ServiceEntityRepository implements Availabi
     public function checkIfAvailabilityExists(Consultant $consultant, string $startDate): bool
     {
         $availability = $this->findAvailabilityByStartDateAndConsultant($consultant, $startDate);
-        if (!$availability) {
-            return false;
-        }
-        return true;
+        return $availability instanceof \App\Consultant\Domain\Availability\Availability;
     }
 
     /**
@@ -108,8 +103,10 @@ class AvailabilityRepository extends ServiceEntityRepository implements Availabi
     public function checkDates(string $startDate, string $endDate): bool
     {
         $start = \DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
-        if (!$start) return false;
-        if ($endDate) {
+        if (!$start) {
+            return false;
+        }
+        if ($endDate !== '' && $endDate !== '0') {
             $end = \DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
             return $end && $start <= $end;
         }

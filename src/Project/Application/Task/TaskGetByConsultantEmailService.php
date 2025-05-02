@@ -11,25 +11,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskGetByConsultantEmailService
 {
-    private TaskRepositoryInterface $taskRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
         $tasks = $this->taskRepository->findTaskByConsultant($consultant);
         return new JsonResponse([

@@ -10,21 +10,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NotificationAdminGetByReceiverUserService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-    private UserRepositoryInterface $userRepository;
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private NotificationRepositoryInterface $notificationRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->notificationRepository = $notificationRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $notifications = $this->notificationRepository->findNotificationsByUser($user);
         return new JsonResponse([
             'message' => 'Notifications retrieved successfully',

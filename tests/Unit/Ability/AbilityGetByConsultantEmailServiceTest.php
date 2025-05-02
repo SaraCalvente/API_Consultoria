@@ -55,7 +55,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
 
         $ability = $this->createConfiguredMock(Ability::class, ['getName' => 'PHP', 'getLevel' => Level::EXPERT,]);
 
-        $this->userRepository->expects($this->once())->method('findUserByEmail')->with($this->data['email'])
+        $this->userRepository->expects($this->once())->method('findUserByEmailOrFail')->with($this->data['email'])
             ->willReturn($user);
 
         $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)
@@ -91,7 +91,7 @@ class AbilityGetByConsultantEmailServiceTest extends Unit
             'getEmail' => new EmailValueObject($this->data['email']),
         ]);
 
-        $this->userRepository->expects($this->once())->method('findUserByEmail')->with($this->data['email'])
+        $this->userRepository->expects($this->once())->method('findUserByEmailOrFail')->with($this->data['email'])
             ->willReturn($user);
 
         $this->consultantRepository->expects($this->once())->method('checkIfConsultantExists')->with($user)

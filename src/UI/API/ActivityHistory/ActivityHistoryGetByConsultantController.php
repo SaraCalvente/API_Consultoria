@@ -14,11 +14,8 @@ use OpenApi\Attributes as OA;
 
 class ActivityHistoryGetByConsultantController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/activity/consultant/activities', name: 'get_consultant_email_activities', methods: ['GET'])]

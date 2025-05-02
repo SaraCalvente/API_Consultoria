@@ -27,30 +27,35 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
+    private const MIN_PASSWORD_LENGTH = 5;
+
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
-        $this->entityManager = $entityManager;
     }
 
 
-    public function findUserByEmail(string $email): ?User
+    public function findUserByEmailOrFail(string $email): User
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if(!$user){
+
+        if (!$user){
             throw new UserNotFoundException();
         }
+
         return $user;
     }
 
-    public function findUserById(int $id): ?User{
+    public function findUserByIdOrFail(int $id): User
+    {
         $user = $this->entityManager->getRepository(User::class)->find($id);
-        if(!$user){
+
+        if (!$user){
             throw new UserNotFoundException();
         }
+
         return $user;
     }
 
@@ -69,45 +74,42 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $this->entityManager->flush();
     }
 
-    public function getAllAdmins(): array{
-        $admins = $this->entityManager->createQueryBuilder()
+    public function getAllAdmins(): array
+    {
+        return $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(User::class, 'u')
             ->where('u.roles LIKE :role')
             ->setParameter('role', '%ROLE_ADMIN%')
             ->getQuery()
             ->getResult();
-        return $admins;
     }
 
-    public function checkIfUserExists(string $email): bool{
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if (!$user) {
-            return false;
-        }
-        return true;
-    }
+    public function checkIfUserExists(string $email): bool
+    {
 
-/*    public function checkIfUserExists1(string $email): void{
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if ($user) {
-            throw new UserAlreadyExistsException($email);
-        }
-    }*/
+
+        return $user !== null;
+    }
 
     public function getUserByEmail(string $email): User
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
         if (!$user) {
-            throw new UserNotFoundException("No user found with email: $email");
+            throw new UserNotFoundException();
         }
 
-        return $user;
+    return $user;
     }
 
-    public function checkPasswordLength(string $password): void{
-        if(strlen($password) < 5) {
+    /**
+     * @throws NotValidPasswordLengthException
+     */
+    public function checkPasswordLength(string $password): void
+    {
+    if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
             throw new NotValidPasswordLengthException();
         }
     }

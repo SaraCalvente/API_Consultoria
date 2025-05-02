@@ -13,11 +13,8 @@ use OpenApi\Attributes as OA;
 
 class TasksGetByConsultantController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/user/tasks', name: 'get_user_tasks', methods: ['GET'])]

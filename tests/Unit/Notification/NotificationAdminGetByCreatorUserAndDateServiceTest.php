@@ -58,7 +58,7 @@ class NotificationAdminGetByCreatorUserAndDateServiceTest extends Unit
 
         $this->userRepository
             ->expects($this->once())
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($creator);
 

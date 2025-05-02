@@ -57,7 +57,7 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $consultant = $this->createMock(Consultant::class);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 
@@ -120,7 +120,7 @@ class ConsultantUpdateByEmailServiceTest extends Unit
         $abilityToAdd = $this->createMock(Ability::class);
         $abilityToRemove = $this->createMock(Ability::class);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->abilityRepository->method('findAbilityByNameAndLevel')

@@ -15,11 +15,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ActivityHistoryUpdateController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/activity/update', name: 'activity_update', methods: ['PUT'])]

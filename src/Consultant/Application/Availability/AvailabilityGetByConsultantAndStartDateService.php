@@ -14,26 +14,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityGetByConsultantAndStartDateService
 {
-    private AvailabilityRepositoryInterface $availabilityRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        AvailabilityRepositoryInterface $availabilityRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->availabilityRepository = $availabilityRepository;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function __invoke(User $user, array $data): JsonResponse
     {
         if ($data['email']){
-            $user = $this->userRepository->findUserByEmail($data['email']);
+            $user = $this->userRepository->findUserByEmailOrFail($data['email']);
             $consultant = $this->consultantRepository->findConsultantByUser($user);
         }
         else{

@@ -12,19 +12,13 @@ use Symfony\Component\Security\Core\Security;
 
 class AuthChecker
 {
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private UserRepositoryInterface $userRepository)
     {
-        $this->userRepository = $userRepository;
     }
     public function getAuthenticated(Security $security): User
     {
         $userId = $security->getUser();
-        if(!$userId){
+        if (!$userId instanceof \Symfony\Component\Security\Core\User\UserInterface){
             throw new \Exception('No user logged in');
         }
         $user = $this->userRepository->find($userId);

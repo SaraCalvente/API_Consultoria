@@ -9,21 +9,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskGetAllService
 {
-    private TaskRepositoryInterface $taskRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository)
     {
-        $this->taskRepository = $taskRepository;
     }
 
     public function __invoke(): JsonResponse
     {
         $tasks = $this->taskRepository->findAllTasks();
 
-        if (!$tasks) {
+        if ($tasks === []) {
             return new JsonResponse(['error' => 'There are no tasks'], 404);
         }
 

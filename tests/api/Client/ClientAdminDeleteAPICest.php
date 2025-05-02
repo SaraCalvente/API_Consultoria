@@ -14,24 +14,28 @@ final class ClientAdminDeleteAPICest
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
 
+    private function authenticateAsAdmin(ApiTester $I): string
+    {
+        $I->sendPOST('/login', [
+            'email' => 'admin@example.com',
+            'password' => 'passw',
+        ]);
+        $I->seeResponseCodeIs(HttpCode::OK);
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
+
+
     public function tryToDeleteClientWithValidEmail(ApiTester $I): void
     {
         $I->wantTo('Delete a client as an authenticated admin with valid email');
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
-        $I->sendDELETE('/admin/delete/client', [
-            'email' => 'ana@garcia.com',
-        ]);
+        $I->sendDELETE('/admin/delete/client?email=ana@garcia.com');
 
         $I->seeResponseCodeIs(HttpCode::OK);
         $I->seeResponseContainsJson([
@@ -45,9 +49,8 @@ final class ClientAdminDeleteAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendDELETE('/admin/delete/client', [
-            'email' => 'ana@garcia.com',
-        ]);
+        $I->sendDELETE('/admin/delete/client?email=ana@garcia.com');
+
 
         $I->seeResponseCodeIs(HttpCode::UNAUTHORIZED);
     }
@@ -58,18 +61,12 @@ final class ClientAdminDeleteAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
-        $I->sendDELETE('/admin/delete/client', [
-            'email' => 'nonexistent@user.com',
-        ]);
+        $I->sendDELETE('/admin/delete/client?email=noana@garcia.com');
+
 
         $I->seeResponseCodeIs(HttpCode::NOT_FOUND);
         $I->seeResponseContainsJson([
@@ -83,16 +80,11 @@ final class ClientAdminDeleteAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
-        $I->sendDELETE('/admin/delete/client', []);
+        $I->sendDELETE('/admin/delete/client');
 
         $I->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $I->seeResponseContainsJson([

@@ -24,13 +24,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ProjectRepository extends ServiceEntityRepository implements ProjectRepositoryInterface
 {
 
-    private EntityManagerInterface $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, Project::class);
-        $this->entityManager = $entityManager;
     }
 
     public function addProject(Project $project): void
@@ -49,17 +47,13 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
     }
 
     public function findAllProjects(): array{
-        $projects = $this->entityManager->getRepository(Project::class)->findAll();
-        return $projects;
+        return $this->entityManager->getRepository(Project::class)->findAll();
     }
 
     public function checkIfProjectExists(string $name): bool
     {
         $project = $this->entityManager->getRepository(Project::class)->findOneBy(['name' => $name]);
-        if(!$project){
-            return false;
-        }
-        return true;
+        return $project !== null;
     }
 
     public function findProjectByClient(Client $client): array
@@ -70,7 +64,9 @@ class ProjectRepository extends ServiceEntityRepository implements ProjectReposi
     public function checkDates(string $startDate, ?string $endDate): bool
     {
         $start = \DateTime::createFromFormat('Y-m-d', $startDate);
-        if (!$start) return false;
+        if (!$start) {
+            return false;
+        }
         if ($endDate) {
             $end = \DateTime::createFromFormat('Y-m-d', $endDate);
             return $end && $start <= $end;

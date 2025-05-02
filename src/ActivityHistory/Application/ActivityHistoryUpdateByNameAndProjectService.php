@@ -14,22 +14,14 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryUpdateByNameAndProjectService
+final readonly class ActivityHistoryUpdateByNameAndProjectService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ProjectRepositoryInterface $projectRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository,
-        ProjectRepositoryInterface $projectRepository,
-    ConsultantRepositoryInterface $consultantRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository,
+        private ProjectRepositoryInterface $projectRepository,
+        private ConsultantRepositoryInterface $consultantRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-        $this->projectRepository = $projectRepository;
-        $this->consultantRepository = $consultantRepository;
-    }
+    {}
 
     /**
      * @throws \DateMalformedStringException
@@ -39,7 +31,7 @@ class ActivityHistoryUpdateByNameAndProjectService
     ): JsonResponse {
 
         $project = $this->projectRepository->findProjectByName($data['projectName']);
-        if (!$project) {
+        if (!$project instanceof \App\Project\Domain\Project\Project) {
             throw new ProjectNotFoundException();
         }
 
@@ -51,7 +43,7 @@ class ActivityHistoryUpdateByNameAndProjectService
 
         $consultantCheck = $this->consultantRepository->checkIfConsultantExists($user);
 
-        if($consultantCheck){
+        if ($consultantCheck){
             $consultant = $this->consultantRepository->findConsultantByUser($user);
             if (!$consultant->getUser()->getActivityHistories()->contains($activity)) {
                 throw new ActivityHistoryNotFromUserException($data['name'], $data['projectName']);

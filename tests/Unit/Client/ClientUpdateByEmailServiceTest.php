@@ -48,7 +48,7 @@ class ClientUpdateByEmailServiceTest extends Unit
 
         $user = $this->createMock(User::class);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
 
         $expectedResponse = new JsonResponse([
             'message' => 'Client updated successfully',
@@ -87,7 +87,7 @@ class ClientUpdateByEmailServiceTest extends Unit
 
         $user = $this->createMock(User::class);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
 
         $expectedResponse = new JsonResponse([
             'message' => 'Client updated successfully',
@@ -126,7 +126,7 @@ class ClientUpdateByEmailServiceTest extends Unit
 
         $user = $this->createMock(User::class);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
 
         $expectedResponse = new JsonResponse([
             'message' => 'Client updated successfully',
@@ -156,7 +156,7 @@ class ClientUpdateByEmailServiceTest extends Unit
         $this->expectException(NoDataToUpdateException::class);
 
         $user = $this->createMock(User::class);
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
 
         $data = ['email' => 'client@example.com'];
         ($this->service)($data);

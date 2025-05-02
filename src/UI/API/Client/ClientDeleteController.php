@@ -15,11 +15,8 @@ use OpenApi\Attributes as OA;
 
 class ClientDeleteController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]

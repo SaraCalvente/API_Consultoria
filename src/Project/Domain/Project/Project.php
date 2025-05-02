@@ -172,11 +172,9 @@ class Project
 
     public function removeActivityHistory(ActivityHistory $activityHistory): static
     {
-        if ($this->activity_history->removeElement($activityHistory)) {
-            // set the owning side to null (unless already changed)
-            if ($activityHistory->getProject() === $this) {
-                $activityHistory->setProject(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->activity_history->removeElement($activityHistory) && $activityHistory->getProject() === $this) {
+            $activityHistory->setProject(null);
         }
 
         return $this;

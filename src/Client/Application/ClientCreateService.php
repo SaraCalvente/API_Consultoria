@@ -19,20 +19,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ClientCreateService
 {
-    private UserPasswordHasherInterface $passwordHasher;
-    private ClientRepositoryInterface $clientRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        UserPasswordHasherInterface $passwordHasher,
-        ClientRepositoryInterface   $clientRepository,
-        UserRepositoryInterface     $userRepository
-    )
+    public function __construct(private UserPasswordHasherInterface $passwordHasher, private ClientRepositoryInterface   $clientRepository, private UserRepositoryInterface     $userRepository)
     {
-        $this->passwordHasher = $passwordHasher;
-        $this->clientRepository = $clientRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -40,7 +28,8 @@ class ClientCreateService
      * @throws RequiredFieldException
      */
     public function __invoke(
-        array $data): JsonResponse
+        array $data
+    ): JsonResponse
     {
         $this->validateRequiredFields($data);
         if ($this->userRepository->checkIfUserExists($data['email'])){

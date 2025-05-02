@@ -13,25 +13,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityUpdateService
 {
-    private AvailabilityRepositoryInterface $availabilityRepository;
-    private UserRepositoryInterface $userRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        AvailabilityRepositoryInterface $availabilityRepository,
-        UserRepositoryInterface $userRepository,
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private UserRepositoryInterface $userRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->availabilityRepository = $availabilityRepository;
-        $this->userRepository = $userRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
         if (!$this->availabilityRepository->checkIfAvailabilityExists($consultant, $data['startDate'])) {
             return new JsonResponse(['error' => 'An availability for ' . $data['email'] . ' with start date ' . $data['startDate'] . ' does not exists.'], 403);

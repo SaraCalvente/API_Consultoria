@@ -11,14 +11,8 @@ use function PHPUnit\Framework\isEmpty;
 
 class ClientUpdateByUserService
 {
-    private ClientRepositoryInterface $clientRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface $clientRepository
-    )
+    public function __construct(private ClientRepositoryInterface $clientRepository)
     {
-        $this->clientRepository = $clientRepository;
     }
 
     public function __invoke(
@@ -27,7 +21,7 @@ class ClientUpdateByUserService
         $address = $data['address'] ?? null;
         $phone = $data['phoneNumber'] ?? null;
 
-        if (empty($data) || $address === null && $phone === null) {
+        if ($data === [] || $address === null && $phone === null) {
             throw new NoDataToUpdateException();
         }
         return $this->clientRepository->updateClient($user, $address, $phone);

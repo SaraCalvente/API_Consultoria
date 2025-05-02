@@ -13,6 +13,15 @@ final class ClientUpdateAPICest
     {
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
+    private function authenticateAsUser(ApiTester $I): string
+    {
+        $I->sendPOST('/login', [
+            'email' => 'ana@garcia.com',
+            'password' => 'passw',
+        ]);
+        $I->seeResponseCodeIs(HttpCode::OK);
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
 
     public function tryToUpdateClientWithValidData(ApiTester $I): void
     {
@@ -20,12 +29,7 @@ final class ClientUpdateAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'ana@garcia.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsUser($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
@@ -71,12 +75,7 @@ final class ClientUpdateAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'ana@garcia.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsUser($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendPUT('/client/update', []);

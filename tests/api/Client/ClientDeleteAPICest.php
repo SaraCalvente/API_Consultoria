@@ -13,18 +13,22 @@ final class ClientDeleteAPICest
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
 
-    public function tryToDeleteClientSuccessfully(ApiTester $I): void
+    private function authenticateAsUser(ApiTester $I): string
     {
-        $I->wantTo('Delete a client successfully when authenticated');
-
-        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST('/login', [
             'email' => 'ana@garcia.com',
             'password' => 'passw',
         ]);
         $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
 
+    public function tryToDeleteClientSuccessfully(ApiTester $I): void
+    {
+        $I->wantTo('Delete a client successfully when authenticated');
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $token = $this->authenticateAsUser($I);
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendDELETE('/client/delete');
 

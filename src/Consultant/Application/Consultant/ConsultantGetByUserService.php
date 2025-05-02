@@ -8,14 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantGetByUserService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->consultantRepository = $consultantRepository;
     }
 
     public function __invoke(User $user): JsonResponse

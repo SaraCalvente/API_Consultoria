@@ -14,23 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskCreateSevice
 {
-    private TaskRepositoryInterface $taskRepository;
-    private ProjectRepositoryInterface $projectRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository,
-        ProjectRepositoryInterface $projectRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->projectRepository = $projectRepository;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -40,13 +25,13 @@ class TaskCreateSevice
     ): JsonResponse
     {
 
-        if(!$this->projectRepository->checkIfProjectExists($data['projectName'])){
+        if (!$this->projectRepository->checkIfProjectExists($data['projectName'])){
             return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
         }
 
         $project = $this->projectRepository->findProjectByName($data['projectName']);
 
-        if($this->taskRepository->checkIfTaskFromProjectExists($data['name'], $project)){
+        if ($this->taskRepository->checkIfTaskFromProjectExists($data['name'], $project)){
             return new JsonResponse(['error' => 'A task with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
         }
 
@@ -62,7 +47,7 @@ class TaskCreateSevice
         $task->setEndDate(new \DateTime($data['endDate']));
         $task->setStatus(Status::from($data['status']));
         foreach ($data['consultantsEmails'] as $consultantEmail) {
-            $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
+            $consultantUser = $this->userRepository->findUserByEmailOrFail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
             $task->addConsultant($consultant);
         }

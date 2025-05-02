@@ -14,11 +14,8 @@ use OpenApi\Attributes as OA;
 
 class NotificationGetByCreatorController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/notifications/user/created', name: 'get_creator_notifications', methods: ['GET'])]

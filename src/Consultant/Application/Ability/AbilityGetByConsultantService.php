@@ -10,22 +10,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AbilityGetByConsultantService
 {
-    private AbilityRepositoryInterface $abilityRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        AbilityRepositoryInterface $abilityRepository,
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private AbilityRepositoryInterface $abilityRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->abilityRepository = $abilityRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     public function __invoke(User $user): JsonResponse
     {
-        if(!$this->consultantRepository->checkIfConsultantExists($user)) {
+        if (!$this->consultantRepository->checkIfConsultantExists($user)) {
             return new JsonResponse(['error' => 'User ' . $user->getEmail() . ' is not a Consultant'], 404);
         }
         $consultant = $this->consultantRepository->findConsultantByUser($user);

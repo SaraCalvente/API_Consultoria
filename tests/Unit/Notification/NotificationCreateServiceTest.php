@@ -51,7 +51,7 @@ class NotificationCreateServiceTest extends Unit
 
         $this->userRepository
             ->expects($this->exactly(2))
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->willReturnMap([
                 ['user1@example.com', $user1],
                 ['user2@example.com', $user2],

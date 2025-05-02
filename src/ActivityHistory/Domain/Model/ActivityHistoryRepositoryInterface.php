@@ -13,7 +13,14 @@ interface ActivityHistoryRepositoryInterface
 
     public function findActivityHistoryFromProject(string $activityHistoryName, Project $project): ActivityHistory;
 
+    /**
+     * @return ActivityHistory[]
+     */
     public function findAllActivityHistories(): array;
+
+    /**
+     * @return ActivityHistory[]
+     */
     public function findActivitiesHistoriesByProject(Project $project): array;
 
     public function saveActivityHistory(): void;

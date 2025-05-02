@@ -109,7 +109,7 @@ class TaskUpdateByNameAndProjectServiceTest extends Unit
 
         $this->userRepository
             ->expects($this->exactly(2))
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->willReturnCallback(function (string $email) use ($user1, $user2) {
                 return match ($email) {
                     'consultant1@example.com' => $user1,

@@ -13,11 +13,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ConsultantDeleteController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct( AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/consultant/delete', name: 'delete_consultant', methods: ['DELETE'])]

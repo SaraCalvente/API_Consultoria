@@ -10,17 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskGetByProjectService
 {
-    private TaskRepositoryInterface $taskRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository,
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(array $data): JsonResponse

@@ -51,7 +51,7 @@ class UserLoginServiceTest extends Unit
 
         $this->repository
             ->expects($this->once())
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 
@@ -89,7 +89,7 @@ class UserLoginServiceTest extends Unit
 
         $this->repository
             ->expects($this->once())
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 
@@ -116,7 +116,7 @@ class UserLoginServiceTest extends Unit
 
         $this->repository
             ->expects($this->once())
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 

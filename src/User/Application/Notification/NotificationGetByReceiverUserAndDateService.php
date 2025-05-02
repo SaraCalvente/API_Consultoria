@@ -15,13 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NotificationGetByReceiverUserAndDateService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository
-    )
+    public function __construct(private NotificationRepositoryInterface $notificationRepository)
     {
-        $this->notificationRepository = $notificationRepository;
     }
 
     /**

@@ -514,7 +514,7 @@ function mo_saml_show_customer_details()
             <script>
                 function upgradeform(planType) {
                     jQuery('#requestOrigin').val(planType);
-                    if(jQuery('#mo_customer_registered').val()==1)
+                    if (jQuery('#mo_customer_registered').val()==1)
                         jQuery('#loginform').submit();
 
                 }

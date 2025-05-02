@@ -16,11 +16,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AvailabilityGetByConsultantAndStartDateController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
     #[Route('/availability', name: 'get_availability', methods: ['GET'])]
     #[OA\Get(

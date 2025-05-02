@@ -10,14 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientGetAllService
 {
-    private ClientRepositoryInterface $clientRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface $clientRepository,
-    )
+    public function __construct(private ClientRepositoryInterface $clientRepository)
     {
-        $this->clientRepository = $clientRepository;
     }
 
     public function __invoke(): JsonResponse
@@ -28,7 +22,7 @@ class ClientGetAllService
         foreach ($clients as $client) {
             $clientData[] = ClientDTO::fromEntity($client);
         }
-        if (empty($clientData)) {
+        if ($clientData === []) {
             return new JsonResponse(['error' => 'There are no activities'], 404);
         }
 

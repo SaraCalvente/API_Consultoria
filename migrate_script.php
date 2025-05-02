@@ -36,9 +36,9 @@ function editFile($file): void
 function modifyFiles($directory) {
     $dir = opendir($directory);
     while ($element = readdir($dir)){
-        if( $element !== "." && $element !== ".."){
+        if ($element !== "." && $element !== ".."){
             $path = $directory.$element;
-            if(
+            if (
                 is_dir($path) && !strpos($path, 'Entity') &&
                 !strpos($path, 'Migrations') &&
                 !strpos($path, 'Security') &&

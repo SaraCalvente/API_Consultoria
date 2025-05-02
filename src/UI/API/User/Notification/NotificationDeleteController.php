@@ -14,11 +14,8 @@ use Symfony\Component\Security\Core\Security;
 
 class NotificationDeleteController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
     #[Route('/notification/delete', name: 'delete_notification', methods: ['DELETE'])]
     #[OA\Delete(

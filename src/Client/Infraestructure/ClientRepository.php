@@ -24,11 +24,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class ClientRepository extends ServiceEntityRepository implements ClientRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
-    public function __construct( EntityManagerInterface $entityManager, ManagerRegistry $registry)
+    public function __construct( private EntityManagerInterface $entityManager, ManagerRegistry $registry)
     {
         parent::__construct($registry, Client::class);
-        $this->entityManager = $entityManager;
     }
 
 
@@ -44,10 +42,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
     public function checkIfClientExists(User $user): bool
     {
         $client = $this->entityManager->getRepository(Client::class)->findOneBy(['user' => $user]);
-        if (!$client) {
-            return false;
-        }
-        return true;
+        return $client !== null;
     }
 
     public function findAllClients(): array

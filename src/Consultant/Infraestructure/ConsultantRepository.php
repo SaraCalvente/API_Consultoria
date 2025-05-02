@@ -23,13 +23,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class ConsultantRepository extends ServiceEntityRepository implements ConsultantRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, Consultant::class);
-        $this->entityManager = $entityManager;
     }
 
 
@@ -49,10 +47,7 @@ class ConsultantRepository extends ServiceEntityRepository implements Consultant
     public function checkIfConsultantExists(User $user): bool
     {
         $consultant = $this->entityManager->getRepository(Consultant::class)->findOneBy(['user' => $user]);
-        if (!$consultant) {
-            return false;
-        }
-        return true;
+        return $consultant !== null;
     }
 
     public function getConsultantByUser(User $user): Consultant

@@ -18,17 +18,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityCreateService
 {
-    private AvailabilityRepositoryInterface $availabilityRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        AvailabilityRepositoryInterface $availabilityRepository,
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->availabilityRepository = $availabilityRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     /**
@@ -44,7 +35,7 @@ class AvailabilityCreateService
         $availability = new Availability();
         $availability->setAvailable($data['available']);
         $availability->setConsultant($consultant);
-        if(!$this->availabilityRepository-> checkDates($data['startDate'], $data['endDate'])){
+        if (!$this->availabilityRepository-> checkDates($data['startDate'], $data['endDate'])){
             return new JsonResponse([
                 'error' => 'Start date (' . $data['startDate'] . ') is grater than end date (' . $data['endDate'] . ') or have the wrong format (Y-m-d H:i:s)'
             ], 403);

@@ -15,11 +15,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AvailabilityGetByConsultantController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct( AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
     #[Route('/consultant/availability', name: 'get_consultant_availability_email', methods: ['GET'])]
     #[OA\Get(

@@ -11,26 +11,15 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryCreateService
+final readonly class ActivityHistoryCreateService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ProjectRepositoryInterface $projectRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository,
-        ProjectRepositoryInterface $projectRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository,
+        private ProjectRepositoryInterface                  $projectRepository,
+        private ConsultantRepositoryInterface               $consultantRepository,
+        private UserRepositoryInterface                     $userRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-        $this->projectRepository = $projectRepository;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
-    }
+    {}
 
     /**
      * @throws \DateMalformedStringException
@@ -40,15 +29,15 @@ class ActivityHistoryCreateService
     ): JsonResponse
     {
 
-        if(!$this->projectRepository->checkIfProjectExists($data['projectName'])){
+        if (!$this->projectRepository->checkIfProjectExists($data['projectName'])){
             return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
         }
         $project = $this->projectRepository->findProjectByName($data['projectName']);
 
-        if($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)){
+        if ($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)){
             return new JsonResponse(['error' => 'An activity with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
         }
-        $user = $this->userRepository->findUserByEmail($data['consultantEmail']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['consultantEmail']);
         if (!$this->consultantRepository->checkIfConsultantExists($user)){
             return new JsonResponse(['error' => 'Consultant with name ' . $data['consultantEmail'] . ' was not found'], 404);
         }

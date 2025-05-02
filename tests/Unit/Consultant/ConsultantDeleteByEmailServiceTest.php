@@ -57,7 +57,7 @@ class ConsultantDeleteByEmailServiceTest extends Unit
         $consultant = $this->createMock(Consultant::class);
         $consultant->method('getId')->willReturn(123);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->projectRepository->method('checkIfConsultantHasProjects')->with($consultant)->willReturn(null);
@@ -88,7 +88,7 @@ class ConsultantDeleteByEmailServiceTest extends Unit
         $consultant = $this->createMock(Consultant::class);
         $consultant->method('getId')->willReturn(123);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->projectRepository->method('checkIfConsultantHasProjects')->with($consultant)->willReturn(

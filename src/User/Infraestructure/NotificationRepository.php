@@ -21,13 +21,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Notification[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class NotificationRepository extends ServiceEntityRepository implements NotificationRepositoryInterface{
-    private EntityManagerInterface $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, Notification::class);
-        $this->entityManager = $entityManager;
     }
 
     public function findAllNotifications(): array
@@ -53,7 +51,7 @@ class NotificationRepository extends ServiceEntityRepository implements Notifica
         }
 
         $notification = $this->findNotificationByUserAndDate($user, $dateObj);
-        return $notification !== null;
+        return $notification instanceof \App\User\Domain\Notification;
     }
 
     public function findNotificationByUserAndDate(User $user, \DateTime $date): ?Notification

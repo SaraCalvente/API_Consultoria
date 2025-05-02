@@ -8,24 +8,17 @@ use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetByProjectService
+final readonly class ActivityHistoryGetByProjectService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository,
-        ProjectRepositoryInterface $projectRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository,
+        private ProjectRepositoryInterface $projectRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-        $this->projectRepository = $projectRepository;
-    }
+    {}
 
     public function __invoke(array $data): JsonResponse
     {
-        if(!$this->projectRepository->checkIfProjectExists($data['projectName'])){
+        if (!$this->projectRepository->checkIfProjectExists($data['projectName'])){
             return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
         }
         $project = $this->projectRepository->findProjectByName($data['projectName']);

@@ -13,11 +13,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AbilityGetByConsultantController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct( AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
     #[Route('/consultant/abilities', name: 'get_consultant_ability', methods: ['GET'])]
     #[OA\Get(

@@ -8,18 +8,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AdminDeleteByIdService
 {
-    private UserRepositoryInterface $repository;
-
-
-    public function __construct(
-        UserRepositoryInterface     $repository
-    ) {
-        $this->repository = $repository;
+    public function __construct(private UserRepositoryInterface     $repository)
+    {
     }
 
     public function __invoke(User $user): JsonResponse
     {
-        $user = $this->repository->findUserById($user->getId());
+        $user = $this->repository->findUserByIdOrFail($user->getId());
         $this->repository->remove($user);
         return new JsonResponse([
             'message' => 'Admin deleted successfully',

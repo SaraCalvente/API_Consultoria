@@ -23,13 +23,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class AbilityRepository extends ServiceEntityRepository implements AbilityRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry $registry)
     {
         parent::__construct($registry, Ability::class);
-        $this->entityManager = $entityManager;
     }
 
 
@@ -49,10 +47,7 @@ class AbilityRepository extends ServiceEntityRepository implements AbilityReposi
     public function checkIfAbilityExists(string $name, string $level): bool
     {
         $ability = $this->entityManager->getRepository(Ability::class)->findAbilityByNameAndLevel($name, $level);
-        if (!$ability) {
-            return false;
-        }
-        return true;
+        return (bool) $ability;
     }
 
     public function findAbilityByNameAndLevel(string $name, string $level): ?Ability{

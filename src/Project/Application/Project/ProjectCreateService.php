@@ -14,23 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ProjectCreateService
 {
 
-    private ProjectRepositoryInterface $projectRepository;
-    private UserRepositoryInterface $userRepository;
-    private ClientRepositoryInterface $clientRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        ProjectRepositoryInterface $projectRepository,
-        UserRepositoryInterface $userRepository,
-        ClientRepositoryInterface $clientRepository,
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private ProjectRepositoryInterface $projectRepository, private UserRepositoryInterface $userRepository, private ClientRepositoryInterface $clientRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->projectRepository = $projectRepository;
-        $this->userRepository = $userRepository;
-        $this->clientRepository = $clientRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     /**
@@ -38,7 +23,7 @@ class ProjectCreateService
      */
     public function __invoke( array $data ): JsonResponse
     {
-        if($this->projectRepository->checkIfProjectExists($data['name'])){
+        if ($this->projectRepository->checkIfProjectExists($data['name'])){
             return new JsonResponse(['error' => 'A project with this name: (' . $data['name'] .') already exists'], 403);
         }
 
@@ -47,7 +32,7 @@ class ProjectCreateService
             return new JsonResponse(['error' => 'Invalid date range or format (Y-m-d)'], 405);
         }
 
-        $clientUser = $this->userRepository->findUserByEmail($data['clientEmail']);
+        $clientUser = $this->userRepository->findUserByEmailOrFail($data['clientEmail']);
         $client = $this->clientRepository->findClientByUser($clientUser);
 
         $project = new Project();
@@ -62,7 +47,7 @@ class ProjectCreateService
         $project->setStatus(Status::from($data['status']));
 
         foreach ($data['consultantsEmails'] as $consultantEmail) {
-            $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
+            $consultantUser = $this->userRepository->findUserByEmailOrFail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
             $project->addConsultant($consultant);
         }

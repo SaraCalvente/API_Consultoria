@@ -45,7 +45,10 @@ class ActivityHistoryDeleteController extends AbstractController
             ),
         ]
     )]
-    public function deleteTask(Request $request, ActivityHistoryDeleteByNameService $activityHistoryDeleteByNameService): JsonResponse
+    public function deleteTask(
+        Request $request,
+        ActivityHistoryDeleteByNameService $activityHistoryDeleteByNameService
+    ): JsonResponse
     {
         try {
             $projectName = $request->query->get('projectName');

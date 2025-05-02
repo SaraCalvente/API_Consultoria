@@ -102,7 +102,7 @@ class Task
     #[ORM\PreUpdate]
     public function setTimeEstimation(): static
     {
-        if (empty($this->start_date) || empty($this->end_date)) {
+        if (!$this->start_date instanceof \DateTime || !$this->end_date instanceof \DateTime) {
             return $this;
         }
         $time_estimation = $this->end_date->diff($this->start_date);

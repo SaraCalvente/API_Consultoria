@@ -14,11 +14,8 @@ use OpenApi\Attributes as OA;
 
 class NotificationGetByReceiverAndDateController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/notifications/user/received/date', name: 'get_received_date_notifications', methods: ['GET'])]

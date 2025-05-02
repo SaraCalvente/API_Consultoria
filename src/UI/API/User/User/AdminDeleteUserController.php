@@ -12,11 +12,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AdminDeleteUserController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     /**

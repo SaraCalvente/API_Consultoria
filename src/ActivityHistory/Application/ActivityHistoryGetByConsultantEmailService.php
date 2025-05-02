@@ -9,33 +9,24 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetByConsultantEmailService
+final readonly class ActivityHistoryGetByConsultantEmailService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface $userRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
-    }
+    {}
 
     public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         if (!$this->consultantRepository->checkIfConsultantExists($user)) {
             return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 400);
         }
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
-        if (!$consultant) {
+        if (!$consultant instanceof \App\Consultant\Domain\Consultant\Consultant) {
             return new JsonResponse(['error' => 'Consultant has no associated activities'], 402);
         }
 

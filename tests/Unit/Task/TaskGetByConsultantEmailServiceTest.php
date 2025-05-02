@@ -72,7 +72,7 @@ class TaskGetByConsultantEmailServiceTest extends Unit
         $task->method('getConsultants')->willReturn($consultants);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 

@@ -47,7 +47,7 @@ class ClientDeleteByEmailServiceTest extends Unit
         $user = $this->createMock(User::class);
         $client = $this->createMock(Client::class);
 
-        $this->userRepository->method('findUserByEmail')->with($this->data['email'])->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($this->data['email'])->willReturn($user);
         $this->clientRepository->method('findClientByUser')->with($user)->willReturn($client);
         $this->projectRepository->method('checkIfClientHasProjects')->with($client)->willReturn(null);
 
@@ -71,7 +71,7 @@ class ClientDeleteByEmailServiceTest extends Unit
         $client = $this->createMock(Client::class);
         $projectInfo = ['project1', 'project2'];
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->clientRepository->method('findClientByUser')->willReturn($client);
 
         $this->projectRepository->method('checkIfClientHasProjects')->willReturn(new JsonResponse([

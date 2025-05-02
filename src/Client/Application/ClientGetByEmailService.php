@@ -11,25 +11,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientGetByEmailService
 {
-    private ClientRepositoryInterface $clientRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface $clientRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private ClientRepositoryInterface $clientRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->clientRepository = $clientRepository;
-        $this->userRepository = $userRepository;
     }
 
     public function __invoke(string $email): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($email);
-        if(!$user){
-            return new JsonResponse(['error' => 'No user found'], 404);
-        }
+        $user = $this->userRepository->findUserByEmailOrFail($email);
         $client = $this->clientRepository->findClientByUser($user);
         return new JsonResponse(ClientDTO::fromEntity($client));
     }

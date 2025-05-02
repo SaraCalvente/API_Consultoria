@@ -12,20 +12,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectUpdateByNameService
 {
-    private ProjectRepositoryInterface $projectRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        ProjectRepositoryInterface $projectRepository,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private ProjectRepositoryInterface $projectRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->projectRepository = $projectRepository;
-        $this->userRepository = $userRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     /**
@@ -76,17 +64,15 @@ class ProjectUpdateByNameService
     private function updateProjectConsultants(Project $project, array $consultantsEmails, bool $add): void
     {
         foreach ($consultantsEmails as $consultantEmail) {
-            $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
+            $consultantUser = $this->userRepository->findUserByEmailOrFail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
 
             if ($add) {
                 if (!$project->getConsultant()->contains($consultant)) {
                     $project->addConsultant($consultant);
                 }
-            } else {
-                if ($project->getConsultant()->contains($consultant)) {
-                    $project->removeConsultant($consultant);
-                }
+            } elseif ($project->getConsultant()->contains($consultant)) {
+                $project->removeConsultant($consultant);
             }
         }
     }

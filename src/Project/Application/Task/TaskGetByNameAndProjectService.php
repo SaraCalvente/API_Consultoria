@@ -12,23 +12,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskGetByNameAndProjectService
 {
-    private TaskRepositoryInterface $taskRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository,
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(array $data): JsonResponse
     {
         $project = $this->projectRepository->findProjectByName($data['projectName']);
-        if (!$project) {
+        if (!$project instanceof \App\Project\Domain\Project\Project) {
             throw new ProjectNotFoundException();
         }
         if (!$this->taskRepository->checkIfTaskFromProjectExists($data['name'], $project)) {

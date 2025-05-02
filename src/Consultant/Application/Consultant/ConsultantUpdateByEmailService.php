@@ -13,24 +13,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantUpdateByEmailService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-    private AbilityRepositoryInterface $abilityRepository;
-
-
-    public function __construct(
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface       $userRepository,
-        AbilityRepositoryInterface     $abilityRepository
-    )
+    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface       $userRepository, private AbilityRepositoryInterface     $abilityRepository)
     {
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
-        $this->abilityRepository = $abilityRepository;
     }
 
     public function __invoke(array $data): JsonResponse {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
         if ($data['addAbilities'] !== null) {
@@ -54,7 +42,7 @@ class ConsultantUpdateByEmailService
     {
         foreach ($abilities as $ability) {
             $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
-            if (!$abilityFind) {
+            if (!$abilityFind instanceof \App\Consultant\Domain\Ability\Ability) {
                 throw new AbilityNotFoundException($ability['abilityName'], $ability['level']);
             }
             if ($add) {

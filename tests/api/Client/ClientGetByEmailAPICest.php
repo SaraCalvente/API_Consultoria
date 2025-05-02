@@ -15,6 +15,16 @@ final class ClientGetByEmailAPICest
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
 
+    private function authenticateAsAdmin(ApiTester $I): string
+    {
+        $I->sendPOST('/login', [
+            'email' => 'admin@example.com',
+            'password' => 'passw',
+        ]);
+        $I->seeResponseCodeIs(HttpCode::OK);
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
+
     /**
      * @throws \Exception
      */
@@ -24,12 +34,7 @@ final class ClientGetByEmailAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
@@ -66,12 +71,8 @@ final class ClientGetByEmailAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
+
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 
         $I->sendGET('/admin/client');
@@ -90,12 +91,8 @@ final class ClientGetByEmailAPICest
 
         $I->haveHttpHeader('Content-Type', 'application/json');
 
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
+
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
 

@@ -16,11 +16,8 @@ use Symfony\Component\Security\Core\Security;
 
 class AvailabilityDeleteController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
     #[Route('/availability/delete', name: 'delete_availability', methods: ['DELETE'])]
     #[OA\Put(

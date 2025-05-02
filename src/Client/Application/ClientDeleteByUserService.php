@@ -10,24 +10,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientDeleteByUserService
 {
-    private ClientRepositoryInterface $clientRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface  $clientRepository,
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private ClientRepositoryInterface  $clientRepository, private ProjectRepositoryInterface $projectRepository)
     {
-        $this->clientRepository = $clientRepository;
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(User $user): JsonResponse
     {
         $client = $this->clientRepository->findClientByUser($user);
         $projects = $this->projectRepository->checkIfClientHasProjects($client);
-        if (!$projects) {
+        if (!$projects instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
             return $this->clientRepository->deleteClient($client);
         }
         return $projects;

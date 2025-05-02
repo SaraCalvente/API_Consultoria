@@ -24,14 +24,11 @@ use Doctrine\Persistence\ManagerRegistry;
 class TaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
 {
 
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry        $registry, )
     {
         parent::__construct($registry, Task::class);
-        $this->entityManager = $entityManager;
     }
 
     public function addTask(Task $task): void
@@ -42,10 +39,7 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
 
     public function checkIfTaskFromProjectExists(string $taskName, Project $project): bool{
         $task = $this->entityManager->getRepository(Task::class)->findOneBy(['name' => $taskName, 'project' => $project]);
-        if(!$task) {
-            return false;
-        }
-        return true;
+        return $task !== null;
     }
 
     public function findTaskFromProject(string $taskName, Project $project): Task
@@ -69,7 +63,9 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
     public function checkDates(string $startDate, ?string $endDate): bool
     {
         $start = \DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
-        if (!$start) return false;
+        if (!$start) {
+            return false;
+        }
         if ($endDate) {
             $end = \DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
             return $end && $start <= $end;
@@ -78,8 +74,7 @@ class TaskRepository extends ServiceEntityRepository implements TaskRepositoryIn
     }
 
     public function findTasksByProject(Project $project): array{
-        $tasks = $this->entityManager->getRepository(Task::class)->findBy(['project' => $project]);
-        return $tasks;
+        return $this->entityManager->getRepository(Task::class)->findBy(['project' => $project]);
     }
 
     public function saveTask(): void{

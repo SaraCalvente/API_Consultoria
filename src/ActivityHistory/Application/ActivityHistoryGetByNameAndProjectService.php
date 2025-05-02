@@ -10,25 +10,18 @@ use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use App\Shared\Domain\Exception\ProjectNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetByNameAndProjectService
+final readonly class ActivityHistoryGetByNameAndProjectService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository,
-        ProjectRepositoryInterface $projectRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository,
+        private ProjectRepositoryInterface $projectRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-        $this->projectRepository = $projectRepository;
-    }
+    {}
 
     public function __invoke(array $data): JsonResponse
     {
         $project = $this->projectRepository->findProjectByName($data['projectName']);
-        if (!$project) {
+        if (!$project instanceof \App\Project\Domain\Project\Project) {
             throw new ProjectNotFoundException();
         }
 

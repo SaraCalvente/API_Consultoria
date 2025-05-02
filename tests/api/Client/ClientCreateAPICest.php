@@ -15,6 +15,16 @@ final class ClientCreateAPICest
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
 
+    private function authenticateAsAdmin(ApiTester $I): string
+    {
+        $I->sendPOST('/login', [
+            'email' => 'admin@example.com',
+            'password' => 'passw',
+        ]);
+        $I->seeResponseCodeIs(HttpCode::OK);
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
+
     public function tryToCreateClientWithValidData(ApiTester $I): void
     {
          $validClientData = [
@@ -28,12 +38,7 @@ final class ClientCreateAPICest
         $I->wantTo('Create a new client with valid data');
 
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendPOST('/create/client', $validClientData);
@@ -65,12 +70,8 @@ final class ClientCreateAPICest
         $I->wantTo('Fail to create a client that already exists (based on fixtures)');
 
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
+
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendPOST('/create/client', $duplicatedClientData);
@@ -93,12 +94,8 @@ final class ClientCreateAPICest
         ];
         $I->wantTo('Fail to create a client due to missing required fields');
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
+
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendPOST('/create/client', $invalidClientData);
@@ -122,12 +119,8 @@ final class ClientCreateAPICest
         $I->wantTo('Fail to create a client with invalid email format');
 
         $I->haveHttpHeader('Content-Type', 'application/json');
-        $I->sendPOST('/login', [
-            'email' => 'admin@example.com',
-            'password' => 'passw',
-        ]);
-        $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        $token = $this->authenticateAsAdmin($I);
+
 
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendPOST('/create/client', $invalidClientData);

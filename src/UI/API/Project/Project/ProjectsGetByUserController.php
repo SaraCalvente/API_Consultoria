@@ -13,11 +13,8 @@ use Symfony\Component\Security\Core\Security;
 
 class ProjectsGetByUserController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(authChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/user/projects', name: 'get_user_projects', methods: ['GET'])]

@@ -11,20 +11,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NotificationGetAllService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository)
+    public function __construct(private NotificationRepositoryInterface $notificationRepository)
     {
-        $this->notificationRepository = $notificationRepository;
     }
 
     public function __invoke(): JsonResponse
     {
         $notifications = $this->notificationRepository->findAllNotifications();
 
-        if (!$notifications) {
+        if ($notifications === []) {
             return new JsonResponse(['error' => 'There are no notifications'], 404);
         }
 

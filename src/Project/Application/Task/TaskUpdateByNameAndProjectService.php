@@ -14,23 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskUpdateByNameAndProjectService
 {
-    private TaskRepositoryInterface $taskRepository;
-    private ProjectRepositoryInterface $projectRepository;
-    private UserRepositoryInterface $userRepository;
-    private ConsultantRepositoryInterface $consultantRepository;
-
-
-    public function __construct(
-        TaskRepositoryInterface $taskRepository,
-        ProjectRepositoryInterface $projectRepository,
-        UserRepositoryInterface $userRepository,
-        ConsultantRepositoryInterface $consultantRepository
-    )
+    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository, private UserRepositoryInterface $userRepository, private ConsultantRepositoryInterface $consultantRepository)
     {
-        $this->taskRepository = $taskRepository;
-        $this->projectRepository = $projectRepository;
-        $this->userRepository = $userRepository;
-        $this->consultantRepository = $consultantRepository;
     }
 
     /**
@@ -81,17 +66,15 @@ class TaskUpdateByNameAndProjectService
     private function updateTaskConsultants(Task $task, array $consultantsEmails, bool $add): void
     {
         foreach ($consultantsEmails as $consultantEmail) {
-            $consultantUser = $this->userRepository->findUserByEmail($consultantEmail);
+            $consultantUser = $this->userRepository->findUserByEmailOrFail($consultantEmail);
             $consultant = $this->consultantRepository->findConsultantByUser($consultantUser);
 
             if ($add) {
                 if (!$task->getConsultants()->contains($consultant)) {
                     $task->addConsultant($consultant);
                 }
-            } else {
-                if ($task->getConsultants()->contains($consultant)) {
-                    $task->removeConsultant($consultant);
-                }
+            } elseif ($task->getConsultants()->contains($consultant)) {
+                $task->removeConsultant($consultant);
             }
         }
     }

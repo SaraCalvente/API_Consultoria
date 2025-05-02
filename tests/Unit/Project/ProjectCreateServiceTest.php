@@ -105,7 +105,7 @@ class ProjectCreateServiceTest extends Unit
         $this->projectRepository->method('checkIfProjectExists')->willReturn(false);
         $this->projectRepository->method('checkDates')->willReturn(true);
 
-        $this->userRepository->method('findUserByEmail')->willReturnMap([
+        $this->userRepository->method('findUserByEmailOrFail')->willReturnMap([
             [$clientEmail, $clientUser],
             [$consultantEmails[0], $consultantUser],
             [$consultantEmails[1], $consultantUser],

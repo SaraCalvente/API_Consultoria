@@ -77,7 +77,7 @@ class ProjectUpdateByNameServiceTest extends Unit
         $project->expects($this->once())->method('setStatus')->with(Status::EN_PROCESO);
         $project->expects($this->once())->method('setEndDate')->with(new \DateTime('2025-12-31'));
 
-        $this->userRepository->method('findUserByEmail')->willReturnMap([
+        $this->userRepository->method('findUserByEmailOrFail')->willReturnMap([
             [$emailToAdd, $userToAdd],
             [$emailToRemove, $userToRemove],
         ]);

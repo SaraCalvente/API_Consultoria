@@ -9,14 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AbilityGetAllService
 {
-    private AbilityRepositoryInterface $abilityRepository;
-
-
-    public function __construct(
-        AbilityRepositoryInterface $abilityRepository
-    )
+    public function __construct(private AbilityRepositoryInterface $abilityRepository)
     {
-        $this->abilityRepository = $abilityRepository;
     }
 
     public function __invoke(): JsonResponse
@@ -26,7 +20,7 @@ class AbilityGetAllService
         foreach ($abilities as $ability) {
             $abilitiesData[] = AbilityDTO::fromEntity($ability);
         }
-        if (empty($abilitiesData)) {
+        if ($abilitiesData === []) {
             return new JsonResponse(['error' => 'There are no activities'], 404);
         }
 

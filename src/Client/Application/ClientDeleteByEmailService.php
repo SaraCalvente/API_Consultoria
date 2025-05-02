@@ -10,20 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientDeleteByEmailService
 {
-    private ClientRepositoryInterface $clientRepository;
-    private UserRepositoryInterface $userRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface  $clientRepository,
-        UserRepositoryInterface    $userRepository,
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private ClientRepositoryInterface  $clientRepository, private UserRepositoryInterface    $userRepository, private ProjectRepositoryInterface $projectRepository)
     {
-        $this->clientRepository = $clientRepository;
-        $this->userRepository = $userRepository;
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(array $data): JsonResponse
@@ -31,10 +19,10 @@ class ClientDeleteByEmailService
         if (!$data || !$data['email']){
             return new JsonResponse(['error' => 'No email provided.'], 400);
         }
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $client = $this->clientRepository->findClientByUser($user);
         $projects = $this->projectRepository->checkIfClientHasProjects($client);
-        if (!$projects) {
+        if (!$projects instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
             return $this->clientRepository->deleteClient($client);
         }
         return $projects;

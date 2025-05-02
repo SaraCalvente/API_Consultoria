@@ -18,24 +18,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ConsultantCreateService
 {
-    private UserPasswordHasherInterface $passwordHasher;
-    private ConsultantRepositoryInterface $consultantRepository;
-    private UserRepositoryInterface $userRepository;
-    private AbilityRepositoryInterface $abilityRepository;
-
-
-
-    public function __construct(
-        UserPasswordHasherInterface   $passwordHasher,
-        ConsultantRepositoryInterface $consultantRepository,
-        UserRepositoryInterface       $userRepository,
-        AbilityRepositoryInterface $abilityRepository
-    )
+    public function __construct(private UserPasswordHasherInterface   $passwordHasher, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface       $userRepository, private AbilityRepositoryInterface $abilityRepository)
     {
-        $this->passwordHasher = $passwordHasher;
-        $this->consultantRepository = $consultantRepository;
-        $this->userRepository = $userRepository;
-        $this->abilityRepository = $abilityRepository;
     }
 
     /**
@@ -44,7 +28,7 @@ class ConsultantCreateService
     public function __invoke(array $data): JsonResponse
     {
         if ($this->userRepository->checkIfUserExists($data['email'])) {
-            $user = $this->userRepository->findUserByEmail($data['email']);
+            $user = $this->userRepository->findUserByEmailOrFail($data['email']);
             return new JsonResponse([
                 'error' => 'User ' . $user->getEmail() . ' already exists as ' . implode(', ', $user->getRoles()),
 
@@ -66,7 +50,7 @@ class ConsultantCreateService
         $consultant->setUser($user);
         if ($data['abilities'] !== null) {
             foreach ($data['abilities'] as $ability) {
-                if(!$this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level'])){
+                if (!$this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']) instanceof \App\Consultant\Domain\Ability\Ability){
                     $newAbility = new Ability();
                     $newAbility->setName($ability['abilityName']);
                     $newAbility->setLevel(Level::from($ability['level']));

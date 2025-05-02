@@ -14,11 +14,8 @@ use Symfony\Component\Security\Core\Security;
 
 class NotificationCreateController extends AbstractController
 {
-    private AuthChecker $authChecker;
-
-    public function __construct(AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     /**

@@ -14,11 +14,8 @@ use Symfony\Component\Security\Core\Security;
 class ConsultantGetController extends AbstractController
 {
 
-    private AuthChecker $authChecker;
-
-    public function __construct( AuthChecker $authChecker)
+    public function __construct(private AuthChecker $authChecker)
     {
-        $this->authChecker = $authChecker;
     }
 
     #[Route('/consultant', name: 'get_consultant', methods: ['GET'])]

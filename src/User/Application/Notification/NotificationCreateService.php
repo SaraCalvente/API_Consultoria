@@ -18,17 +18,8 @@ use function Symfony\Component\Clock\now;
 
 class NotificationCreateService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-    private UserRepositoryInterface $userRepository;
-
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private NotificationRepositoryInterface $notificationRepository, private UserRepositoryInterface $userRepository)
     {
-        $this->notificationRepository = $notificationRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -42,7 +33,7 @@ class NotificationCreateService
         $notification->setMessage($data['message']);
 
         foreach ($data['usersEmails'] as $email) {
-            $user = $this->userRepository->findUserByEmail($email);
+            $user = $this->userRepository->findUserByEmailOrFail($email);
             $notification->addUser($user);
         }
         $this->notificationRepository->addNotification($notification);

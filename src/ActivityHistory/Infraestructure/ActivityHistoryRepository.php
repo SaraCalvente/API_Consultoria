@@ -21,23 +21,17 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ActivityHistoryRepository extends ServiceEntityRepository implements ActivityHistoryRepositoryInterface
 {
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
         ManagerRegistry        $registry, )
     {
         parent::__construct($registry, ActivityHistory::class);
-        $this->entityManager = $entityManager;
     }
 
 
     public function checkIfActivityHistoryFromProjectExists(string $activityHistoryName, Project $project): bool{
         $activity = $this->entityManager->getRepository(ActivityHistory::class)->findOneBy(['name' => $activityHistoryName, 'project' => $project]);
-        if(!$activity) {
-            return false;
-        }
-        return true;
+        return $activity !== null;
     }
 
     public function addActivityHistory(ActivityHistory $activityHistory): void
@@ -73,9 +67,6 @@ class ActivityHistoryRepository extends ServiceEntityRepository implements Activ
 
     public function findActivitiesByConsultant(User $user): array
     {
-        if (!$user) {
-            throw new UserNotFoundException();
-        }
         return $user->getActivityHistories()->toArray();
     }
 

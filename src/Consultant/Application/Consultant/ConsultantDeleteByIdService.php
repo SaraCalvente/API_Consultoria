@@ -9,24 +9,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantDeleteByIdService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        ConsultantRepositoryInterface $consultantRepository,
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private ProjectRepositoryInterface $projectRepository)
     {
-        $this->consultantRepository = $consultantRepository;
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(User $user): JsonResponse
     {
         $consultant = $this->consultantRepository->findConsultantByUser($user);
         $projects = $this->projectRepository->checkIfConsultantHasProjects($consultant);
-        if(!$projects){
+        if (!$projects instanceof \Symfony\Component\HttpFoundation\JsonResponse){
             return $this->consultantRepository->deleteConsultant($consultant);
         }
         return $projects;

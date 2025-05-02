@@ -7,13 +7,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserFindAllService
 {
-    private UserRepositoryInterface $repository;
-
-
-    public function __construct(
-        UserRepositoryInterface $repository
-    ) {
-        $this->repository = $repository;
+    public function __construct(private UserRepositoryInterface $repository)
+    {
     }
 
     public function __invoke(): JsonResponse

@@ -11,16 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TaskGetByConsultantService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-    private TaskRepositoryInterface $taskRepository;
-
-    public function __construct(
-        ConsultantRepositoryInterface $consultantRepository,
-        TaskRepositoryInterface $taskRepository
-    )
+    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private TaskRepositoryInterface $taskRepository)
     {
-        $this->consultantRepository = $consultantRepository;
-        $this->taskRepository = $taskRepository;
     }
 
     public function __invoke(User $user): JsonResponse

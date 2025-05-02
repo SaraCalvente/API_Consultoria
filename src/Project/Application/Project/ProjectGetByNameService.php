@@ -8,14 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProjectGetByNameService
 {
-    private ProjectRepositoryInterface $projectRepository;
-
-
-    public function __construct(
-        ProjectRepositoryInterface $projectRepository
-    )
+    public function __construct(private ProjectRepositoryInterface $projectRepository)
     {
-        $this->projectRepository = $projectRepository;
     }
 
     public function __invoke(array $data): JsonResponse

@@ -11,10 +11,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ClientGetAllController extends AbstractController
 {
-    /**
-     * @param ClientGetAllService $clientFindAllService
-     * @return JsonResponse
-     */
     #[Route('/admin/clients', name: 'get_all_clients', methods: ['GET'])]
     #[OA\Get(
         path: "/admin/clients",

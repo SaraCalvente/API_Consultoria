@@ -10,21 +10,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AdminRegisterService
 {
-    private UserPasswordHasherInterface $passwordHasher;
-    private UserRepositoryInterface $repository;
-
-
-    public function __construct(
-        UserPasswordHasherInterface $passwordHasher,
-        UserRepositoryInterface     $repository
-    ) {
-        $this->passwordHasher = $passwordHasher;
-        $this->repository = $repository;
+    public function __construct(private UserPasswordHasherInterface $passwordHasher, private UserRepositoryInterface     $repository)
+    {
     }
 
     public function __invoke(array $data): JsonResponse
     {
-        if($this->repository->checkIfUserExists($data['email'])){
+        if ($this->repository->checkIfUserExists($data['email'])){
             return new JsonResponse([
                 'error' => 'User ' . $data['email'] . ' already exists',
 

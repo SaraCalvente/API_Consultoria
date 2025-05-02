@@ -59,7 +59,7 @@ class ActivityHistoryCreateServiceTest extends Unit
         $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
         $this->projectRepository->method('findProjectByName')->willReturn($project);
         $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('checkIfConsultantExists')->willReturn(true);
 
         $project->method('getName')->willReturn('Awesome Project');
@@ -117,7 +117,7 @@ class ActivityHistoryCreateServiceTest extends Unit
         $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
         $this->projectRepository->method('findProjectByName')->willReturn($project);
         $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('checkIfConsultantExists')->willReturn(false);
 
         $response = ($this->service)($this->data);

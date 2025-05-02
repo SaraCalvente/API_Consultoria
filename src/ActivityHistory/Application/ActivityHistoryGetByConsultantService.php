@@ -11,25 +11,19 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetByConsultantService
+final readonly class ActivityHistoryGetByConsultantService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-
     public function __construct(
-        ConsultantRepositoryInterface $consultantRepository,
-        ActivityHistoryRepositoryInterface $activityHistoryRepository
+        private ConsultantRepositoryInterface $consultantRepository,
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository
     )
-    {
-        $this->consultantRepository = $consultantRepository;
-        $this->activityHistoryRepository = $activityHistoryRepository;
-    }
+    {}
 
     public function __invoke(User $user): JsonResponse
     {
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
-        if (!$consultant) {
+        if (!$consultant instanceof \App\Consultant\Domain\Consultant\Consultant) {
             return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 402);
         }
 

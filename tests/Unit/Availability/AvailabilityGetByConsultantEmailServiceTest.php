@@ -72,7 +72,7 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
         $user->method('getEmail')->willReturn($emailValueObject);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 
@@ -121,13 +121,21 @@ class AvailabilityGetByConsultantEmailServiceTest extends Unit
         $user = $this->createMock(User::class);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->willReturn($user);
 
         $this->consultantRepository
             ->method('checkIfConsultantExists')
             ->with($user)
             ->willReturn(false);
+
+        $this->consultantRepository
+            ->expects($this->never())
+            ->method('findConsultantByUser');
+
+        $this->availabilityRepository
+            ->expects($this->never())
+            ->method('findAvailabilityByConsultant');
 
         $response = ($this->service)($data);
 

@@ -8,14 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AbilityDeleteService
 {
-    private AbilityRepositoryInterface $abilityRepository;
-
-
-    public function __construct(
-        AbilityRepositoryInterface $abilityRepository
-    )
+    public function __construct(private AbilityRepositoryInterface $abilityRepository)
     {
-        $this->abilityRepository = $abilityRepository;
     }
 
     public function __invoke(array $data): JsonResponse

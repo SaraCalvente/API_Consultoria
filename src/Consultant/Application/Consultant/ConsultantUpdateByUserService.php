@@ -15,17 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ConsultantUpdateByUserService
 {
-    private ConsultantRepositoryInterface $consultantRepository;
-    private AbilityRepositoryInterface $abilityRepository;
-
-
-    public function __construct(
-        ConsultantRepositoryInterface $consultantRepository,
-        AbilityRepositoryInterface $abilityRepository
-    )
+    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private AbilityRepositoryInterface $abilityRepository)
     {
-        $this->consultantRepository = $consultantRepository;
-        $this->abilityRepository = $abilityRepository;
     }
 
     public function __invoke( User $user, array $data
@@ -54,7 +45,7 @@ class ConsultantUpdateByUserService
     {
         foreach ($abilities as $ability) {
             $abilityFind = $this->abilityRepository->findAbilityByNameAndLevel($ability['abilityName'], $ability['level']);
-            if (!$abilityFind) {
+            if (!$abilityFind instanceof \App\Consultant\Domain\Ability\Ability) {
                 throw new AbilityNotFoundException($ability['abilityName'], $ability['level']);
             }
             if ($add) {

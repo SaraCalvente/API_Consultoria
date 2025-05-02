@@ -51,16 +51,16 @@ class AvailabilityDeleteServiceTest extends Unit
         $email = 'test@example.com';
         $startDate = '2025-04-22 10:00:00';
 
-        $data = ['email' => $email, 'startDate' => $startDate];
+        $data = ['consultantEmail' => $email, 'startDate' => $startDate];
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->willReturn($consultant);
         $this->availabilityRepository->method('checkIfAvailabilityExists')->willReturn(false);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
@@ -76,13 +76,13 @@ class AvailabilityDeleteServiceTest extends Unit
     {
         $email = 'test@example.com';
         $startDate = '2025-04-22 10:00:00';
-        $data = ['email' => $email, 'startDate' => $startDate];
+        $data = ['consultantEmail' => $email, 'startDate' => $startDate];
 
         $user = $this->createMock(User::class);
         $consultant = $this->createMock(Consultant::class);
         $availability = $this->createMock(Availability::class);
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->willReturn($consultant);
         $this->availabilityRepository->method('checkIfAvailabilityExists')->willReturn(true);
         $this->availabilityRepository->method('findAvailabilityByStartDateAndConsultant')->willReturn($availability);
@@ -91,7 +91,7 @@ class AvailabilityDeleteServiceTest extends Unit
             ->method('deleteAvailability')
             ->with($availability);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());

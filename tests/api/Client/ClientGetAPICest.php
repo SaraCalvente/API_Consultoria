@@ -14,18 +14,22 @@ final class ClientGetAPICest
         $I->loadFixtures([UserFixtures::class, ClientFixtures::class]);
     }
 
-    public function tryToGetAllClientsAsAdmin(ApiTester $I): void
+    private function authenticateAsUser(ApiTester $I): string
     {
-        $I->wantTo('Retrieve client information as an authenticated client');
-
-        $I->haveHttpHeader('Content-Type', 'application/json');
         $I->sendPOST('/login', [
             'email' => 'ana@garcia.com',
             'password' => 'passw',
         ]);
         $I->seeResponseCodeIs(HttpCode::OK);
-        $token = $I->grabDataFromResponseByJsonPath('token')[0];
+        return $I->grabDataFromResponseByJsonPath('token')[0];
+    }
 
+    public function tryToGetAllClientsAsAdmin(ApiTester $I): void
+    {
+        $I->wantTo('Retrieve client information as an authenticated client');
+
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $token = $this->authenticateAsUser($I);
         $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
         $I->sendGET('/client');
 

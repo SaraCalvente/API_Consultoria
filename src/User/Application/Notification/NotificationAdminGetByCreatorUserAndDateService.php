@@ -10,16 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NotificationAdminGetByCreatorUserAndDateService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-    private USerRepositoryInterface $userRepository;
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository,
-        UserRepositoryInterface $userRepository
-    )
+    public function __construct(private NotificationRepositoryInterface $notificationRepository, private USerRepositoryInterface $userRepository)
     {
-        $this->notificationRepository = $notificationRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -27,7 +19,7 @@ class NotificationAdminGetByCreatorUserAndDateService
      */
     public function __invoke(array $data): JsonResponse
     {
-        $user = $this->userRepository->findUserByEmail($data['email']);
+        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $date = new \DateTime($data['date']);
         $notifications = $this->notificationRepository->findCreatedNotificationsByUserAndDate($user, $date);
         return new JsonResponse([

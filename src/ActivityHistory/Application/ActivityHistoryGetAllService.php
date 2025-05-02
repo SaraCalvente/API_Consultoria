@@ -7,23 +7,18 @@ use App\ActivityHistory\Domain\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ActivityHistoryGetAllService
+final readonly class ActivityHistoryGetAllService
 {
-    private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-
-
     public function __construct(
-        ActivityHistoryRepositoryInterface $activityHistoryRepository
+        private ActivityHistoryRepositoryInterface $activityHistoryRepository
     )
-    {
-        $this->activityHistoryRepository = $activityHistoryRepository;
-    }
+    {}
 
     public function __invoke(): JsonResponse
     {
         $activities = $this->activityHistoryRepository->findAllActivityHistories();
 
-        if (empty($activities)) {
+        if ($activities === []) {
             return new JsonResponse(['error' => 'There are no activities'], 404);
         }
 

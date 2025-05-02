@@ -53,7 +53,7 @@ class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn(new EmailValueObject($this->data['email']));
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
 
         $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(false);
 
@@ -70,7 +70,7 @@ class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
     {
         $user = $this->createMock(User::class);
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
 
         $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(true);
         $this->consultantRepository->method('findConsultantByUser')->willReturn(null);
@@ -100,7 +100,7 @@ class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
 
         $activity = $this->createActivityMock(1, 'Activity', 'Description', '2025-04-16', $project, $user);
 
-        $this->userRepository->method('findUserByEmail')->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
 
         $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(true);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);

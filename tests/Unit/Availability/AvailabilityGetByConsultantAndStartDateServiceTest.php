@@ -63,7 +63,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
         $consultant->method('getId')->willReturn(123);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->with($email)
             ->willReturn($user);
 
@@ -82,7 +82,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
             ->with($consultant, $startDate)
             ->willReturn($availability);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
@@ -112,7 +112,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
         $consultant = $this->createMock(Consultant::class);
 
         $this->userRepository
-            ->method('findUserByEmail')
+            ->method('findUserByEmailOrFail')
             ->willReturn($user);
 
         $this->consultantRepository
@@ -124,7 +124,7 @@ class AvailabilityGetByConsultantAndStartDateServiceTest extends Unit
             ->with($consultant, $startDate)
             ->willReturn(false);
 
-        $response = ($this->service)($data);
+        $response = ($this->service)($user, $data);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());

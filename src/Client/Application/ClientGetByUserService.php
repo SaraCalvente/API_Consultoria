@@ -10,14 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientGetByUserService
 {
-    private ClientRepositoryInterface $clientRepository;
-
-
-    public function __construct(
-        ClientRepositoryInterface $clientRepository
-    )
+    public function __construct(private ClientRepositoryInterface $clientRepository)
     {
-        $this->clientRepository = $clientRepository;
     }
 
     public function __invoke(User $user): JsonResponse

@@ -15,13 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NotificationGetByReceiverUserService
 {
-    private NotificationRepositoryInterface $notificationRepository;
-
-    public function __construct(
-        NotificationRepositoryInterface $notificationRepository
-    )
+    public function __construct(private NotificationRepositoryInterface $notificationRepository)
     {
-        $this->notificationRepository = $notificationRepository;
     }
 
     public function __invoke(User $user): JsonResponse

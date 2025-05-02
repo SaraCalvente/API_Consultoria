@@ -13,14 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AvailabilityGetAllService
 {
-    private AvailabilityRepositoryInterface $availabilityRepository;
-
-
-    public function __construct(
-        AvailabilityRepositoryInterface $availabilityRepository
-    )
+    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository)
     {
-        $this->availabilityRepository = $availabilityRepository;
     }
 
     public function __invoke(): JsonResponse
@@ -30,7 +24,7 @@ class AvailabilityGetAllService
         foreach ($availabilities as $availability) {
             $availabilitiesData[] = AvailabilityDTO::fromEntity($availability);
         }
-        if (empty($availabilitiesData)) {
+        if ($availabilitiesData === []) {
             return new JsonResponse(['error' => 'There are no activities'], 404);
         }
 

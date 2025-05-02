@@ -65,7 +65,7 @@ class AvailabilityUpdateServiceTest extends Unit
         $availability = $this->createMock(Availability::class);
         $availability->method('getStartDate')->willReturn(new \DateTime($startDate));
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(true);
@@ -105,7 +105,7 @@ class AvailabilityUpdateServiceTest extends Unit
         $availability = $this->createMock(Availability::class);
         $availability->method('getStartDate')->willReturn(new \DateTime($startDate));
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(true);
@@ -145,7 +145,7 @@ class AvailabilityUpdateServiceTest extends Unit
         $availability = $this->createMock(Availability::class);
         $availability->method('getStartDate')->willReturn(new \DateTime($startDate));
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(true);
@@ -182,7 +182,7 @@ class AvailabilityUpdateServiceTest extends Unit
         $consultant = $this->createMock(Consultant::class);
         $consultant->method('getId')->willReturn(123);
 
-        $this->userRepository->method('findUserByEmail')->with($email)->willReturn($user);
+        $this->userRepository->method('findUserByEmailOrFail')->with($email)->willReturn($user);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
 
         $this->availabilityRepository->method('checkIfAvailabilityExists')->with($consultant, $startDate)->willReturn(false);

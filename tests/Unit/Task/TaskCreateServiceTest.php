@@ -74,7 +74,7 @@ class TaskCreateServiceTest extends Unit
         $this->taskRepository->method('checkDates')->with('2025-05-01', '2025-05-15')->willReturn(true);
         $this->taskRepository->expects($this->once())->method('addTask');
 
-        $this->userRepository->method('findUserByEmail')->with('consultant@example.com')->willReturn($consultantUser);
+        $this->userRepository->method('findUserByEmailOrFail')->with('consultant@example.com')->willReturn($consultantUser);
         $this->consultantRepository->method('findConsultantByUser')->with($consultantUser)->willReturn($consultant);
 
         $response = ($this->service)($data);
