@@ -6,11 +6,12 @@ use App\Consultant\Domain\Consultant\ConsultantDTO;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantGetAllService
+final readonly class ConsultantGetAllService
 {
-    public function __construct(private ConsultantRepositoryInterface $consultantRepository)
-    {
-    }
+    public function __construct(
+        private ConsultantRepositoryInterface $consultantRepository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

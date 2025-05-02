@@ -6,11 +6,12 @@ namespace App\Consultant\Application\Ability;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbilityDeleteService
+final readonly class AbilityDeleteService
 {
-    public function __construct(private AbilityRepositoryInterface $abilityRepository)
-    {
-    }
+    public function __construct(
+        private AbilityRepositoryInterface $abilityRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

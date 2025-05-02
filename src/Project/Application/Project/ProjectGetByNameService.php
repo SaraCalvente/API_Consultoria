@@ -6,11 +6,12 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\ProjectDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ProjectGetByNameService
+final readonly class ProjectGetByNameService
 {
-    public function __construct(private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private ProjectRepositoryInterface $projectRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

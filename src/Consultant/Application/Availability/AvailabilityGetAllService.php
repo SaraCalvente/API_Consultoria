@@ -11,11 +11,12 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityGetAllService
+final readonly class AvailabilityGetAllService
 {
-    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository)
-    {
-    }
+    public function __construct(
+        private AvailabilityRepositoryInterface $availabilityRepository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

@@ -7,11 +7,12 @@ use App\User\Domain\Model\NotificationRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class NotificationDeleteService
+final readonly class NotificationDeleteService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository
+    )
+    {}
 
     public function __invoke(User $user, array $data): JsonResponse
     {

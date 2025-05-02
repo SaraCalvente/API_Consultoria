@@ -8,11 +8,13 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\NotificationDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class NotificationAdminGetByCreatorUserAndDateService
+final readonly class NotificationAdminGetByCreatorUserAndDateService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository, private USerRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository,
+        private USerRepositoryInterface $userRepository
+    )
+    {}
 
     /**
      * @throws \DateMalformedStringException

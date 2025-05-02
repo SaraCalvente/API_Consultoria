@@ -9,11 +9,14 @@ use App\Project\Domain\Project\ProjectDTO;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ProjectGetByUserService
+final readonly class ProjectGetByUserService
 {
-    public function __construct(private ProjectRepositoryInterface    $projectRepository, private ClientRepositoryInterface     $clientRepository, private ConsultantRepositoryInterface $consultantRepository)
-    {
-    }
+    public function __construct(
+        private ProjectRepositoryInterface    $projectRepository,
+        private ClientRepositoryInterface     $clientRepository,
+        private ConsultantRepositoryInterface $consultantRepository
+    )
+    {}
 
     public function __invoke(User $user): JsonResponse
     {

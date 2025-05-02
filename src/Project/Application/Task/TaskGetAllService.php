@@ -7,11 +7,12 @@ use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\Task\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskGetAllService
+final readonly class TaskGetAllService
 {
-    public function __construct(private TaskRepositoryInterface $taskRepository)
-    {
-    }
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

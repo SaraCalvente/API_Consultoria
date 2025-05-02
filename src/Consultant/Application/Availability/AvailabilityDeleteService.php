@@ -10,11 +10,14 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityDeleteService
+final readonly class AvailabilityDeleteService
 {
-    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private UserRepositoryInterface $userRepository, private ConsultantRepositoryInterface $consultantRepository)
-    {
-    }
+    public function __construct(
+        private AvailabilityRepositoryInterface $availabilityRepository,
+        private UserRepositoryInterface $userRepository,
+        private ConsultantRepositoryInterface $consultantRepository
+    )
+    {}
 
     public function __invoke(User $user, array $data): JsonResponse
     {

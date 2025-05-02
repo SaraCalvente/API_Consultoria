@@ -7,11 +7,13 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantDeleteByEmailService
+final readonly class ConsultantDeleteByEmailService
 {
-    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private ProjectRepositoryInterface $projectRepository, private UserRepositoryInterface       $userRepository)
-    {
-    }
+    public function __construct(
+        private ConsultantRepositoryInterface $consultantRepository,
+        private ProjectRepositoryInterface $projectRepository,
+        private UserRepositoryInterface       $userRepository)
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

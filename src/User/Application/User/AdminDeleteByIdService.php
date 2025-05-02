@@ -6,11 +6,12 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AdminDeleteByIdService
+final readonly class AdminDeleteByIdService
 {
-    public function __construct(private UserRepositoryInterface     $repository)
-    {
-    }
+    public function __construct(
+        private UserRepositoryInterface     $repository
+    )
+    {}
 
     public function __invoke(User $user): JsonResponse
     {

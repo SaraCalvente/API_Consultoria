@@ -8,11 +8,13 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientDeleteByEmailService
+final readonly class ClientDeleteByEmailService
 {
-    public function __construct(private ClientRepositoryInterface  $clientRepository, private UserRepositoryInterface    $userRepository, private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface  $clientRepository,
+        private UserRepositoryInterface    $userRepository,
+        private ProjectRepositoryInterface $projectRepository)
+    {}
 
     public function __invoke(array $data): JsonResponse
     {
@@ -22,7 +24,7 @@ class ClientDeleteByEmailService
         $user = $this->userRepository->findUserByEmailOrFail($data['email']);
         $client = $this->clientRepository->findClientByUser($user);
         $projects = $this->projectRepository->checkIfClientHasProjects($client);
-        if (!$projects instanceof \Symfony\Component\HttpFoundation\JsonResponse) {
+        if (!$projects instanceof JsonResponse) {
             return $this->clientRepository->deleteClient($client);
         }
         return $projects;

@@ -13,11 +13,13 @@ use App\Shared\Domain\Exception\UserNotFoundException;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantUpdateByUserService
+final readonly class ConsultantUpdateByUserService
 {
-    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private AbilityRepositoryInterface $abilityRepository)
-    {
-    }
+    public function __construct(
+        private ConsultantRepositoryInterface $consultantRepository,
+        private AbilityRepositoryInterface $abilityRepository
+    )
+    {}
 
     public function __invoke( User $user, array $data
     ): JsonResponse {

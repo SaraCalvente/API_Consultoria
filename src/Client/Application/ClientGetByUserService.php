@@ -8,11 +8,12 @@ use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientGetByUserService
+final readonly class ClientGetByUserService
 {
-    public function __construct(private ClientRepositoryInterface $clientRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface $clientRepository
+    )
+    {}
 
     public function __invoke(User $user): JsonResponse
     {

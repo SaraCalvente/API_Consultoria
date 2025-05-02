@@ -9,11 +9,12 @@ use App\User\Domain\Model\NotificationRepositoryInterface;
 use App\User\Domain\NotificationDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class NotificationGetAllService
+final readonly class NotificationGetAllService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

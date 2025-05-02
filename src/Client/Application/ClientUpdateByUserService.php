@@ -9,11 +9,12 @@ use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function PHPUnit\Framework\isEmpty;
 
-class ClientUpdateByUserService
+final readonly class ClientUpdateByUserService
 {
-    public function __construct(private ClientRepositoryInterface $clientRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface $clientRepository
+    )
+    {}
 
     public function __invoke(
         User $user, array $data

@@ -7,11 +7,13 @@ use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Model\TaskRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskDeleteByNameService
+final readonly class TaskDeleteByNameService
 {
-    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository,
+        private ProjectRepositoryInterface $projectRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

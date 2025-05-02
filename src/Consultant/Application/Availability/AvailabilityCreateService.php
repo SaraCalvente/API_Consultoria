@@ -16,11 +16,13 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityCreateService
+final readonly class AvailabilityCreateService
 {
-    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private ConsultantRepositoryInterface $consultantRepository)
-    {
-    }
+    public function __construct(
+        private AvailabilityRepositoryInterface $availabilityRepository,
+        private ConsultantRepositoryInterface $consultantRepository
+    )
+    {}
 
     /**
      * @throws \DateMalformedStringException

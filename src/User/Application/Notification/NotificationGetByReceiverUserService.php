@@ -13,11 +13,12 @@ use App\User\Domain\User;
 use App\User\Infraestructure\NotificationRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class NotificationGetByReceiverUserService
+final readonly class NotificationGetByReceiverUserService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository
+    )
+    {}
 
     public function __invoke(User $user): JsonResponse
     {

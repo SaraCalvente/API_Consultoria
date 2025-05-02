@@ -10,11 +10,13 @@ use App\Shared\Domain\Exception\ProjectNotFoundException;
 use App\Shared\Domain\Exception\TaskNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskGetByNameAndProjectService
+final readonly class TaskGetByNameAndProjectService
 {
-    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository,
+        private ProjectRepositoryInterface $projectRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

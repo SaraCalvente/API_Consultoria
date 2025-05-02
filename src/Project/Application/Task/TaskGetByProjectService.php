@@ -8,11 +8,13 @@ use App\Project\Domain\Model\TaskRepositoryInterface;
 use App\Project\Domain\Task\TaskDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskGetByProjectService
+final readonly class TaskGetByProjectService
 {
-    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository,
+        private ProjectRepositoryInterface $projectRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

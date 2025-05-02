@@ -17,11 +17,13 @@ use MiniOrange\Helper\Exception\RequiredFieldsException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ClientCreateService
+final readonly class ClientCreateService
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher, private ClientRepositoryInterface   $clientRepository, private UserRepositoryInterface     $userRepository)
-    {
-    }
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+        private ClientRepositoryInterface   $clientRepository,
+        private UserRepositoryInterface     $userRepository)
+    {}
 
     /**
      * @throws NotValidEmailException

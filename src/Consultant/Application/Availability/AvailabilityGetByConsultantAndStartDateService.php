@@ -12,11 +12,14 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AvailabilityGetByConsultantAndStartDateService
+final readonly class AvailabilityGetByConsultantAndStartDateService
 {
-    public function __construct(private AvailabilityRepositoryInterface $availabilityRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private AvailabilityRepositoryInterface $availabilityRepository,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     public function __invoke(User $user, array $data): JsonResponse
     {

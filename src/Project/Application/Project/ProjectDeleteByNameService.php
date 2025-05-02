@@ -5,11 +5,12 @@ namespace App\Project\Application\Project;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ProjectDeleteByNameService
+final readonly class ProjectDeleteByNameService
 {
-    public function __construct(private ProjectRepositoryInterface $projectRepository)
-    {
-    }
+    public function __construct(
+        private ProjectRepositoryInterface $projectRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

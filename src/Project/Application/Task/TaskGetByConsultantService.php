@@ -9,11 +9,13 @@ use App\Project\Domain\Task\TaskDTO;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskGetByConsultantService
+final readonly class TaskGetByConsultantService
 {
-    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private TaskRepositoryInterface $taskRepository)
-    {
-    }
+    public function __construct(
+        private ConsultantRepositoryInterface $consultantRepository,
+        private TaskRepositoryInterface $taskRepository
+    )
+    {}
 
     public function __invoke(User $user): JsonResponse
     {

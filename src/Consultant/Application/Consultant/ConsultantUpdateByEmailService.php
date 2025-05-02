@@ -11,11 +11,14 @@ use App\Shared\Domain\Exception\AbilityNotFoundException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ConsultantUpdateByEmailService
+final readonly class ConsultantUpdateByEmailService
 {
-    public function __construct(private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface       $userRepository, private AbilityRepositoryInterface     $abilityRepository)
-    {
-    }
+    public function __construct(
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface       $userRepository,
+        private AbilityRepositoryInterface     $abilityRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse {
         $user = $this->userRepository->findUserByEmailOrFail($data['email']);

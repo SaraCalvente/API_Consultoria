@@ -10,11 +10,14 @@ use App\Project\Domain\Status;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ProjectUpdateByNameService
+final readonly class ProjectUpdateByNameService
 {
-    public function __construct(private ProjectRepositoryInterface $projectRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private ProjectRepositoryInterface $projectRepository,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     /**
      * @throws \DateMalformedStringException

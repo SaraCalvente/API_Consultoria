@@ -7,11 +7,12 @@ use App\Consultant\Domain\Ability\AbilityDTO;
 use App\Consultant\Domain\Model\AbilityRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbilityGetService
+final readonly class AbilityGetService
 {
-    public function __construct(private AbilityRepositoryInterface $abilityRepository)
-    {
-    }
+    public function __construct(
+        private AbilityRepositoryInterface $abilityRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

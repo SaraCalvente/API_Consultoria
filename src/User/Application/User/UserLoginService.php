@@ -8,11 +8,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
-class UserLoginService
+final readonly class UserLoginService
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher, private JWTTokenManagerInterface $jwtManager, private UserRepositoryInterface $repository)
-    {
-    }
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+        private JWTTokenManagerInterface $jwtManager,
+        private UserRepositoryInterface $repository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse{
         $user = $this->repository->findUserByEmailOrFail($data['email']);

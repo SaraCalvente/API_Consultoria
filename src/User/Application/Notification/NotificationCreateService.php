@@ -16,11 +16,13 @@ use App\User\Infraestructure\NotificationRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use function Symfony\Component\Clock\now;
 
-class NotificationCreateService
+final readonly class NotificationCreateService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     /**
      * @throws \DateMalformedStringException

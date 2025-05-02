@@ -8,11 +8,12 @@ use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientGetAllService
+final readonly class ClientGetAllService
 {
-    public function __construct(private ClientRepositoryInterface $clientRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface $clientRepository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

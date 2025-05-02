@@ -9,11 +9,12 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientGetByEmailService
+final readonly class ClientGetByEmailService
 {
-    public function __construct(private ClientRepositoryInterface $clientRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface $clientRepository,
+        private UserRepositoryInterface $userRepository)
+    {}
 
     public function __invoke(string $email): JsonResponse
     {

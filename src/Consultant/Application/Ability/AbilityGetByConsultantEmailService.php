@@ -8,11 +8,14 @@ use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbilityGetByConsultantEmailService
+final readonly class AbilityGetByConsultantEmailService
 {
-    public function __construct(private AbilityRepositoryInterface    $abilityRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private AbilityRepositoryInterface $abilityRepository,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

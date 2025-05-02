@@ -12,11 +12,15 @@ use App\Project\Domain\Task\TaskDTO;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class TaskCreateSevice
+final readonly class TaskCreateSevice
 {
-    public function __construct(private TaskRepositoryInterface $taskRepository, private ProjectRepositoryInterface $projectRepository, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private TaskRepositoryInterface $taskRepository,
+        private ProjectRepositoryInterface $projectRepository,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     /**
      * @throws \DateMalformedStringException

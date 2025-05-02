@@ -8,11 +8,13 @@ use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\NotificationDTO;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class NotificationAdminGetByCreatorUserService
+final readonly class NotificationAdminGetByCreatorUserService
 {
-    public function __construct(private NotificationRepositoryInterface $notificationRepository, private UserRepositoryInterface $userRepository)
-    {
-    }
+    public function __construct(
+        private NotificationRepositoryInterface $notificationRepository,
+        private UserRepositoryInterface $userRepository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

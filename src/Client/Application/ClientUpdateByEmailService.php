@@ -8,11 +8,12 @@ use App\Shared\Domain\Exception\NoDataToUpdateException;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ClientUpdateByEmailService
+final readonly class ClientUpdateByEmailService
 {
-    public function __construct(private ClientRepositoryInterface  $clientRepository, private UserRepositoryInterface    $userRepository)
-    {
-    }
+    public function __construct(
+        private ClientRepositoryInterface  $clientRepository,
+        private UserRepositoryInterface    $userRepository)
+    {}
 
     public function __invoke( array $data
     ): JsonResponse {

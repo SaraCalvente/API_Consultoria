@@ -8,11 +8,13 @@ use App\User\Domain\ValueObject\EmailValueObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class AdminRegisterService
+final readonly class AdminRegisterService
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher, private UserRepositoryInterface     $repository)
-    {
-    }
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+        private UserRepositoryInterface     $repository
+    )
+    {}
 
     public function __invoke(array $data): JsonResponse
     {

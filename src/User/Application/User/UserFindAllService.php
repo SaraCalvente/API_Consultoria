@@ -5,11 +5,12 @@ namespace App\User\Application\User;
 use App\User\Domain\Model\UserRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class UserFindAllService
+final readonly class UserFindAllService
 {
-    public function __construct(private UserRepositoryInterface $repository)
-    {
-    }
+    public function __construct(
+        private UserRepositoryInterface $repository
+    )
+    {}
 
     public function __invoke(): JsonResponse
     {

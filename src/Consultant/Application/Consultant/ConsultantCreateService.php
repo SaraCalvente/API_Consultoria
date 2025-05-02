@@ -16,11 +16,14 @@ use App\User\Domain\ValueObject\EmailValueObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class ConsultantCreateService
+final readonly class ConsultantCreateService
 {
-    public function __construct(private UserPasswordHasherInterface   $passwordHasher, private ConsultantRepositoryInterface $consultantRepository, private UserRepositoryInterface       $userRepository, private AbilityRepositoryInterface $abilityRepository)
-    {
-    }
+    public function __construct(
+        private UserPasswordHasherInterface   $passwordHasher,
+        private ConsultantRepositoryInterface $consultantRepository,
+        private UserRepositoryInterface       $userRepository,
+        private AbilityRepositoryInterface $abilityRepository)
+    {}
 
     /**
      * @throws NotValidEmailException
