@@ -19,11 +19,12 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method ActivityHistory[]    findAll()
  * @method ActivityHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ActivityHistoryRepository extends ServiceEntityRepository implements ActivityHistoryRepositoryInterface
+final class ActivityHistoryRepository extends ServiceEntityRepository implements ActivityHistoryRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry        $registry, )
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry
+    )
     {
         parent::__construct($registry, ActivityHistory::class);
     }

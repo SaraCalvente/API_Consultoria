@@ -100,4 +100,23 @@ class ActivityHistory
 
         return $this;
     }
+
+    public static function createActivityHistory(
+        string $name,
+        string $description,
+        \DateTimeInterface $date,
+        User $user,
+        Project $project
+    ): self {
+        $activityHistory = new self();
+        $activityHistory->setName($name);
+        $activityHistory->setDescription($description);
+        $activityHistory->setDate($date);
+        $activityHistory->setUser($user);
+        $activityHistory->setProject($project);
+
+        return $activityHistory;
+    }
+
+
 }

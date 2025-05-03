@@ -20,10 +20,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Notification[]    findAll()
  * @method Notification[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class NotificationRepository extends ServiceEntityRepository implements NotificationRepositoryInterface{
+final class NotificationRepository extends ServiceEntityRepository implements NotificationRepositoryInterface{
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry $registry)
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry
+    )
     {
         parent::__construct($registry, Notification::class);
     }

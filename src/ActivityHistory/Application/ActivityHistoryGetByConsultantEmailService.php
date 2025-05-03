@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Application;
 
-use App\ActivityHistory\Domain\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
+use DomainException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final readonly class ActivityHistoryGetByConsultantEmailService
@@ -15,27 +16,31 @@ final readonly class ActivityHistoryGetByConsultantEmailService
         private ActivityHistoryRepositoryInterface $activityHistoryRepository,
         private ConsultantRepositoryInterface $consultantRepository,
         private UserRepositoryInterface $userRepository
-    )
-    {}
+    ) {}
 
-    public function __invoke(array $data): JsonResponse
+    /**
+     * @return array{current_consultant_id: int, activities: ActivityHistoryDTO[]}
+     */
+    public function __invoke(array $data): array
     {
         $user = $this->userRepository->findUserByEmailOrFail($data['email']);
+
         if (!$this->consultantRepository->checkIfConsultantExists($user)) {
-            return new JsonResponse(['error' => 'The user ' . $user->getEmail() . ' is not a consultant'], 400);
+            throw new DomainException('The user ' . $user->getEmail() . ' is not a consultant');
         }
+
         $consultant = $this->consultantRepository->findConsultantByUser($user);
 
-        if (!$consultant instanceof \App\Consultant\Domain\Consultant\Consultant) {
-            return new JsonResponse(['error' => 'Consultant has no associated activities'], 402);
+        if (!$consultant) {
+            throw new DomainException('Consultant not found for user: ' . $user->getEmail());
         }
 
         $activities = $this->activityHistoryRepository->findActivitiesByConsultant($user);
-        return new JsonResponse([
-            'message' => 'Tasks retrieved successfully',
+
+        return [
             'current_consultant_id' => $consultant->getId(),
             'activities' => array_map(fn($activity) => ActivityHistoryDTO::fromEntity($activity), $activities),
-        ], 200);
+        ];
     }
 
 }

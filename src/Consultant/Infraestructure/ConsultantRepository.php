@@ -21,11 +21,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Client[]    findAll()
  * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ConsultantRepository extends ServiceEntityRepository implements ConsultantRepositoryInterface
+final class ConsultantRepository extends ServiceEntityRepository implements ConsultantRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry $registry)
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry)
     {
         parent::__construct($registry, Consultant::class);
     }

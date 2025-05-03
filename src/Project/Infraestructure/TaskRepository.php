@@ -21,12 +21,13 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Client[]    findAll()
  * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
+final class TaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry        $registry, )
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry
+    )
     {
         parent::__construct($registry, Task::class);
     }

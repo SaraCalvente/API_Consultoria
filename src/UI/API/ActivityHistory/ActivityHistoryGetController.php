@@ -4,12 +4,15 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryGetByNameAndProjectService;
-use App\Project\Application\Task\TaskGetByNameAndProjectService;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryByNameAndProjectDTO;
+use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
+use App\Shared\Domain\Exception\ProjectNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
+
 class ActivityHistoryGetController extends AbstractController
 {
     #[Route('/activity', name: 'get_activity_by_name_and_project', methods: ['GET'])]
@@ -17,17 +20,22 @@ class ActivityHistoryGetController extends AbstractController
         path: "/activity",
         description: "Retrieve activity by name and project name for admin.",
         summary: "Get activity",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ["name", "projectName"],
-                properties: [
-                    new OA\Property(property: "name", type: "string", example: "This is the name of a activity"),
-                    new OA\Property(property: "projectName", type: "string", example: "Project 1"),
-                ],
-                type: "object"
+        parameters: [
+            new OA\Parameter(
+                name: "name",
+                in: "query",
+                required: true,
+                schema: new OA\Schema(type: "string"),
+                example: "This is the name of a activity"
+            ),
+            new OA\Parameter(
+                name: "projectName",
+                in: "query",
+                required: true,
+                schema: new OA\Schema(type: "string"),
+                example: "Project 1"
             )
-        ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -44,22 +52,29 @@ class ActivityHistoryGetController extends AbstractController
                     type: "object"
                 )
             ),
-            new OA\Response(
-                response: 401,
-                description: "Unauthorized"
-            )]
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 404, description: "Not Found")
+        ]
     )]
     public function getActivityByNameAndProject(Request $request, ActivityHistoryGetByNameAndProjectService $findByNameAndProjectService): JsonResponse
     {
         try {
-            $projectName = $request->query->get('projectName');
-            $name = $request->query->get('name');
-            $data = [
-                'projectName' => $projectName,
-                'name' => $name];
-            return $findByNameAndProjectService($data);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 500);
+            $dto = new ActivityHistoryByNameAndProjectDTO(
+                projectName: (string) $request->query->get('projectName'),
+                name: (string) $request->query->get('name')
+            );
+
+            $activity = $findByNameAndProjectService($dto);
+
+            return new JsonResponse([
+                'message' => 'Activity retrieved successfully',
+                'task' => $activity
+            ], 200);
+
+        } catch (ProjectNotFoundException|ActivityHistoryNotFoundException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 404);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => 'Unexpected error: ' . $e->getMessage()], 500);
         }
     }
 }

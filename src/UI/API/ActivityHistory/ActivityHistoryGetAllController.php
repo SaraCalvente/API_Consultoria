@@ -5,6 +5,7 @@ namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryGetAllService;
 use App\Project\Application\Task\TaskGetAllService;
+use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,6 +24,7 @@ class ActivityHistoryGetAllController extends AbstractController
                 description: "Activities retrieved successfully",
                 content: new OA\JsonContent(
                     properties: [
+                        new OA\Property(property: "message", type: "string", example: "Activities retrieved successfully"),
                         new OA\Property(property: "activities", type: "array", items: new OA\Items(
                             properties: [
                                 new OA\Property(property: "activity_id", type: "integer", example: 1),
@@ -40,10 +42,27 @@ class ActivityHistoryGetAllController extends AbstractController
             new OA\Response(
                 response: 401,
                 description: "Unauthorized"
-            )]
+            ),
+            new OA\Response(
+                response: 404,
+                description: "No activities found"
+            )
+        ]
     )]
-    public function getAllTasks(ActivityHistoryGetAllService $activityHistoryFindAllService): JsonResponse
+    public function getAllActivities(ActivityHistoryGetAllService $activityHistoryGetAllService): JsonResponse
     {
-        return $activityHistoryFindAllService();
+        try {
+            $activities = $activityHistoryGetAllService();
+
+            return new JsonResponse([
+                'message' => 'Activities retrieved successfully',
+                'activities' => $activities,
+            ], 200);
+
+        } catch (ActivityHistoryNotFoundException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 404);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Unexpected error'], 500);
+        }
     }
 }

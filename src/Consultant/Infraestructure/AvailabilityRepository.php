@@ -21,11 +21,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Availability[]    findAll()
  * @method Availability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AvailabilityRepository extends ServiceEntityRepository implements AvailabilityRepositoryInterface
+final class AvailabilityRepository extends ServiceEntityRepository implements AvailabilityRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry $registry)
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry)
     {
         parent::__construct($registry, Availability::class);
     }

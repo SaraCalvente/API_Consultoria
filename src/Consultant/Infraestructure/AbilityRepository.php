@@ -21,11 +21,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @method Ability[]    findAll()
  * @method Ability[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AbilityRepository extends ServiceEntityRepository implements AbilityRepositoryInterface
+final class AbilityRepository extends ServiceEntityRepository implements AbilityRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        ManagerRegistry $registry)
+        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry                         $registry
+    )
     {
         parent::__construct($registry, Ability::class);
     }

@@ -3,28 +3,29 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Application;
 
-use App\ActivityHistory\Domain\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
+use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final readonly class ActivityHistoryGetAllService
 {
     public function __construct(
         private ActivityHistoryRepositoryInterface $activityHistoryRepository
-    )
-    {}
+    ) {}
 
-    public function __invoke(): JsonResponse
+    /**
+     * @return ActivityHistoryDTO[]
+     */
+    public function __invoke(): array
     {
         $activities = $this->activityHistoryRepository->findAllActivityHistories();
 
         if ($activities === []) {
-            return new JsonResponse(['error' => 'There are no activities'], 404);
+            throw new ActivityHistoryNotFoundException();
         }
 
-        return new JsonResponse([
-            'message' => 'Activities retrieved successfully',
-            'tasks' => array_map(fn($activity) => ActivityHistoryDTO::fromEntity($activity), $activities),
-        ], 200);
+        return array_map(fn($activity) => ActivityHistoryDTO::fromEntity($activity), $activities);
     }
+
 }

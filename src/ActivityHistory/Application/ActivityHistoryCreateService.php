@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace App\ActivityHistory\Application;
 
 use App\ActivityHistory\Domain\ActivityHistory;
-use App\ActivityHistory\Domain\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryCreateDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\User\Domain\Model\UserRepositoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use DateTime;
+use DomainException;
 
 final readonly class ActivityHistoryCreateService
 {
@@ -22,40 +24,35 @@ final readonly class ActivityHistoryCreateService
     {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws \Exception
      */
-    public function __invoke(
-        array $data
-    ): JsonResponse
+    public function __invoke(ActivityHistoryCreateDTO $dto): ActivityHistoryDTO
     {
-
-        if (!$this->projectRepository->checkIfProjectExists($data['projectName'])){
-            return new JsonResponse(['error' => 'Project with name ' . $data['projectName'] . ' was not found'], 404);
+        if (!$this->projectRepository->checkIfProjectExists($dto->projectName)) {
+            throw new DomainException("Project with name {$dto->projectName} was not found");
         }
-        $project = $this->projectRepository->findProjectByName($data['projectName']);
+        $project = $this->projectRepository->findProjectByName($dto->projectName);
 
-        if ($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)){
-            return new JsonResponse(['error' => 'An activity with this name (' . $data['name'] . ') in project ' . $data['projectName'] . ' already exists'], 403);
-        }
-        $user = $this->userRepository->findUserByEmailOrFail($data['consultantEmail']);
-        if (!$this->consultantRepository->checkIfConsultantExists($user)){
-            return new JsonResponse(['error' => 'Consultant with name ' . $data['consultantEmail'] . ' was not found'], 404);
+        if ($this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($dto->name, $project)) {
+            throw new DomainException("Activity '{$dto->name}' in project '{$dto->projectName}' already exists");
         }
 
-        $activityHistory = new ActivityHistory();
-        $activityHistory->setName($data['name']);
-        $activityHistory->setProject($project);
-        $activityHistory->setUser($user);
-        $activityHistory->setDescription($data['description']);
-        $activityHistory->setDate(new \DateTime($data['date']));
-        $project->addActivityHistory($activityHistory);
-        $user->addActivityHistory($activityHistory);
+        $user = $this->userRepository->findUserByEmailOrFail($dto->consultantEmail);
+
+        if (!$this->consultantRepository->checkIfConsultantExists($user)) {
+            throw new DomainException("Consultant with email {$dto->consultantEmail} was not found");
+        }
+
+        $activityHistory = ActivityHistory::createActivityHistory(
+            $dto->name,
+            $dto->description,
+            new DateTime($dto->date),
+            $user,
+            $project
+        );
 
         $this->activityHistoryRepository->addActivityHistory($activityHistory);
 
-        return new JsonResponse([
-            'message' => 'ActivityHistory created successfully',
-            'activity' => ActivityHistoryDTO::fromEntity($activityHistory),
-        ], 201);
+        return ActivityHistoryDTO::fromEntity($activityHistory);
     }
 }

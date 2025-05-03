@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryDeleteByNameService;
-use App\Project\Application\Task\TaskDeleteByNameService;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDeleteDTO;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,36 +16,45 @@ class ActivityHistoryDeleteController extends AbstractController
     #[Route('/activity/delete', name: 'delete_activity', methods: ['DELETE'])]
     #[OA\Delete(
         path: "/activity/delete",
-        description: "Deletes the authenticated activity.",
-        summary: "Activity deleted successfully",
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ["name", "projectName"],
-                properties: [
-                    new OA\Property(property: "name", type: "string", example: "This is the name of a task"),
-                    new OA\Property(property: "projectName", type: "string", example: "Project 1"),
-                ],
-                type: "object"
+        description: "Deletes the activity with the given name from a project.",
+        summary: "Delete activity by name and project",
+        parameters: [
+            new OA\Parameter(
+                name: "projectName",
+                in: "query",
+                required: true,
+                schema: new OA\Schema(type: "string"),
+                example: "Project 1"
+            ),
+            new OA\Parameter(
+                name: "name",
+                in: "query",
+                required: true,
+                schema: new OA\Schema(type: "string"),
+                example: "Historial 7"
             )
-        ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Task deleted successfully",
+                description: "Activity deleted successfully",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Task deleted successfully")
+                        new OA\Property(property: "message", type: "string", example: "Activity deleted successfully")
                     ]
                 )
             ),
             new OA\Response(
-                response: 401,
-                description: "Not authorized"
+                response: 404,
+                description: "Activity or project not found"
             ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid request"
+            )
         ]
     )]
-    public function deleteTask(
+    public function deleteActivity(
         Request $request,
         ActivityHistoryDeleteByNameService $activityHistoryDeleteByNameService
     ): JsonResponse
@@ -53,12 +62,21 @@ class ActivityHistoryDeleteController extends AbstractController
         try {
             $projectName = $request->query->get('projectName');
             $name = $request->query->get('name');
-            $data = [
-                'projectName' => $projectName,
-                'name' => $name];
-            return $activityHistoryDeleteByNameService($data);
+
+            if (!$projectName || !$name) {
+                return new JsonResponse(['error' => 'Missing required parameters'], 400);
+            }
+
+            $dto = new ActivityHistoryDeleteDTO($projectName, $name);
+            $activityHistoryDeleteByNameService($dto); // NO RETURN
+
+            return new JsonResponse(['message' => 'Activity deleted successfully'], 200);
+
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 404);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => 'Unexpected error'], 500);
         }
     }
+
 }

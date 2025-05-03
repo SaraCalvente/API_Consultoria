@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\ActivityHistory\Application;
 
-use App\ActivityHistory\Domain\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryByNameAndProjectDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Shared\Domain\Exception\ActivityHistoryNotFoundException;
@@ -15,25 +16,21 @@ final readonly class ActivityHistoryGetByNameAndProjectService
     public function __construct(
         private ActivityHistoryRepositoryInterface $activityHistoryRepository,
         private ProjectRepositoryInterface $projectRepository
-    )
-    {}
+    ) {}
 
-    public function __invoke(array $data): JsonResponse
+    public function __invoke(ActivityHistoryByNameAndProjectDTO $dto): ActivityHistoryDTO
     {
-        $project = $this->projectRepository->findProjectByName($data['projectName']);
-        if (!$project instanceof \App\Project\Domain\Project\Project) {
+        $project = $this->projectRepository->findProjectByName($dto->projectName);
+        if (!$project) {
             throw new ProjectNotFoundException();
         }
 
-        if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)) {
+        if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($dto->name, $project)) {
             throw new ActivityHistoryNotFoundException();
         }
 
-        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($data['name'], $project);
-        return new JsonResponse([
-            'message' => 'Tasks retrieved successfully',
-            'task' => ActivityHistoryDTO::fromEntity($activity)
-        ], 201);
+        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($dto->name, $project);
+        return ActivityHistoryDTO::fromEntity($activity);
     }
 
 }
