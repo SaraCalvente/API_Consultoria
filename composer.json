@@ -6,7 +6,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "repositories": [
-        { "type": "vcs", "url": "git@bitbucket.org:sara_cuatroochenta/api_consultorias.git" }
+        { "type": "vcs", "url": "git@bitbucket.org:sara_cuatroochenta/api_consultorias.git" },
+        { "type": "vcs", "url": "git@github.com:SaraCalvente/API_Consultoria.git" }
     ],
     "require": {
         "php": "^8.2",
