@@ -3,19 +3,34 @@ declare(strict_types=1);
 
 namespace App\Client\Domain;
 
+use App\ActivityHistory\Domain\ActivityHistory;
+use App\User\Domain\ValueObject\EmailValueObject;
+
 class ClientDTO
 {
-    public static function fromEntity(Client $client): array
+    public function __construct(
+        public int $clientId,
+        public int $userId,
+        public EmailValueObject $email,
+        public string $name,
+        public string $surnames,
+        public string $address,
+        public string $phoneNumber,
+        public array $roles
+    ) {}
+
+    public static function fromEntity(Client $client): self
     {
-        return [
-            'client_id' => $client->getId(),
-            'user_id' => $client->getUser()->getId(),
-            'email' => $client->getUser()->getEmail(),
-            'name' => $client->getName(),
-            'surnames' => $client->getSurnames(),
-            'address' => $client->getAddress(),
-            'phone_number' => $client->getPhoneNumber(),
-            'roles' => $client->getUser()->getRoles()
-        ];
+        return new self(
+            $client->getId(),
+            $client->getUser()->getId(),
+            $client->getUser()->getEmail(),
+            $client->getName(),
+            $client->getSurnames(),
+            $client->getAddress(),
+            $client->getPhoneNumber(),
+            $client->getUser()->getRoles()
+        );
     }
+
 }

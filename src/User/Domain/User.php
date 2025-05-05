@@ -3,6 +3,7 @@
 namespace App\User\Domain;
 
 use App\ActivityHistory\Domain\ActivityHistory;
+use App\Shared\Domain\Exception\NotValidEmailException;
 use App\User\Domain\ValueObject\EmailValueObject;
 use App\User\Infraestructure\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -166,5 +167,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @throws NotValidEmailException
+     */
+    public static function createUser(
+        string $email,
+        string $password,
+        array $roles
+    ): self {
+        $user = new self();
+        $user->setEmail(new EmailValueObject($email));
+        $user->setPassword($password);
+        $user->setRoles($roles);
+
+        return $user;
     }
 }

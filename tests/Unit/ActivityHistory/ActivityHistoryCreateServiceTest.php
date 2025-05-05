@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryCreateService;
+use App\ActivityHistory\Domain\ActivityHistory;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryCreateDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
@@ -13,6 +16,7 @@ use App\User\Application\User\UserFindAllService;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
+use DomainException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,7 +29,7 @@ class ActivityHistoryCreateServiceTest extends Unit
     private ConsultantRepositoryInterface $consultantRepository;
 
     private ActivityHistoryCreateService $service;
-    private array $data;
+    private ActivityHistoryCreateDTO $dto;
 
     /**
      * @throws Exception
@@ -38,60 +42,72 @@ class ActivityHistoryCreateServiceTest extends Unit
         $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
 
         $this->service = new ActivityHistoryCreateService($this->activityHistoryRepository, $this->projectRepository, $this->consultantRepository, $this->userRepository);
-        $this->data = [
-            'name' => 'Implement login',
-            'description' => 'Add login functionality',
-            'date' => '2025-04-16',
-            'projectName' => 'Awesome Project',
-            'consultantEmail' => 'consultant@example.com',
-        ];
+        $this->dto = new ActivityHistoryCreateDTO(
+            'Awesome Project',
+            'Implement login',
+            'Add login functionality',
+            '2025-04-16',
+            'consultant@example.com'
+        );
+
     }
 
     /**
      * @throws \DateMalformedStringException
      * @throws Exception
+     * @throws \Exception
      */
     public function testActivityHistoryIsCreatedSuccessfully(): void
     {
         $project = $this->createMock(Project::class);
         $user = $this->createMock(User::class);
+        $activityHistory = $this->createMock(ActivityHistory::class);
+
+        $project->method('getId')->willReturn(1);
+        $user->method('getId')->willReturn(1);
+
+        $date = new \DateTime('2025-04-16');
+
+        $activityHistory->method('getName')->willReturn('Implement login');
+        $activityHistory->method('getDescription')->willReturn('Add login functionality');
+        $activityHistory->method('getProject')->willReturn($project);
+        $activityHistory->method('getUser')->willReturn($user);
+        $activityHistory->method('getDate')->willReturn($date);
+
 
         $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
         $this->projectRepository->method('findProjectByName')->willReturn($project);
         $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(false);
         $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('checkIfConsultantExists')->willReturn(true);
+        $dto = ($this->service)($this->dto);
 
-        $project->method('getName')->willReturn('Awesome Project');
-
-
-        $response = ($this->service)($this->data);
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertStringContainsString('ActivityHistory created successfully', $response->getContent());
+        $this->assertEquals('Implement login', $dto->name);
+        $this->assertEquals('Add login functionality', $dto->description);
     }
+
 
     /**
      * @throws \DateMalformedStringException
      * @throws Exception
+     * @throws \Exception
      */
-    public function testReturns404IfProjectNotFound(): void
+    public function testThrowsExceptionIfProjectNotFound(): void
     {
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('Project with name');
 
         $this->projectRepository->method('checkIfProjectExists')->willReturn(false);
 
-        $response = ($this->service)($this->data);
-
-        $this->assertEquals(404, $response->getStatusCode());
-        $this->assertStringContainsString('Project with name', $response->getContent());
+        ($this->service)($this->dto);
     }
 
     /**
      * @throws \DateMalformedStringException
      * @throws Exception
+     * @throws \Exception
      */
-    public function testReturns403IfActivityAlreadyExists(): void
+    public function testThrowsExceptionIfActivityAlreadyExists(): void
     {
         $project = $this->createMock(Project::class);
 
@@ -99,17 +115,19 @@ class ActivityHistoryCreateServiceTest extends Unit
         $this->projectRepository->method('findProjectByName')->willReturn($project);
         $this->activityHistoryRepository->method('checkIfActivityHistoryFromProjectExists')->willReturn(true);
 
-        $response = ($this->service)($this->data);
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("already exists");
 
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertStringContainsString('already exists', $response->getContent());
+        ($this->service)($this->dto);
     }
+
 
     /**
      * @throws \DateMalformedStringException
      * @throws Exception
+     * @throws \Exception
      */
-    public function testReturns404IfConsultantNotFound(): void
+    public function testThrowsExceptionIfConsultantNotFound(): void
     {
         $project = $this->createMock(Project::class);
         $user = $this->createMock(User::class);
@@ -120,9 +138,9 @@ class ActivityHistoryCreateServiceTest extends Unit
         $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
         $this->consultantRepository->method('checkIfConsultantExists')->willReturn(false);
 
-        $response = ($this->service)($this->data);
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("Consultant with email");
 
-        $this->assertEquals(404, $response->getStatusCode());
-        $this->assertStringContainsString('Consultant with name', $response->getContent());
+        ($this->service)($this->dto);
     }
 }

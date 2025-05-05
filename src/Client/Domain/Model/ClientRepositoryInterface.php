@@ -12,7 +12,7 @@ interface ClientRepositoryInterface
     public function findClientByUser(User $user): ?Client;
     public function checkIfClientExists(User $user): bool;
     public function findAllClients(): array;
-    public function updateClient(User $user, ?string $address, ?string $phoneNumber): JsonResponse;
+    public function updateClient(User $user, ?string $address, ?string $phoneNumber): Client;
     public function deleteClient(Client $client): JsonResponse;
     public function addClient(Client $client): void;
     public function saveClient(): void;

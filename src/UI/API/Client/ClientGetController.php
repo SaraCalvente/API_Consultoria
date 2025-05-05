@@ -15,11 +15,9 @@ use OpenApi\Attributes as OA;
 
 class ClientGetController extends AbstractController
 {
-    public function __construct(private AuthChecker $authChecker)
-    {
-    }
-    #[Route('/client', name: 'get_client', methods: ['GET'])]
+    public function __construct(private AuthChecker $authChecker) {}
 
+    #[Route('/client', name: 'get_client', methods: ['GET'])]
     #[OA\Get(
         path: "/client",
         description: "Retrieve client data for an authenticated client.",
@@ -38,22 +36,20 @@ class ClientGetController extends AbstractController
                         new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
                         new OA\Property(property: "phone_number", type: "string", example: "666 666 666"),
                         new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
-
                     ],
                     type: "object"
                 )
             ),
-            new OA\Response(
-                response: 401,
-                description: "Unauthorized"
-            )]
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 404, description: "Client not found")
+        ]
     )]
-
     public function getClient(Security $security, ClientGetByUserService $clientFindService): JsonResponse
     {
         try {
             $user = $this->authChecker->getAuthenticated($security);
-            return $clientFindService($user);
+            $clientDTO = $clientFindService($user);
+            return new JsonResponse($clientDTO, 200);
         } catch (ClientNotFoundException $e) {
             return new JsonResponse(['error' => $e->getMessage()], 404);
         }

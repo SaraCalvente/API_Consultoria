@@ -8,8 +8,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserAlreadyExistsException extends Exception
 {
-    public function __construct(string $email)
+    public function __construct(string $message)
     {
-        parent::__construct("User $email already exists", 409);
+        parent::__construct($message, 409);
     }
 }

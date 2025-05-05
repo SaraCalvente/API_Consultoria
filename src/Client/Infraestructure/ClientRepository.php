@@ -53,7 +53,7 @@ final class ClientRepository extends ServiceEntityRepository implements ClientRe
         return $this->entityManager->getRepository(Client::class)->findAll();
     }
 
-    public function updateClient(User $user, ?string $address, ?string $phoneNumber): JsonResponse
+    public function updateClient(User $user, ?string $address, ?string $phoneNumber): Client
     {
         $client = $this->findClientByUser($user);
 
@@ -61,20 +61,15 @@ final class ClientRepository extends ServiceEntityRepository implements ClientRe
             $client->setAddress($address);
             $this->saveClient();
 
-            return new JsonResponse([
-                'message' => 'Client address updated successfully',
-                'client' => ClientDTO::fromEntity($client)
-            ]);
+            return $client;
         }
 
         if ($phoneNumber && !$address) {
             $client->setPhoneNumber($phoneNumber);
             $this->saveClient();
 
-            return new JsonResponse([
-                'message' => 'Client phone number updated successfully',
-                'client' => ClientDTO::fromEntity($client)
-            ]);
+            return $client;
+
         }
 
         if ($address && $phoneNumber) {
@@ -83,10 +78,8 @@ final class ClientRepository extends ServiceEntityRepository implements ClientRe
             $this->saveClient();
         }
 
-        return new JsonResponse([
-            'message' => 'Client address and phone number updated successfully',
-            'client' => ClientDTO::fromEntity($client)
-        ]);
+        return $client;
+
     }
 
     public function deleteClient(Client $client): JsonResponse

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Client\Application;
 
+use App\Client\Domain\ClientDTO;
+use App\Client\Domain\ClientUpdateByEmailDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NoDataToUpdateException;
 use App\User\Domain\Model\UserRepositoryInterface;
@@ -15,15 +17,20 @@ final readonly class ClientUpdateByEmailService
         private UserRepositoryInterface    $userRepository)
     {}
 
-    public function __invoke( array $data
-    ): JsonResponse {
-        $user = $this->userRepository->findUserByEmailOrFail($data['email']);
-        $address = $data['address'] ?? null;
-        $phone = $data['phoneNumber'] ?? null;
+    public function __invoke(ClientUpdateByEmailDTO $data): ClientDTO
+    {
+        $user = $this->userRepository->findUserByEmailOrFail($data->email);
 
-        if ($data === [] || $address === null && $phone === null) {
+        if ($data->address === null && $data->phoneNumber === null) {
             throw new NoDataToUpdateException();
         }
-        return $this->clientRepository->updateClient($user, $address, $phone);
+
+        $updatedClient = $this->clientRepository->updateClient(
+            $user,
+            $data->address,
+            $data->phoneNumber
+        );
+
+        return ClientDTO::fromEntity($updatedClient);
     }
 }

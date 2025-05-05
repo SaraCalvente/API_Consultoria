@@ -15,9 +15,10 @@ final readonly class ClientGetByUserService
     )
     {}
 
-    public function __invoke(User $user): JsonResponse
+    public function __invoke(User $user): ClientDTO
     {
         $client = $this->clientRepository->findClientByUser($user);
-        return new JsonResponse(ClientDTO::fromEntity($client));
+
+        return ClientDTO::fromEntity($client);
     }
 }

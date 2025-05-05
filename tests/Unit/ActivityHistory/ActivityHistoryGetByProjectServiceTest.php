@@ -2,18 +2,16 @@
 
 namespace App\Tests\Unit\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryCreateService;
 use App\ActivityHistory\Application\ActivityHistoryGetByProjectService;
-use App\ActivityHistory\Domain\ActivityHistory;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryByProjectDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
-use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
-use App\User\Domain\Model\UserRepositoryInterface;
+use App\Shared\Domain\Exception\ProjectNotFoundException;
 use App\User\Domain\User;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 
 class ActivityHistoryGetByProjectServiceTest extends Unit
 {
@@ -21,7 +19,6 @@ class ActivityHistoryGetByProjectServiceTest extends Unit
     private ProjectRepositoryInterface $projectRepository;
 
     private ActivityHistoryGetByProjectService $service;
-    private array $data;
 
     /**
      * @throws Exception
@@ -32,15 +29,17 @@ class ActivityHistoryGetByProjectServiceTest extends Unit
         $this->projectRepository = $this->createMock(ProjectRepositoryInterface::class);
 
         $this->service = new ActivityHistoryGetByProjectService($this->activityHistoryRepository, $this->projectRepository);
-        $this->data = ['projectName' => 'Project A'];
     }
 
     /**
-     * @throws Exception
      * @throws \DateMalformedStringException
+     * @throws Exception
      */
     public function testReturnsActivitiesByProjectSuccessfully(): void
     {
+        $projectName = 'Project A';
+        $dto = new ActivityHistoryByProjectDTO($projectName);
+
         $project = $this->createMock(Project::class);
         $project->method('getId')->willReturn(300);
 
@@ -50,53 +49,34 @@ class ActivityHistoryGetByProjectServiceTest extends Unit
         $activity1 = $this->createActivityMock(1, 'Activity 1', 'Description 1', '2025-04-16', $project, $user);
         $activity2 = $this->createActivityMock(2, 'Activity 2', 'Description 2', '2025-04-17', $project, $user);
 
-        $this->projectRepository->method('checkIfProjectExists')->willReturn(true);
-        $this->projectRepository->method('findProjectByName')->willReturn($project);
+        $this->projectRepository->method('checkIfProjectExists')->with($projectName)->willReturn(true);
+        $this->projectRepository->method('findProjectByName')->with($projectName)->willReturn($project);
 
-        $this->activityHistoryRepository->method('findActivitiesHistoriesByProject')->with($project)->willReturn([$activity1, $activity2]);
+        $this->activityHistoryRepository
+            ->method('findActivitiesHistoriesByProject')
+            ->with($project)
+            ->willReturn([$activity1, $activity2]);
 
-        $response = ($this->service)($this->data);
+        $result = ($this->service)($dto);
 
-        $this->assertEquals(201, $response->getStatusCode());
-
-        $expected = [
-            'message' => 'Tasks retrieved successfully',
-            'tasks' => [
-                [
-                    'activity_history_id' => 1,
-                    'name' => 'Activity 1',
-                    'description' => 'Description 1',
-                    'project_id' => 300,
-                    'date' => '2025-04-16',
-                    'user_id' => 200,
-                ],
-                [
-                    'activity_history_id' => 2,
-                    'name' => 'Activity 2',
-                    'description' => 'Description 2',
-                    'project_id' => 300,
-                    'date' => '2025-04-17',
-                    'user_id' => 200,
-                ]
-            ]
-        ];
-
-        $this->assertEquals($expected, json_decode($response->getContent(), true));
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf(ActivityHistoryDTO::class, $result[0]);
+        $this->assertSame('Activity 1', $result[0]->name);
+        $this->assertSame('Activity 2', $result[1]->name);
     }
 
     /**
-     * @throws \DateMalformedStringException
      * @throws Exception
      */
-    public function testReturns404IfProjectNotFound(): void
+    public function testThrowsExceptionIfProjectNotFound(): void
     {
+        $dto = new ActivityHistoryByProjectDTO('Nonexistent Project');
 
-        $this->projectRepository->method('checkIfProjectExists')->willReturn(false);
+        $this->projectRepository->method('checkIfProjectExists')->with('Nonexistent Project')->willReturn(false);
 
-        $response = ($this->service)($this->data);
+        $this->expectException(ProjectNotFoundException::class);
 
-        $this->assertEquals(404, $response->getStatusCode());
-        $this->assertStringContainsString('Project with name', $response->getContent());
+        ($this->service)($dto);
     }
 
     /**
@@ -110,8 +90,8 @@ class ActivityHistoryGetByProjectServiceTest extends Unit
         string $date,
         ?Project $project,
         ?User $user
-    ): ActivityHistory {
-        $activity = $this->createMock(ActivityHistory::class);
+    ) {
+        $activity = $this->createMock(\App\ActivityHistory\Domain\ActivityHistory::class);
         $activity->method('getId')->willReturn($id);
         $activity->method('getName')->willReturn($name);
         $activity->method('getDescription')->willReturn($description);
@@ -121,5 +101,4 @@ class ActivityHistoryGetByProjectServiceTest extends Unit
 
         return $activity;
     }
-
 }

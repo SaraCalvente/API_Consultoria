@@ -9,7 +9,6 @@ class ActivityHistoryDTO
 {
 
     public function __construct(
-        public int $activityHistoryId,
         public string $name,
         public string $description,
         public int $projectId,
@@ -21,7 +20,6 @@ class ActivityHistoryDTO
     public static function fromEntity(ActivityHistory $activityHistory): self
     {
         return new self(
-            $activityHistory->getId(),
             $activityHistory->getName(),
             $activityHistory->getDescription(),
             $activityHistory->getProject()->getId(),

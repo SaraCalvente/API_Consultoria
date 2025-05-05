@@ -15,13 +15,15 @@ final readonly class ClientDeleteByUserService
         private ProjectRepositoryInterface $projectRepository)
     {}
 
-    public function __invoke(User $user): JsonResponse
+    public function __invoke(User $user): void
     {
         $client = $this->clientRepository->findClientByUser($user);
-        $projects = $this->projectRepository->checkIfClientHasProjects($client);
-        if (!$projects instanceof JsonResponse) {
-            return $this->clientRepository->deleteClient($client);
+
+        if ($this->projectRepository->checkIfClientHasProjects($client)) {
+            throw new \DomainException('Cannot delete client because there are associated projects.');
         }
-        return $projects;
+
+        $this->clientRepository->deleteClient($client);
     }
+
 }

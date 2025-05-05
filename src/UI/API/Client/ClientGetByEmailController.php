@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\Client;
 
 use App\Client\Application\ClientGetByEmailService;
+use App\Client\Domain\ClientByEmailDTO;
 use App\Shared\Domain\Exception\ClientNotFoundException;
 use App\Shared\Domain\Exception\UserNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -60,9 +61,12 @@ class ClientGetByEmailController extends AbstractController
         }
 
         try {
-            return $clientFindService($email);
+            $dto = new ClientByEmailDTO($email);
+            $clientDTO = $clientFindService($dto);
+
+            return new JsonResponse($clientDTO, 200);
         }
-        catch (UserNotFoundException ) {
+        catch (UserNotFoundException) {
             return new JsonResponse(['error' => 'No user found'], 404);
         }
         catch (ClientNotFoundException $e) {

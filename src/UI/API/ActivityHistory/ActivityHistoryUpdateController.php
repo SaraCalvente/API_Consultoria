@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\UI\API\ActivityHistory;
 
 use App\ActivityHistory\Application\ActivityHistoryUpdateByNameAndProjectService;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryUpdateDTO;
 use App\Project\Application\Task\TaskUpdateByNameAndProjectService;
 use App\Shared\Domain\Auth\AuthChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,9 +16,7 @@ use Symfony\Component\Security\Core\Security;
 
 class ActivityHistoryUpdateController extends AbstractController
 {
-    public function __construct(private AuthChecker $authChecker)
-    {
-    }
+    public function __construct(private AuthChecker $authChecker) {}
 
     #[Route('/activity/update', name: 'activity_update', methods: ['PUT'])]
     #[OA\Put(
@@ -42,8 +41,8 @@ class ActivityHistoryUpdateController extends AbstractController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: "activity_id", type: "integer", example: 1),
-                        new OA\Property(property: "name", type: "string", example: "This is the name of a activity"),
-                        new OA\Property(property: "description", type: "string", example: "This is a activity description."),
+                        new OA\Property(property: "name", type: "string", example: "This is the name of an activity"),
+                        new OA\Property(property: "description", type: "string", example: "This is an activity description."),
                         new OA\Property(property: "project_id", type: "integer", example: 2),
                         new OA\Property(property: "date", type: "string", example: "2025-03-20"),
                         new OA\Property(property: "consultantId", type: "integer", example: 1),
@@ -51,18 +50,33 @@ class ActivityHistoryUpdateController extends AbstractController
                     type: "object"
                 )
             ),
-            new OA\Response(
-                response: 401,
-                description: "Unauthorized"
-            )]
+            new OA\Response(response: 401, description: "Unauthorized"),
+            new OA\Response(response: 404, description: "Activity or project not found")
+        ]
     )]
-    public function updateProject(Security $security, Request $request, ActivityHistoryUpdateByNameAndProjectService $activityHistoryUpdateController): JsonResponse
-    {
+    public function updateProject(
+        Security $security,
+        Request $request,
+        ActivityHistoryUpdateByNameAndProjectService $service
+    ): JsonResponse {
         try {
             $user = $this->authChecker->getAuthenticated($security);
-            $data = json_decode($request->getContent(), true);
-            return $activityHistoryUpdateController($user, $data);
-        } catch (\Exception $e) {
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+            $dto = new ActivityHistoryUpdateDTO(
+                name: $data['name'],
+                projectName: $data['projectName'],
+                description: $data['description'] ?? null
+            );
+
+            $activityDTO = $service($user, $dto);
+
+            return new JsonResponse([
+                'message' => 'Activity updated successfully',
+                'activity' => $activityDTO
+            ], 200);
+
+        } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }

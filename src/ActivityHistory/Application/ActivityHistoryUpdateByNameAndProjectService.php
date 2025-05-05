@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\ActivityHistory\Application;
 
 use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryUpdateDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Project\Domain\Model\ProjectRepositoryInterface;
@@ -19,45 +20,40 @@ final readonly class ActivityHistoryUpdateByNameAndProjectService
         private ActivityHistoryRepositoryInterface $activityHistoryRepository,
         private ProjectRepositoryInterface $projectRepository,
         private ConsultantRepositoryInterface $consultantRepository
-    )
-    {}
+    ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws ProjectNotFoundException
+     * @throws ActivityHistoryNotFoundException
+     * @throws ActivityHistoryNotFromUserException
      */
-    public function __invoke( User $user,
-        array $data
-    ): JsonResponse {
-
-        $project = $this->projectRepository->findProjectByName($data['projectName']);
-        if (!$project instanceof \App\Project\Domain\Project\Project) {
+    public function __invoke(User $user, ActivityHistoryUpdateDTO $dto): ActivityHistoryDTO
+    {
+        $project = $this->projectRepository->findProjectByName($dto->projectName);
+        if (!$project) {
             throw new ProjectNotFoundException();
         }
 
-        if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($data['name'], $project)) {
+        if (!$this->activityHistoryRepository->checkIfActivityHistoryFromProjectExists($dto->name, $project)) {
             throw new ActivityHistoryNotFoundException();
         }
 
-        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($data['name'], $project);
+        $activity = $this->activityHistoryRepository->findActivityHistoryFromProject($dto->name, $project);
 
         $consultantCheck = $this->consultantRepository->checkIfConsultantExists($user);
-
-        if ($consultantCheck){
+        if ($consultantCheck) {
             $consultant = $this->consultantRepository->findConsultantByUser($user);
             if (!$consultant->getUser()->getActivityHistories()->contains($activity)) {
-                throw new ActivityHistoryNotFromUserException($data['name'], $data['projectName']);
+                throw new ActivityHistoryNotFromUserException($dto->name, $dto->projectName);
             }
         }
 
-        if ($data['description'] !== null) {
-            $activity->setDescription($data['description']);
+        if ($dto->description !== null) {
+            $activity->setDescription($dto->description);
         }
+
         $this->activityHistoryRepository->saveActivityHistory();
 
-        return new JsonResponse([
-            'message' => 'Activity updated successfully',
-            'project' => ActivityHistoryDTO::fromEntity($activity),
-        ], 201);
-
+        return ActivityHistoryDTO::fromEntity($activity);
     }
 }

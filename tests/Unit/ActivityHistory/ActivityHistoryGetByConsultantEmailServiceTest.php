@@ -17,13 +17,13 @@ use App\User\Domain\User;
 use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
+use DomainException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
 {
     private ActivityHistoryRepositoryInterface $activityHistoryRepository;
-    private ProjectRepositoryInterface $projectRepository;
     private UserRepositoryInterface $userRepository;
     private ConsultantRepositoryInterface $consultantRepository;
 
@@ -57,29 +57,36 @@ class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
 
         $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(false);
 
-        $response = ($this->service)($this->data);
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("The user test@example.com is not a consultant");
 
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals(['error' => 'The user test@example.com is not a consultant'], json_decode($response->getContent(), true));
+        ($this->service)($this->data);
     }
+
 
     /**
      * @throws Exception
      */
+    /**
+     * @throws Exception
+     * @throws NotValidEmailException
+     */
     public function testReturns402IfConsultantNotFound(): void
     {
         $user = $this->createMock(User::class);
+        $user->method('getEmail')->willReturn(new EmailValueObject($this->data['email']));
 
         $this->userRepository->method('findUserByEmailOrFail')->willReturn($user);
 
         $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(true);
-        $this->consultantRepository->method('findConsultantByUser')->willReturn(null);
+        $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn(null);
 
-        $response = ($this->service)($this->data);
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("Consultant not found for user: test@example.com");
 
-        $this->assertEquals(402, $response->getStatusCode());
-        $this->assertEquals(['error' => 'Consultant has no associated activities'], json_decode($response->getContent(), true));
+        ($this->service)($this->data);
     }
+
 
     /**
      * @throws Exception
@@ -107,27 +114,20 @@ class ActivityHistoryGetByConsultantEmailServiceTest extends Unit
 
         $this->activityHistoryRepository->method('findActivitiesByConsultant')->with($user)->willReturn([$activity]);
 
-        $response = ($this->service)($this->data);
+        $result = ($this->service)($this->data);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $expected = [
-            'message' => 'Tasks retrieved successfully',
-            'current_consultant_id' => 500,
-            'activities' => [[
-                'activity_history_id' => 1,
-                'name' => 'Activity',
-                'description' => 'Description',
-                'project_id' => 300,
-                'date' => '2025-04-16',
-                'user_id' => 200,
-            ]]
-        ];
-        $this->assertEquals($expected, json_decode($response->getContent(), true));
+        $this->assertEquals(500, $result['current_consultant_id']);
+        $this->assertCount(1, $result['activities']);
+        $this->assertEquals('Activity', $result['activities'][0]->name);
+        $this->assertEquals('Description', $result['activities'][0]->description);
+        $this->assertEquals('2025-04-16', $result['activities'][0]->date);
+        $this->assertEquals(300, $result['activities'][0]->projectId);
+        $this->assertEquals(200, $result['activities'][0]->userId);
     }
 
     /**
-     * @throws \DateMalformedStringException
      * @throws Exception
+     * @throws \DateMalformedStringException
      */
     private function createActivityMock(
         int $id,

@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ActivityHistory;
 
-use App\ActivityHistory\Application\ActivityHistoryGetByConsultantEmailService;
 use App\ActivityHistory\Application\ActivityHistoryGetByConsultantService;
 use App\ActivityHistory\Domain\ActivityHistory;
+use App\ActivityHistory\Domain\DTO\ActivityHistoryDTO;
 use App\ActivityHistory\Domain\Model\ActivityHistoryRepositoryInterface;
 use App\Consultant\Domain\Model\ConsultantRepositoryInterface;
 use App\Consultant\Domain\Consultant\Consultant;
-use App\Project\Domain\Model\ProjectRepositoryInterface;
 use App\Project\Domain\Project\Project;
 use App\Shared\Domain\Exception\NotValidEmailException;
-use App\User\Domain\Model\UserRepositoryInterface;
 use App\User\Domain\User;
 use App\User\Domain\ValueObject\EmailValueObject;
 use Codeception\Test\Unit;
-use phpDocumentor\Reflection\Types\This;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use DomainException;
 
 class ActivityHistoryGetByConsultantServiceTest extends Unit
 {
     private ActivityHistoryRepositoryInterface $activityHistoryRepository;
     private ConsultantRepositoryInterface $consultantRepository;
-
     private ActivityHistoryGetByConsultantService $service;
     private string $email;
 
@@ -38,48 +33,32 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
         $this->activityHistoryRepository = $this->createMock(ActivityHistoryRepositoryInterface::class);
         $this->consultantRepository = $this->createMock(ConsultantRepositoryInterface::class);
 
-        $this->service = new ActivityHistoryGetByConsultantService($this->consultantRepository, $this->activityHistoryRepository);
+        $this->service = new ActivityHistoryGetByConsultantService(
+            $this->consultantRepository,
+            $this->activityHistoryRepository
+        );
         $this->email = 'test@example.com';
-
     }
+
     /**
-     * @throws Exception
      * @throws NotValidEmailException
+     * @throws Exception
      */
-    public function testReturns402IfUserIsNotConsultant(): void
+    public function testThrowsExceptionIfUserIsNotConsultant(): void
     {
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn(new EmailValueObject($this->email));
 
-        $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(false);
+        $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn(null);
 
-        $response = ($this->service)($user);
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('The user test@example.com is not a consultant');
 
-        $this->assertEquals(402, $response->getStatusCode());
-        $this->assertEquals(['error' => 'The user test@example.com is not a consultant'], json_decode($response->getContent(), true));
+        ($this->service)($user);
     }
 
     /**
      * @throws Exception
-     * @throws NotValidEmailException
-     */
-    public function testReturns400IfConsultantNotFound(): void
-    {
-        $user = $this->createMock(User::class);
-        $user->method('getEmail')->willReturn(new EmailValueObject($this->email));
-
-        $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(true);
-        $this->consultantRepository->method('findConsultantByUser')->willReturn(null);
-
-        $response = ($this->service)($user);
-
-        $this->assertEquals(402, $response->getStatusCode());
-        $this->assertEquals(['error' => 'The user test@example.com is not a consultant'], json_decode($response->getContent(), true));
-    }
-
-    /**
-     * @throws Exception
-     * @throws \DateMalformedStringException
      */
     public function testReturnsActivitiesSuccessfully(): void
     {
@@ -95,33 +74,24 @@ class ActivityHistoryGetByConsultantServiceTest extends Unit
 
         $activity = $this->createActivityMock(1, 'Activity', 'Description', '2025-04-16', $project, $user);
 
-        $this->consultantRepository->method('checkIfConsultantExists')->with($user)->willReturn(true);
         $this->consultantRepository->method('findConsultantByUser')->with($user)->willReturn($consultant);
-
         $this->activityHistoryRepository->method('findActivitiesByConsultant')->with($user)->willReturn([$activity]);
 
-        $response = ($this->service)($user);
+        $result = ($this->service)($user);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('current_consultant_id', $result);
+        $this->assertArrayHasKey('activities', $result);
 
-        $expected = [
-            'message' => 'Tasks retrieved successfully',
-            'current_consultant_id' => 500,
-            'activities' => [[
-                'activity_history_id' => 1,
-                'name' => 'Activity',
-                'description' => 'Description',
-                'project_id' => 300,
-                'date' => '2025-04-16',
-                'user_id' => 200,
-            ]],
-        ];
+        $this->assertEquals(500, $result['current_consultant_id']);
+        $this->assertCount(1, $result['activities']);
+        $this->assertInstanceOf(ActivityHistoryDTO::class, $result['activities'][0]);
 
-        $this->assertEquals($expected, json_decode($response->getContent(), true));
+        $this->assertEquals('Activity', $result['activities'][0]->name);
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws \Exception
      * @throws Exception
      */
     private function createActivityMock(

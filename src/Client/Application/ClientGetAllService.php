@@ -6,27 +6,33 @@ namespace App\Client\Application;
 
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
+use App\Shared\Domain\Exception\NoClientsFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 final readonly class ClientGetAllService
 {
     public function __construct(
         private ClientRepositoryInterface $clientRepository
-    )
-    {}
+    ) {}
 
-    public function __invoke(): JsonResponse
+    /**
+     * @return ClientDTO[]
+     *
+     * @throws NoClientsFoundException if no clients are found.
+     */
+    public function __invoke(): array
     {
         $clients = $this->clientRepository->findAllClients();
-
         $clientData = [];
+
         foreach ($clients as $client) {
             $clientData[] = ClientDTO::fromEntity($client);
         }
-        if ($clientData === []) {
-            return new JsonResponse(['error' => 'There are no activities'], 404);
+
+        if (empty($clientData)) {
+            throw new NoClientsFoundException();
         }
 
-        return new JsonResponse($clientData, 200);
+        return $clientData;
     }
 }

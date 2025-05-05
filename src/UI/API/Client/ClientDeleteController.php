@@ -13,11 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use OpenApi\Attributes as OA;
 
-class ClientDeleteController extends AbstractController
+final  class ClientDeleteController extends AbstractController
 {
-    public function __construct(private AuthChecker $authChecker)
-    {
-    }
+    public function __construct(private AuthChecker $authChecker) {}
 
     #[Route('/client/delete', name: 'delete_client', methods: ['DELETE'])]
     #[OA\Delete(
@@ -34,21 +32,27 @@ class ClientDeleteController extends AbstractController
                     ]
                 )
             ),
-            new OA\Response(
-                response: 401,
-                description: "Not authorized"
-            ),
+            new OA\Response(response: 401, description: "Not authorized"),
+            new OA\Response(response: 402, description: "Cannot delete client because there are associated projects"),
+            new OA\Response(response: 404, description: "User not found")
         ]
     )]
-    public function deleteClient (Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
+    public function deleteClient(Security $security, ClientDeleteByUserService $clientDeleteById): JsonResponse
     {
-        try{
+        try {
             $user = $this->authChecker->getAuthenticated($security);
-            return $clientDeleteById($user);
-        } catch (UserNotFoundException $e){
-            return new JsonResponse(["message" => $e->getMessage()], 404);
-        }
+            $clientDeleteById($user);
 
+            return new JsonResponse(["message" => "Client deleted successfully"], 200);
+
+        } catch (UserNotFoundException $e) {
+            return new JsonResponse(["message" => $e->getMessage()], 404);
+        } catch (\DomainException $e) {
+            return new JsonResponse(["message" => $e->getMessage()], 402);
+        } catch (\Exception $e) {
+            return new JsonResponse(["message" => $e->getMessage()], 500);
+        }
     }
+
 
 }

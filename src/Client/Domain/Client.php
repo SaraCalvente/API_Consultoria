@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Client\Domain;
 
 use App\Client\Infraestructure\ClientRepository;
+use App\Project\Domain\Project\Project;
 use App\User\Domain\User;
+use App\User\Domain\ValueObject\EmailValueObject;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
@@ -94,5 +96,22 @@ class Client
         $this->user = $user;
 
         return $this;
+    }
+
+    public static function createClient(
+        User $user,
+        string $name,
+        string $surnames,
+        ?string $address,
+        string $phoneNumber
+    ): self {
+        $client = new self();
+        $client->setUser($user);
+        $client->setName($name);
+        $client->setSurnames($surnames);
+        $client->setAddress($address);
+        $client->setPhoneNumber($phoneNumber);
+
+        return $client;
     }
 }

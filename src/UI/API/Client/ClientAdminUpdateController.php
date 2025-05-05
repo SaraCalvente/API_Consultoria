@@ -4,18 +4,19 @@ declare(strict_types=1);
 namespace App\UI\API\Client;
 
 use App\Client\Application\ClientUpdateByEmailService;
+use App\Client\Domain\ClientCreateDTO;
+use App\Client\Domain\ClientUpdateByEmailDTO;
+use App\Shared\Domain\Exception\ClientNotFoundException;
+use App\Shared\Domain\Exception\NoDataToUpdateException;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class ClientAdminUpdateController extends AbstractController
 {
-    /**
-     * @throws \Exception
-     */
     #[Route('/admin/update/client', name: 'admin_client_update', methods: ['PUT'])]
     #[OA\Put(
         path: "/admin/client/update",
@@ -24,7 +25,7 @@ class ClientAdminUpdateController extends AbstractController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["email", "address", "phone_number"],
+                required: ["email"],
                 properties: [
                     new OA\Property(property: "email", type: "string", example: "user@example.com"),
                     new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
@@ -38,7 +39,6 @@ class ClientAdminUpdateController extends AbstractController
                 description: "Client updated successfully",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Client updated successfully"),
                         new OA\Property(property: "id", type: "integer", example: 1),
                         new OA\Property(property: "user_id", type: "integer", example: 1),
                         new OA\Property(property: "email", type: "string", example: "user@example.com"),
@@ -50,22 +50,35 @@ class ClientAdminUpdateController extends AbstractController
                     ]
                 )
             ),
-            new OA\Response(
-                response: 404,
-                description: "Client not found"
-            ),
-            new OA\Response(
-                response: 401,
-                description: "Unauthorized"
-            )
+            new OA\Response(response: 404, description: "Client not found"),
+            new OA\Response(response: 400, description: "No data to update"),
+            new OA\Response(response: 401, description: "Unauthorized")
         ]
     )]
     public function adminUpdateClient(Request $request, ClientUpdateByEmailService $clientUpdateByEmail): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        return $clientUpdateByEmail($data);
+        $requiredFields = ['email', 'address', 'phone_number'];
+        foreach ($requiredFields as $field) {
+            if (empty($data[$field] ?? null)) {
+                throw new BadRequestHttpException("Missing or empty field: $field");
+            }
+        }
+
+        try {
+            $dto = new ClientUpdateByEmailDTO(
+                email: $data['email'],
+                address: $data['address'],
+                phoneNumber: $data['phoneNumber']
+            );
+
+            $updatedClient = $clientUpdateByEmail($dto);
+            return new JsonResponse($updatedClient, 200);
+        } catch (NoDataToUpdateException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 400);
+        } catch (ClientNotFoundException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 404);
+        }
     }
-
-
 }

@@ -15,24 +15,22 @@ use OpenApi\Attributes as OA;
 
 class ClientUpdateController extends AbstractController
 {
-    public function __construct(private AuthChecker $authChecker)
-    {
-    }
+    public function __construct(private AuthChecker $authChecker) {}
 
     /**
-     * @throws \Exception
+     * Update client details of the authenticated user.
      */
     #[Route('/client/update', name: 'client_update', methods: ['PUT'])]
     #[OA\Put(
         path: "/client/update",
-        description: "Update client details of authenticated client.",
-        summary: "Client details updated successfully",
+        description: "Update client details of the authenticated client.",
+        summary: "Update client profile",
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ["address", "phone_number"],
                 properties: [
-                    new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
+                    new OA\Property(property: "address", type: "string", example: "C/ Example, 9"),
                     new OA\Property(property: "phone_number", type: "string", example: "666 666 666")
                 ]
             )
@@ -43,39 +41,45 @@ class ClientUpdateController extends AbstractController
                 description: "Client updated successfully",
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Client updated successfully"),
                         new OA\Property(property: "id", type: "integer", example: 1),
                         new OA\Property(property: "user_id", type: "integer", example: 1),
                         new OA\Property(property: "email", type: "string", example: "user@example.com"),
                         new OA\Property(property: "name", type: "string", example: "Ana"),
                         new OA\Property(property: "surNames", type: "string", example: "Garcia Ruiz"),
-                        new OA\Property(property: "address", type: "string", example: "C/ example, 9"),
+                        new OA\Property(property: "address", type: "string", example: "C/ Example, 9"),
                         new OA\Property(property: "phone_number", type: "string", example: "666 666 666"),
-                        new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT"),
-                    ]
+                        new OA\Property(property: "roles", type: "string", example: "ROLE_CLIENT")
+                    ],
+                    type: "object"
                 )
             ),
             new OA\Response(
-                response: 404,
-                description: "Client not found"
+                response: 400,
+                description: "No data provided to update"
             ),
             new OA\Response(
                 response: 401,
                 description: "Unauthorized"
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Client not found"
             )
         ]
     )]
-    public function updateClient(Request $request, Security $security, ClientUpdateByUserService $clientUpdateById): JsonResponse
-    {
+    public function updateClient(
+        Request $request,
+        Security $security,
+        ClientUpdateByUserService $clientUpdateById
+    ): JsonResponse {
         try {
             $user = $this->authChecker->getAuthenticated($security);
             $data = json_decode($request->getContent(), true);
-            return $clientUpdateById(
-                $user,
-                $data
-            );
+            $clientDTO = $clientUpdateById($user, $data);
+
+            return new JsonResponse($clientDTO, 200);
         } catch (NoDataToUpdateException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 401);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 

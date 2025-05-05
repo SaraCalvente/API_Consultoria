@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Client\Application;
 
 use App\Client\Domain\Client;
+use App\Client\Domain\ClientCreateDTO;
 use App\Client\Domain\ClientDTO;
 use App\Client\Domain\Model\ClientRepositoryInterface;
 use App\Shared\Domain\Exception\NotValidEmailException;
@@ -21,60 +22,43 @@ final readonly class ClientCreateService
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher,
-        private ClientRepositoryInterface   $clientRepository,
-        private UserRepositoryInterface     $userRepository)
-    {}
+        private ClientRepositoryInterface $clientRepository,
+        private UserRepositoryInterface $userRepository
+    ) {}
 
     /**
      * @throws NotValidEmailException
      * @throws RequiredFieldException
+     * @throws NotValidPasswordLengthException
+     * @throws UserAlreadyExistsException
      */
-    public function __invoke(
-        array $data
-    ): JsonResponse
+    public function __invoke(ClientCreateDTO $dto): ClientDTO
     {
-        $this->validateRequiredFields($data);
-        if ($this->userRepository->checkIfUserExists($data['email'])){
-            return new JsonResponse([
-                'error' => 'User ' . $data['email'] . ' already exists.',
-
-            ], 409);
+        if ($this->userRepository->checkIfUserExists($dto->email)) {
+            throw new UserAlreadyExistsException('User with email ' . $dto->email . ' already exists.');
         }
 
         $user = new User();
-        $user->setEmail(new EmailValueObject($data['email']));
-        $this->userRepository->checkPasswordLength($data['password']);
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['password']);
+        $user->setEmail(new EmailValueObject($dto->email));
+        $this->userRepository->checkPasswordLength($dto->password);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $dto->password);
         $user->setPassword($hashedPassword);
         $user->setRoles(['ROLE_CLIENT']);
 
         $client = new Client();
         $client
             ->setUser($user)
-            ->setName($data['name'])
-            ->setSurnames($data['surnames'])
-            ->setPhoneNumber($data['phoneNumber'])
-            ->setAddress($data['address']);
+            ->setName($dto->name)
+            ->setSurnames($dto->surnames)
+            ->setPhoneNumber($dto->phoneNumber)
+            ->setAddress($dto->address);
 
         $this->userRepository->add($user);
         $this->clientRepository->addClient($client);
 
-        return new JsonResponse([
-            'message' => 'Client successfully registered',
-            'client' => ClientDTO::fromEntity($client)
-        ], 201);
+        return ClientDTO::fromEntity($client);
     }
 
-    private function validateRequiredFields(array $data): void
-    {
-        $requiredFields = ['email', 'password', 'name', 'surnames', 'address', 'phoneNumber'];
-
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) || empty($data[$field])) {
-                throw new RequiredFieldException($field);
-            }
-        }
-    }
 
 
 }
